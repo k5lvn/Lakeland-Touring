@@ -1,0 +1,73 @@
+name: Centre Touring footer logo
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/centre-touring-footer.yml']
+permissions:
+  contents: read
+concurrency:
+  group: lakeland-touring-deployment
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: pip -q install paramiko==3.5.1
+      - name: Centre footer artwork and verify
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: |
+          python3 - <<'PY'
+          import os,socket,base64,ssl,datetime
+          from pathlib import Path
+          from urllib.request import urlopen
+          from urllib.error import URLError
+          import paramiko
+          parts=os.environ['SFTP_HOST_PUBLIC_KEY'].split()
+          if len(parts)==3:parts=parts[1:]
+          key=paramiko.PKey.from_type_string(parts[0],base64.b64decode(parts[1],validate=True))
+          t=paramiko.Transport(socket.create_connection((os.environ['SFTP_HOST'].strip(),22),timeout=25));t.start_client(timeout=25)
+          assert t.get_remote_server_key().asbytes()==key.asbytes()
+          t.auth_password(os.environ['SFTP_USER'].strip(),os.environ['SFTP_PASSWORD']);s=paramiko.SFTPClient.from_transport(t);s.get_channel().settimeout(40)
+          def read(name):
+           with s.open('/public/'+name,'rb') as f:return f.read()
+          def put(name,data):
+           p='/public/'+name
+           with s.open(p+'.centre-stage','wb') as f:f.set_pipelined(True);f.write(data)
+           s.chmod(p+'.centre-stage',0o644);s.posix_rename(p+'.centre-stage',p)
+          names=['brand.css','index.html','booking.html']
+          old={name:read(name) for name in names}
+          css='\n/* Keep the mobile footer artwork centred with its copy. */\n@media(max-width:720px){.worx-footer .footer-brand{width:100%;text-align:center}.worx-footer .footer-brand .footer-name{width:100%;display:flex;justify-content:center}.worx-footer .footer-brand .touring-official-logo{margin-left:auto;margin-right:auto}}\n'
+          updates={'brand.css':old['brand.css']+css.encode()}
+          for name in ['index.html','booking.html']:
+           raw=old[name].decode()
+           assert 'brand.css?v=20261015-4k2' in raw
+           updates[name]=raw.replace('brand.css?v=20261015-4k2','brand.css?v=20261015-centre3').encode()
+          changed=[]
+          Path('footer-centre-backup').mkdir()
+          try:
+           for name,data in updates.items():
+            Path('footer-centre-backup/'+name).write_bytes(old[name]);assert read(name)==old[name];put(name,data);changed.append(name)
+           for name,data in updates.items():
+            url='https://lakelandtouring.uk/'+name+'?footer-check='+datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+            try:r=urlopen(url,timeout=40)
+            except URLError as e:
+             if not isinstance(e.reason,ssl.SSLError):raise
+             r=urlopen(url.replace('https://','http://',1),timeout=40)
+            with r:assert r.status==200 and r.read()==data
+            print('VERIFIED',name,flush=True)
+          except Exception:
+           for name in reversed(changed):put(name,old[name])
+           raise
+          finally:s.close();t.close()
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: footer-centre-backup
+          path: footer-centre-backup/
+          retention-days: 30
