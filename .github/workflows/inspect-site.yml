@@ -1,0 +1,38 @@
+name: Inspect Lakeland Touring web root (read only)
+on:
+  push:
+    paths:
+      - '.github/workflows/inspect-site.yml'
+  workflow_dispatch:
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: python -m pip install -q paramiko
+      - name: List likely web root and top-level files
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os,socket,base64,paramiko,stat
+          h=os.environ['SFTP_HOST']; user=os.environ['SFTP_USER']; pw=os.environ['SFTP_PASSWORD']
+          k=os.environ['SFTP_HOST_PUBLIC_KEY'].split()
+          if len(k)==3:k=k[1:]
+          sock=socket.create_connection((h,22),timeout=10)
+          t=paramiko.Transport(sock);t.start_client(timeout=10)
+          key=t.get_remote_server_key()
+          if key.get_name()!=k[0] or key.asbytes()!=base64.b64decode(k[1]): raise RuntimeError('Host key mismatch')
+          t.auth_password(user,pw);s=paramiko.SFTPClient.from_transport(t);s.get_channel().settimeout(12)
+          for path in ['/','/public','/public/']:
+              try:
+                  print('DIRECTORY',path,flush=True)
+                  for e in s.listdir_attr(path)[:80]:
+                      print(('DIR ' if stat.S_ISDIR(e.st_mode) else 'FILE'),e.filename,'bytes',e.st_size,flush=True)
+              except Exception as e: print('ERROR',type(e).__name__,str(e),flush=True)
+          s.close();t.close()
+          PY
