@@ -1,0 +1,57 @@
+name: Import Touring public design files (no deployment)
+on:
+  push:
+    paths:
+      - '.github/workflows/import-design.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install -q paramiko
+      - name: Read public site HTML CSS JS and image assets
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: |
+          python - <<'PY'
+          import os,stat,socket,base64,paramiko,pathlib
+          h=os.environ['SFTP_HOST']; key=os.environ['SFTP_HOST_PUBLIC_KEY'].split()
+          if len(key)==3:key=key[1:]
+          t=paramiko.Transport(socket.create_connection((h,22),timeout=10));t.start_client(timeout=10)
+          remote=t.get_remote_server_key()
+          if remote.get_name()!=key[0] or remote.asbytes()!=base64.b64decode(key[1]):raise RuntimeError('Host identity mismatch')
+          t.auth_password(os.environ['SFTP_USER'],os.environ['SFTP_PASSWORD'])
+          s=paramiko.SFTPClient.from_transport(t);s.get_channel().settimeout(15)
+          allow={'.html','.css','.js','.png','.jpg','.jpeg','.webp','.gif','.svg','.ico','.avif'}
+          count=0
+          def visit(src,rel='',depth=0):
+              global count
+              if depth>5:return
+              for e in s.listdir_attr(src):
+                  name=e.filename
+                  if name.startswith('.') or name.lower() in ('data','admin','api','clickandbuilds'):continue
+                  rp=src.rstrip('/')+'/'+name; local=(rel+'/'+name).lstrip('/')
+                  if stat.S_ISDIR(e.st_mode):visit(rp,local,depth+1)
+                  elif pathlib.PurePosixPath(name).suffix.lower() in allow and e.st_size<12000000:
+                      dest=pathlib.Path('site')/local;dest.parent.mkdir(parents=True,exist_ok=True)
+                      s.get(rp,str(dest));count+=1; print('IMPORTED',local,'bytes',e.st_size)
+          visit('/public')
+          print('Total visual assets imported:',count)
+          s.close();t.close()
+          PY
+      - name: Commit imported visual site to private repository
+        run: |
+          git config user.name "Lakeland Touring site import"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add site/
+          if ! git diff --cached --quiet; then
+            git commit -m "Back up original Touring HTML CSS JS and visual assets"
+            git push
+          fi
