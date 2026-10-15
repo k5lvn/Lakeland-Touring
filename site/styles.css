@@ -14,3 +14,37 @@
 /* 2026 Lakeland Touring locked additions */
 .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}.price-card{border:1px solid #d9dfdc;border-radius:16px;padding:24px;background:#fff}.price-card.low{background:#eef8ef}.price-card.standard{background:#fff7e6}.price-card.peak{background:#fff0f0}.price-card h3{margin:0 0 6px}.price-card strong{font-size:2.1rem}.price-card.peak strong{color:#b6232c}.price-card.standard strong{color:#b77700}.price-card.low strong{color:#176d2a}.short-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.short-card{padding:18px;border-radius:14px;background:#f0f8f1;border:1px solid #dce9dd;text-align:center}.short-card strong{display:block;font-size:1.45rem}.notice{padding:14px 16px;border-radius:12px;background:#eef7ef;border-left:4px solid #39a34a;margin-top:16px}.nav-active{color:#d9a52f!important}.page-hero{padding:72px 7vw 46px;background:linear-gradient(135deg,#071722,#0d2a31);color:#fff}.page-hero h1{font-size:clamp(2.4rem,5vw,4.7rem);margin:.35rem 0}.page-hero p{max-width:720px;color:#d8e4e5}.split{display:grid;grid-template-columns:1.6fr .8fr;gap:24px}.calendar-shell{display:grid;grid-template-columns:1.5fr .8fr;gap:22px}.diary-table{width:100%;border-collapse:collapse}.diary-table th,.diary-table td{padding:12px;border-bottom:1px solid #e4e9e7;text-align:left}.status{display:inline-block;padding:5px 9px;border-radius:999px;font-size:.78rem}.status.confirmed{background:#e7f5ea;color:#176d2a}.status.pending{background:#fff3d5;color:#8b6100}.status.blocked{background:#fde6e8;color:#9f1e27}.admin-wrap{max-width:1200px;margin:40px auto;padding:0 22px}.admin-card{background:#fff;border:1px solid #dce4e2;border-radius:18px;padding:22px;margin-bottom:20px}.login-card{max-width:460px;margin:90px auto;background:#fff;padding:28px;border-radius:18px;border:1px solid #dce4e2}.form-stack{display:grid;gap:12px}.form-stack input{padding:13px;border:1px solid #ccd6d2;border-radius:10px}.muted-copy{color:#687a7d}.breakdown-pending{background:#fff7e6;border-left:4px solid #d9a52f;padding:16px;border-radius:12px}.tiny{font-size:.82rem;color:#6e7d80}
 @media(max-width:900px){.price-grid,.short-grid,.split,.calendar-shell{grid-template-columns:1fr}}
+
+/* Lakeland Touring — champagne and charcoal editorial redesign; staged, not deployed */
+:root{--navy:#171919;--navy2:#242523;--gold:#bca17c;--gold2:#e3d1b6;--cream:#f6f2ea;--ink:#24221f;--muted:#706b64;--line:rgba(49,42,33,.15);--shadow:0 26px 60px rgba(27,23,17,.12)}
+body{background:var(--cream);color:var(--ink)}
+.topbar{background:rgba(22,23,22,.95);border-bottom:1px solid rgba(227,209,182,.22)}
+.brand strong{font-weight:500;letter-spacing:.14em}
+.button{border-radius:2px;background:#d9c3a5;color:#1a1917;box-shadow:none;letter-spacing:.035em;transition:background .25s ease,transform .25s ease}
+.button:hover{background:#f1e4d0;transform:translateY(-2px)}
+.button.ghost{background:rgba(0,0,0,.18);border-color:rgba(246,242,234,.55)}
+.hero{min-height:min(820px,95svh);background-position:center}
+.hero:after{background:linear-gradient(90deg,rgba(15,17,17,.88) 0%,rgba(19,19,18,.66) 52%,rgba(14,14,13,.25) 100%)}
+.hero h1{font-size:clamp(52px,6.5vw,100px);line-height:1.02;letter-spacing:-.045em}
+.hero h1 span{color:#e3d1b6}
+.hero-book-card{background:rgba(24,25,24,.77);border-color:rgba(227,209,182,.35);border-radius:3px;backdrop-filter:blur(18px)}
+.hero-book-card strong{color:#ead7b9}
+.eyebrow{color:#ad8f69;letter-spacing:.25em}
+.hero .eyebrow,.hero-book-card .eyebrow{color:#e3d1b6}
+.section{padding-top:clamp(76px,9vw,130px);padding-bottom:clamp(76px,9vw,130px)}
+.section h2{letter-spacing:-.04em;line-height:1.06}
+.caravan-showcase{background:#f6f2ea}
+.gallery{gap:12px}
+.gallery img{border-radius:2px;box-shadow:none;transition:filter .35s ease,transform .45s ease}
+.gallery img:hover{filter:brightness(1.07)}
+.spec-grid div{border-radius:2px;background:#eee8de;border-color:#e3dbd0}
+.spec-grid strong{color:#262422}
+.price-card,.short-card,.policy-card,.steps>div,.calendar-card,.summary-card{border-radius:3px}
+.price-card.low,.price-card.standard,.price-card.peak,.short-card{background:#f2ece3;border-color:#e0d5c5}
+.price-card.low strong,.price-card.standard strong,.price-card.peak strong{color:#7b5d39}
+.travel-policy,.booking-section{background:#eee7dc}
+.owner-panel{background:linear-gradient(120deg,#1b1c1b,#31302d)}
+footer{background:#171919;color:#d0c8bd}
+footer .group,.nav-active{color:#e3d1b6!important}
+@media(max-width:950px){.hero{min-height:680px}}
+@media(max-width:560px){.hero{min-height:720px}.hero h1{font-size:clamp(48px,12vw,66px)}.hero-book-card{width:100%}.gallery{gap:6px}.topbar{padding-inline:16px}}
