@@ -1,0 +1,40 @@
+name: Test Lakeland Touring SFTP connection (read only)
+on:
+  push:
+    paths:
+      - '.github/workflows/test-ionos-sftp.yml'
+  workflow_dispatch:
+jobs:
+  connectivity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check configured secrets without displaying them
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: |
+          set -euo pipefail
+          for k in SFTP_HOST SFTP_USER SFTP_PASSWORD SFTP_HOST_PUBLIC_KEY; do
+            if [ -z "${!k:-}" ]; then echo "::error::Missing required secret $k"; exit 1; fi
+          done
+          echo "All four required secrets are set."
+      - name: Authenticate and list remote starting directory
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq lftp >/dev/null
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s %s\n' "$SFTP_HOST" "$SFTP_HOST_PUBLIC_KEY" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          ssh-keygen -F "$SFTP_HOST" >/dev/null
+          echo "Attempting read-only SFTP login..."
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" "sftp://$SFTP_HOST:22" -e 'set net:max-retries 1; set net:timeout 15; set sftp:auto-confirm no; pwd; cls -1; bye'
+          echo "Read-only SFTP check complete. No files changed."
