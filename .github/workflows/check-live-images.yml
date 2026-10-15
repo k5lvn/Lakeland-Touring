@@ -1,0 +1,32 @@
+name: Check live Touring image paths (read only)
+on:
+  push:
+    paths:
+      - '.github/workflows/check-live-images.yml'
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: python -m pip install -q paramiko
+      - name: Inspect asset paths only
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: |
+          python - <<'PY'
+          import os,socket,base64,paramiko
+          h=os.environ['SFTP_HOST'];k=os.environ['SFTP_HOST_PUBLIC_KEY'].split()
+          if len(k)==3:k=k[1:]
+          t=paramiko.Transport(socket.create_connection((h,22),timeout=12));t.start_client(timeout=12)
+          a=t.get_remote_server_key()
+          assert a.get_name()==k[0] and a.asbytes()==base64.b64decode(k[1])
+          t.auth_password(os.environ['SFTP_USER'],os.environ['SFTP_PASSWORD'])
+          s=paramiko.SFTPClient.from_transport(t)
+          for p in ['/public/Assets','/public/assets']:
+            try: print(p,[(x.filename,x.st_size) for x in s.listdir_attr(p)],flush=True)
+            except Exception as e:print(p,type(e).__name__,flush=True)
+          s.close();t.close()
+          PY
