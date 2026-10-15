@@ -1,0 +1,61 @@
+name: Publish Touring public design (manual, backed up)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install SFTP tooling
+        run: python -m pip install -q paramiko
+      - name: Back up remote public design and publish selected files
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os,socket,base64,paramiko,pathlib,datetime
+          host=os.environ['SFTP_HOST']; key=os.environ['SFTP_HOST_PUBLIC_KEY'].split()
+          if len(key)==3 and key[0]==host:key=key[1:]
+          if len(key)!=2:raise RuntimeError('Invalid host key format')
+          sock=socket.create_connection((host,22),timeout=12)
+          t=paramiko.Transport(sock);t.start_client(timeout=12)
+          actual=t.get_remote_server_key()
+          if actual.get_name()!=key[0] or actual.asbytes()!=base64.b64decode(key[1]):raise RuntimeError('SFTP identity mismatch')
+          t.auth_password(os.environ['SFTP_USER'],os.environ['SFTP_PASSWORD'])
+          s=paramiko.SFTPClient.from_transport(t);s.get_channel().settimeout(20)
+          root='/public'
+          # Intentionally explicit allowlist; never send PHP, config, admin, API or booking data.
+          files=['index.html','booking.html','styles.css','gigi.js','robots.txt','sitemap.xml']
+          backup=pathlib.Path('site-backup');backup.mkdir()
+          for f in files:
+            try:s.get(root+'/'+f,str(backup/f));print('BACKED UP',f,flush=True)
+            except FileNotFoundError:print('NEW FILE',f,flush=True)
+          # No remote changes until all available files have been downloaded.
+          for f in files:
+            source=pathlib.Path('site')/f
+            if not source.is_file():raise RuntimeError('Missing local '+f)
+          print('SAFE BACKUP FINISHED; starting allowlisted design publish',flush=True)
+          for f in files:
+            remote=root+'/'+f
+            tmp=root+'/.'+f+'.touring-upload'
+            s.put('site/'+f,tmp)
+            s.rename(tmp,remote)
+            print('PUBLISHED',f,flush=True)
+          print('PUBLISH COMPLETE — booking.js, PHP, data, Admin, Api and Assets unchanged',flush=True)
+          s.close();t.close()
+          PY
+      - name: Save pre-deployment backup
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: touring-pre-publish-backup
+          path: site-backup/
+          if-no-files-found: warn
+          retention-days: 30
