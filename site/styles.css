@@ -81,3 +81,26 @@ footer .group,.nav-active{color:#e3d1b6!important}
 .gg-quicklinks a:hover{background:#ede1d0}
 @media(max-width:760px){.footer-inner{grid-template-columns:1fr 1fr;padding-top:45px;padding-bottom:45px}.footer-brand{grid-column:1/-1}.gg-widget{right:12px;bottom:12px}}
 @media(max-width:450px){.footer-inner{grid-template-columns:1fr}.footer-brand{grid-column:auto}.gg-panel{bottom:64px}.hero-signature{font-size:19px}}
+
+/* Touring mobile editorial rescue 2026-10-15 */
+:root{--gold:#bda88c;--gold2:#e6d8c6;--navy:#181a19;--cream:#f8f5f0}
+.topbar{height:82px;background:#1c1d1c}
+.topbar .brand{gap:10px}.topbar .brand strong{color:#f8f3eb;font-family:Georgia,serif;letter-spacing:.12em}
+.topbar .brand small{color:#d3bea0}
+.hero{background-image:linear-gradient(90deg,rgba(15,17,16,.69),rgba(15,17,16,.08)),url('Assets/caravan-main.jpg');background-position:center center;background-size:cover;min-height:690px}
+.hero:after{background:linear-gradient(90deg,rgba(18,20,19,.76) 0%,rgba(18,20,19,.37) 75%,rgba(18,20,19,.12) 100%)}
+.hero .eyebrow{font-size:11px;color:#dfcdb5}
+.hero h1{font-size:clamp(44px,5.8vw,83px);line-height:1.07;max-width:950px}
+.hero h1 span{color:#ecddc5}
+.hero-copy>p{font-size:clamp(16px,1.3vw,19px);line-height:1.7;max-width:670px;font-weight:400;color:#f3ede6}
+.hero-copy>p strong{font-weight:650}
+.hero-signature{font-size:13px;letter-spacing:.25em;color:#f1e9dd}
+.button{background:#d8c3a8;color:#24211c;font-weight:650;font-size:14px;letter-spacing:.03em}
+.hero-book-card{background:rgba(24,25,24,.82)}
+.spec-grid div{padding:23px}
+.gallery{grid-template-columns:1.5fr 1fr 1fr;grid-template-rows:240px 240px}
+.gallery .gallery-main{grid-row:span 2}
+.gallery img{display:block;object-position:center;aspect-ratio:auto}
+.gg-widget{z-index:9999}
+@media(max-width:950px){.hero{grid-template-columns:1fr;background-position:58% center}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:250px 180px 180px}.gallery .gallery-main{grid-column:span 2;grid-row:span 1}}
+@media(max-width:560px){.hero{min-height:710px;padding:62px 21px 55px;background-position:59% center}.hero h1{font-size:clamp(42px,10vw,52px);line-height:1.08;letter-spacing:-.04em}.hero-copy>p{font-size:16px;line-height:1.65}.hero-signature{font-size:12px;letter-spacing:.16em;margin-bottom:14px}.hero-actions{gap:10px}.hero-actions .button{padding:13px 16px}.trust-row{gap:10px 14px;font-size:11px}.hero-book-card{margin-top:24px}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:230px 140px 140px}.gallery img{width:100%;height:100%}.gg-widget{bottom:24px;right:14px}.gg-launcher{padding:8px 14px 8px 8px}.gg-orb{width:40px;height:40px}}
