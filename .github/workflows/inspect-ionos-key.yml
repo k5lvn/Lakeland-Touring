@@ -1,0 +1,26 @@
+name: Inspect IONOS SFTP host key (read only)
+on:
+  push:
+    paths:
+      - '.github/workflows/inspect-ionos-key.yml'
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieve public host key and SHA256 fingerprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          HOST="access-5021325370.webspace-host.com"
+          ssh-keyscan -T 15 -p 22 -t ed25519 "$HOST" 2>/dev/null > hostkeys.txt
+          if [ ! -s hostkeys.txt ]; then
+            echo "No ED25519 key received. Host may not support this type or may be unavailable."
+            exit 1
+          fi
+          echo "=== GitHub secret SFTP_HOST_PUBLIC_KEY: copy the key type and base64 value (NOT the hostname) ==="
+          awk '{print $2 " " $3}' hostkeys.txt | sort -u
+          echo "=== SHA256 FINGERPRINT - MUST BE VERIFIED AGAINST IONOS BEFORE TRUSTING ==="
+          ssh-keygen -lf hostkeys.txt -E sha256
+          echo "This retrieves a publicly offered key. It does not by itself authenticate the server."
