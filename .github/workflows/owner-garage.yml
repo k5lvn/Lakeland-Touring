@@ -1,0 +1,44 @@
+name: Publish Owner Garage and Touring SEO
+on:
+  push:
+    branches: [main]
+    paths: ['owner-garage/**', '.github/workflows/owner-garage.yml']
+permissions:
+  contents: read
+concurrency:
+  group: lakeland-touring-deployment
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP lint and garage security checks
+        run: |
+          php -l owner-garage/garage.php
+          php -r 'foreach(["pdo_sqlite","gd"] as $ext) {if(!extension_loaded($ext)){fwrite(STDERR,"Missing $ext\n");exit(1);}}'
+          mkdir -p garage-test/public
+          cp owner-garage/garage.php garage-test/public/
+          printf '<header></header>' > garage-test/public/garage-header.html
+          printf '<footer></footer>' > garage-test/public/garage-footer.html
+          cp owner-garage/router.php garage-test/public/router.php
+          php -d sendmail_path=/bin/true -S 127.0.0.1:8767 -t garage-test/public garage-test/public/router.php > /tmp/garage-server.log 2>&1 &
+          for i in $(seq 1 20); do curl -sf http://127.0.0.1:8767/garage.php > /dev/null && break; sleep 1; done
+          python owner-garage/check.py
+      - run: pip -q install paramiko==3.5.1
+      - name: Publish reviewed source and verify public pages
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python owner-garage/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: garage-deployment-backup
+          path: |
+            garage-rollback/
+            garage-published/
+          retention-days: 30
