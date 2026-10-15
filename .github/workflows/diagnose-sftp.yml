@@ -26,6 +26,7 @@ jobs:
           for name,value in [('SFTP_HOST',h),('SFTP_USER',u),('SFTP_PASSWORD',p),('SFTP_HOST_PUBLIC_KEY',key)]:
               if not value: print(f'MISSING SECRET: {name}');sys.exit(1)
           print('Secrets: all four present',flush=True)
+          print('HOST MATCHES PROVIDED IONOS HOST:', h.strip().lower() == 'access-5021325370.webspace-host.com',flush=True)
           try:
               sock=socket.create_connection((h,22),timeout=8)
               print('TCP PORT 22: reachable',flush=True)
