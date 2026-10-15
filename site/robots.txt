@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /Admin/
+Disallow: /Api/
+Disallow: /Data/
+Disallow: /config.php
+Disallow: /webhook.php
+Sitemap: https://lakelandtouring.uk/sitemap.xml
