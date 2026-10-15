@@ -1,0 +1,39 @@
+name: Publish clean original photos and fullscreen gallery
+on:
+  push:
+    branches: [main]
+    paths: ['touring-gallery/**', '.github/workflows/touring-gallery.yml']
+permissions:
+  contents: read
+concurrency:
+  group: lakeland-touring-deployment
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check gallery at mobile and desktop widths
+        run: |
+          python3 touring-gallery/build.py
+          node --check touring-gallery/gallery.js
+          npm install --no-save --no-package-lock playwright
+          export CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)"
+          node touring-gallery/check.cjs
+      - run: pip -q install paramiko==3.5.1
+      - name: Publish and verify clean gallery
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 touring-gallery/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: touring-gallery-checks-and-rollback
+          path: |
+            gallery-check-*.png
+            touring-gallery-rollback/
+          retention-days: 30
