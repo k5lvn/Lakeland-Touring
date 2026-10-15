@@ -1,0 +1,30 @@
+name: Publish rich 4K Lake District photography
+on:
+  push:
+    branches: [main]
+    paths: ['touring-images/**', '.github/workflows/touring-images.yml']
+permissions:
+  contents: read
+concurrency:
+  group: lakeland-touring-deployment
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip -q install paramiko==3.5.1
+      - name: Publish 4K photo and verify static pages
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 touring-images/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: touring-images-rollback
+          path: touring-images-rollback/
+          retention-days: 30
