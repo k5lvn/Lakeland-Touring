@@ -1,5 +1,8 @@
 name: Publish Touring public design (manual, backed up)
 on:
+  push:
+    paths:
+      - '.github/workflows/publish-design.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -46,7 +49,10 @@ jobs:
             remote=root+'/'+f
             tmp=root+'/.'+f+'.touring-upload'
             s.put('site/'+f,tmp)
-            s.rename(tmp,remote)
+            try:s.posix_rename(tmp,remote)
+            except IOError:
+              s.put('site/'+f,remote)
+              s.remove(tmp)
             print('PUBLISHED',f,flush=True)
           print('PUBLISH COMPLETE — booking.js, PHP, data, Admin, Api and Assets unchanged',flush=True)
           s.close();t.close()
