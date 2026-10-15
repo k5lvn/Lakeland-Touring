@@ -1,0 +1,30 @@
+name: Publish official Touring identity and Lake District hero
+on:
+  push:
+    branches: [main]
+    paths: ['touring-brand/**', 'site/brand.css', 'site/Assets/lakeland-touring-official.png', 'site/Assets/derwentwater-panorama.jpg', '.github/workflows/touring-brand.yml']
+permissions:
+  contents: read
+concurrency:
+  group: lakeland-touring-deployment
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip -q install paramiko==3.5.1
+      - name: Apply and verify branding with rollback
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 touring-brand/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: touring-brand-rollback
+          path: touring-brand-rollback/
+          retention-days: 30
