@@ -48,3 +48,36 @@ footer{background:#171919;color:#d0c8bd}
 footer .group,.nav-active{color:#e3d1b6!important}
 @media(max-width:950px){.hero{min-height:680px}}
 @media(max-width:560px){.hero{min-height:720px}.hero h1{font-size:clamp(48px,12vw,66px)}.hero-book-card{width:100%}.gallery{gap:6px}.topbar{padding-inline:16px}}
+
+/* Worx365 footer, Touring masthead and Gigi assistant guide */
+.hero-signature{font-family:Georgia,serif;font-size:clamp(20px,2.2vw,31px);letter-spacing:.2em;margin:0 0 20px;color:#fff}
+.hero-signature span{color:#e3d1b6}
+.topbar .brand strong{font-size:21px}.topbar .brand small{font-size:11px}
+.worx-footer{display:block;padding:0;background:#171919;color:#eee6db;font-size:14px}
+.footer-inner{max-width:1440px;margin:auto;padding:74px clamp(20px,6vw,90px) 64px;display:grid;grid-template-columns:1.4fr .7fr 1fr;gap:clamp(30px,6vw,90px)}
+.footer-name{font-family:Georgia,serif;letter-spacing:.12em;font-size:clamp(24px,2.5vw,35px);color:#f8f2e8}
+.footer-name span{color:#d5b88e}
+.footer-brand p{max-width:320px;line-height:1.75;color:#b9b0a7}
+.footer-links,.footer-contact{display:flex;flex-direction:column;gap:12px;min-width:0}
+.worx-footer h3{font-family:inherit;text-transform:uppercase;letter-spacing:.2em;color:#cdb38f;font-size:11px;font-weight:700;margin:7px 0 14px}
+.worx-footer a:hover{color:#e4c9a3}
+.footer-contact a{overflow-wrap:anywhere}
+.footer-contact span{color:#b9b0a7}
+.footer-bottom{padding:22px clamp(20px,6vw,90px);max-width:1440px;margin:auto;border-top:1px solid #4b453e;display:flex;gap:15px;justify-content:space-between;flex-wrap:wrap;color:#aaa39c;font-size:12px}
+.footer-bottom a{color:#e0c7a4}
+.gg-widget{position:fixed;right:20px;bottom:20px;z-index:45;font-family:Inter,system-ui,sans-serif}
+.gg-launcher{display:flex;align-items:center;gap:10px;border:1px solid #ded4c5;background:#202323;color:#f6eee4;border-radius:40px;padding:9px 18px 9px 9px;box-shadow:0 12px 34px #0005;cursor:pointer;font-weight:700}
+.gg-orb{width:35px;height:35px;border-radius:50%;display:grid;place-items:center;background:#c6a8dc;color:#242032;font-size:21px;box-shadow:0 0 18px #c6a8dc66}
+.gg-panel{position:absolute;right:0;bottom:69px;width:min(355px,calc(100vw - 28px));background:#f7f2eb;border:1px solid #cfc1af;box-shadow:0 20px 70px #0005;border-radius:15px;overflow:hidden;color:#272523}
+.gg-panel[hidden]{display:none}
+.gg-head{background:#242323;color:white;padding:17px 20px;display:flex;justify-content:space-between;align-items:center}
+.gg-head strong{font-family:Georgia,serif;font-size:22px}.gg-head strong span{color:#c6a8dc}
+.gg-head small{display:block;color:#e0d5c7;font-size:11px}
+.gg-head button{border:0;background:transparent;color:#fff;font-size:26px;width:32px;height:32px;cursor:pointer}
+.gg-content{padding:20px}.gg-bubble{background:#fff;border:1px solid #e8ded0;border-radius:12px;padding:16px;line-height:1.5;margin:0}
+.gg-status{font-size:11px;color:#766755;margin:14px 0}
+.gg-quicklinks{display:grid;gap:8px}
+.gg-quicklinks a{display:block;border:1px solid #d7c7b1;padding:11px 12px;border-radius:6px;font-size:13px;color:#3b342c;background:#fdfaf5}
+.gg-quicklinks a:hover{background:#ede1d0}
+@media(max-width:760px){.footer-inner{grid-template-columns:1fr 1fr;padding-top:45px;padding-bottom:45px}.footer-brand{grid-column:1/-1}.gg-widget{right:12px;bottom:12px}}
+@media(max-width:450px){.footer-inner{grid-template-columns:1fr}.footer-brand{grid-column:auto}.gg-panel{bottom:64px}.hero-signature{font-size:19px}}
