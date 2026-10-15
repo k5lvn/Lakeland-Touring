@@ -1,4 +1,4 @@
-name: Publish Touring footer and gallery alignment fix
+name: Publish Worx365 footer logo fix
 on:
   push:
     paths:
