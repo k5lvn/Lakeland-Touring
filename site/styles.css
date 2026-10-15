@@ -262,3 +262,8 @@ body{background:#161d21;color:#eef4f5;font-family:Inter,system-ui,-apple-system,
 .gallery figure,.gallery figure.gallery-lead{aspect-ratio:auto;margin:0;min-width:0;min-height:0;overflow:hidden}
 .gallery figure img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
 @media(max-width:720px){.worx-footer .footer-inner{display:flex;flex-direction:column;align-items:center;gap:27px;text-align:center;padding:48px 22px 30px}.worx-footer .footer-links,.worx-footer .footer-contact{align-items:center}.worx-footer .footer-brand p{margin:15px auto 0}.worx-footer .footer-bottom{flex-direction:column;gap:9px;text-align:center;padding:24px 16px}.gallery{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:220px 138px 138px;gap:7px}.gallery figure.gallery-lead{grid-column:1/-1;grid-row:1/2}.gallery figure img{object-fit:cover}}
+
+/* Genuine Worx365 Group footer artwork */
+.worx-footer .footer-bottom .worx-group-logo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:145px;color:#b9c5c7;text-decoration:none}
+.worx-footer .worx-group-logo span{font-size:10px;letter-spacing:.08em;color:#a5b3b8}
+.worx-footer .worx-group-logo img{display:block;max-width:190px;width:100%;height:auto;max-height:65px;object-fit:contain}
