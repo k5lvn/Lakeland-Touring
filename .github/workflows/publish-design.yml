@@ -1,4 +1,4 @@
-name: Publish Touring public design (mobile fix, backed up)
+name: Publish Touring light luxury and Gigi correction
 on:
   push:
     paths:
