@@ -104,3 +104,36 @@ footer .group,.nav-active{color:#e3d1b6!important}
 .gg-widget{z-index:9999}
 @media(max-width:950px){.hero{grid-template-columns:1fr;background-position:58% center}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:250px 180px 180px}.gallery .gallery-main{grid-column:span 2;grid-row:span 1}}
 @media(max-width:560px){.hero{min-height:710px;padding:62px 21px 55px;background-position:59% center}.hero h1{font-size:clamp(42px,10vw,52px);line-height:1.08;letter-spacing:-.04em}.hero-copy>p{font-size:16px;line-height:1.65}.hero-signature{font-size:12px;letter-spacing:.16em;margin-bottom:14px}.hero-actions{gap:10px}.hero-actions .button{padding:13px 16px}.trust-row{gap:10px 14px;font-size:11px}.hero-book-card{margin-top:24px}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:230px 140px 140px}.gallery img{width:100%;height:100%}.gg-widget{bottom:24px;right:14px}.gg-launcher{padding:8px 14px 8px 8px}.gg-orb{width:40px;height:40px}}
+
+/* Lighter luxury Touring refresh — warmer Studio Quattro-inspired palette */
+:root{--navy:#302e2b;--navy2:#514b44;--gold:#b5a083;--gold2:#e5d7c3;--cream:#faf7f1;--ink:#34312d;--muted:#786f65;--line:rgba(91,76,58,.13);--shadow:0 16px 40px rgba(70,50,28,.08)}
+body{background:#faf7f1;color:#34312d}
+.topbar{background:rgba(250,247,241,.96);color:#332d27;border-bottom:1px solid #e7ded2;box-shadow:0 3px 22px #5c4d3b12}
+.topbar .brand strong{color:#302a24}.topbar .brand small{color:#987b56}.topbar .logo{stroke:#b49a76}
+.topbar nav a:hover{color:#90704d}
+.hero{background-image:linear-gradient(90deg,rgba(31,29,26,.64),rgba(31,29,26,.08)),url('Assets/caravan-main.jpg');}
+.hero:after{background:linear-gradient(90deg,rgba(28,27,25,.56),rgba(28,27,25,.20) 66%,transparent)}
+.hero-shade{background:transparent}
+.hero h1 span{color:#f2e3cc}.hero-book-card{background:rgba(250,247,241,.95);color:#312c26;border:1px solid #d6c7b4;box-shadow:0 10px 40px #17151120}
+.hero-book-card .eyebrow,.hero-book-card strong,.hero-book-card a{color:#806849}.hero-book-card span{color:#5c5246}.hero-book-card .mileage-badge{background:#f1e9db;border-color:#dbcebb;color:#55483b}
+.button{background:#ddcbb1;color:#302a24}.button:hover{background:#eadbc7}
+.caravan-showcase{background:#faf7f1}
+.section:nth-of-type(even){background:#f0eae0}
+.spec-grid div,.steps>div,.policy-card,.price-card.low,.price-card.standard,.price-card.peak,.short-card{background:#fffdfa;border:1px solid #e8ded0}
+.price-card.low strong,.price-card.standard strong,.price-card.peak strong{color:#9d7c54}
+.owner-panel{background:#d9cab7;color:#302d29}.owner-panel p{color:#544d45}.owner-panel .eyebrow{color:#846747}
+.worx-footer{background:#292825}
+.gg-widget{position:fixed;right:18px;bottom:max(18px,env(safe-area-inset-bottom));z-index:2147483000}
+.gg-launcher{background:#fffaf2;color:#37302a;border:1px solid #dbcfbd;box-shadow:0 8px 28px #3332;padding:6px 16px 6px 6px;border-radius:999px}
+.gg-mascot{width:54px;height:54px;object-fit:contain;display:block;border-radius:50%;background:#e2effd;box-shadow:0 0 0 2px #bcd6ff}
+.gg-panel{bottom:76px;max-height:min(68dvh,540px);overflow:auto}
+.gg-head{background:#edf5ff;color:#263d60}.gg-head small{color:#4e6480}.gg-head button{color:#30435b}
+@media(max-width:560px){
+ .hero{background-position:59% center}
+ .hero h1{font-size:clamp(40px,10.1vw,50px)}
+ .hero-book-card{width:min(100%,340px)}
+ .gg-widget{right:12px;bottom:max(14px,env(safe-area-inset-bottom))}
+ .gg-launcher{padding:5px 12px 5px 5px;font-size:13px}
+ .gg-mascot{width:48px;height:48px}
+ .gg-panel{right:0;bottom:66px;max-height:65dvh}
+}
