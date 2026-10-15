@@ -1,0 +1,33 @@
+name: Inspect Touring garage prerequisites
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/garage-prerequisites.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - run: pip -q install paramiko==3.5.1
+      - name: Inspect directories and PHP availability
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: |
+          python - <<'PY'
+          import os,socket,base64,paramiko
+          parts=os.environ['SFTP_HOST_PUBLIC_KEY'].split()
+          if len(parts)==3:parts=parts[1:]
+          key=paramiko.PKey.from_type_string(parts[0],base64.b64decode(parts[1],validate=True))
+          t=paramiko.Transport(socket.create_connection((os.environ['SFTP_HOST'].strip(),22),timeout=25));t.start_client(timeout=25)
+          assert t.get_remote_server_key().asbytes()==key.asbytes()
+          t.auth_password(os.environ['SFTP_USER'].strip(),os.environ['SFTP_PASSWORD'])
+          s=paramiko.SFTPClient.from_transport(t)
+          for path in ['/','/public','/public/api','/private']:
+           try:print(path, s.listdir(path))
+           except OSError:print(path,'not present')
+          s.close();t.close()
+          PY
