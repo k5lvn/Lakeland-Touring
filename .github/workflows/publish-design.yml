@@ -1,4 +1,4 @@
-name: Publish Touring public design (manual, backed up)
+name: Publish Touring public design (mobile fix, backed up)
 on:
   push:
     paths:
