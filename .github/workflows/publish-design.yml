@@ -1,4 +1,4 @@
-name: Publish Touring approved cinematic design
+name: Publish Touring footer and gallery alignment fix
 on:
   push:
     paths:
