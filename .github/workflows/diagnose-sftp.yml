@@ -25,7 +25,7 @@ jobs:
           h=os.getenv('SFTP_HOST',''); u=os.getenv('SFTP_USER',''); p=os.getenv('SFTP_PASSWORD',''); key=os.getenv('SFTP_HOST_PUBLIC_KEY','')
           for name,value in [('SFTP_HOST',h),('SFTP_USER',u),('SFTP_PASSWORD',p),('SFTP_HOST_PUBLIC_KEY',key)]:
               if not value: print(f'MISSING SECRET: {name}');sys.exit(1)
-          print('Secrets: all four present',flush=True)
+          print('Secrets: all four present (rerun)',flush=True)
           print('HOST MATCHES PROVIDED IONOS HOST:', h.strip().lower() == 'access-5021325370.webspace-host.com',flush=True)
           try:
               sock=socket.create_connection((h,22),timeout=8)
