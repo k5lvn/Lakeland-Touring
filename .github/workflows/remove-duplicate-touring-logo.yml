@@ -1,0 +1,70 @@
+name: Remove duplicate hero logo
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/remove-duplicate-touring-logo.yml']
+permissions:
+  contents: read
+concurrency:
+  group: lakeland-touring-deployment
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: pip -q install paramiko==3.5.1
+      - name: Remove only the duplicate hero artwork
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: |
+          python3 - <<'PY'
+          import os,socket,base64,re,ssl,datetime
+          from pathlib import Path
+          from urllib.request import urlopen
+          from urllib.error import URLError
+          import paramiko
+          parts=os.environ['SFTP_HOST_PUBLIC_KEY'].split()
+          if len(parts)==3:parts=parts[1:]
+          key=paramiko.PKey.from_type_string(parts[0],base64.b64decode(parts[1],validate=True))
+          t=paramiko.Transport(socket.create_connection((os.environ['SFTP_HOST'].strip(),22),timeout=25));t.start_client(timeout=25)
+          assert t.get_remote_server_key().asbytes()==key.asbytes()
+          t.auth_password(os.environ['SFTP_USER'].strip(),os.environ['SFTP_PASSWORD'])
+          s=paramiko.SFTPClient.from_transport(t);s.get_channel().settimeout(40)
+          path='/public/index.html'
+          with s.open(path,'rb') as f:old=f.read()
+          raw=old.decode()
+          new,n=re.subn(r'<img\b[^>]*class="hero-brand-logo"[^>]*>','',raw,count=1)
+          assert n==1 and 'class="hero-brand-logo"' not in new
+          assert new.count('class="touring-official-logo"')==2
+          assert 'Assets/buttermere-4k.jpg' in new and 'noindex' not in new.lower()
+          data=new.encode()
+          Path('touring-hero-backup').mkdir()
+          Path('touring-hero-backup/index.html').write_bytes(old)
+          def put(data):
+           with s.open(path+'.logo-stage','wb') as f:f.set_pipelined(True);f.write(data)
+           s.chmod(path+'.logo-stage',0o644);s.posix_rename(path+'.logo-stage',path)
+          try:
+           with s.open(path,'rb') as f:assert f.read()==old
+           put(data)
+           url='https://lakelandtouring.uk/index.html?single-logo='+datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+           try:r=urlopen(url,timeout=40)
+           except URLError as e:
+            if not isinstance(e.reason,ssl.SSLError):raise
+            r=urlopen(url.replace('https://','http://',1),timeout=40)
+           with r:assert r.status==200 and r.read()==data
+           print('VERIFIED: header and footer logos retained, large hero duplicate removed.')
+          except Exception:
+           put(old)
+           raise
+          finally:s.close();t.close()
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: touring-hero-backup
+          path: touring-hero-backup/
+          retention-days: 30
