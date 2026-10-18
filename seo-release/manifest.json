@@ -1,0 +1,15 @@
+{
+  "site": "lakelandtouring.uk",
+  "remote_root": "/public",
+  "base_url": "https://lakelandtouring.uk/",
+  "files": {
+    "sitemap.xml": {
+      "original_sha256": "f4b01bad81a43af38a1c2fbe49ebdd6acef33939a4952c702e0e1211b87601fc",
+      "updated_sha256": "213f3b0c5e1a7e53ae3b042dbb1f5d3a7d5f848475fce2d7da552a12b3fc9557"
+    },
+    "index.html": {
+      "original_sha256": "7c82e148564bbf155f4fd41a61105880fc9a57cdb5044ce7c7f320ccda226326",
+      "updated_sha256": "81c20b2a6dc3dd7fe92f2582ea3e8291f365504796632f99f96844cd9b06de04"
+    }
+  }
+}

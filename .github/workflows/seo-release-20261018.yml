@@ -1,0 +1,43 @@
+name: Deploy approved SEO release 2026-10-18
+on:
+  push:
+    branches: [main]
+    paths: ['seo-release/**', '.github/workflows/seo-release-20261018.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: seo-release-20261018
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate PHP syntax
+        run: find seo-release/files -name '*.php' -exec php -l {} \;
+      - name: Install validation tools
+        run: |
+          python3 -m pip -q install paramiko==3.5.1
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Check added content on mobile and desktop
+        run: node seo-release/check.cjs
+      - name: Back up, deploy and verify approved changes
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 seo-release/deploy.py
+      - name: Save rollback and verification records
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-release-20261018-rollback-and-checks
+          path: |
+            seo-rollback/
+            layout-validation.json
+            SEO-DEPLOYED.json
+          retention-days: 90
