@@ -1,0 +1,29 @@
+name: Deploy verified canonical redirects
+on:
+  push:
+    branches: [main]
+    paths: ['seo-redirects/**','.github/workflows/seo-redirects.yml']
+permissions:
+  contents: read
+jobs:
+  redirects:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Install missing redirects and test live routes
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 seo-redirects/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: canonical-redirect-verification
+          path: |
+            REDIRECT-BACKUP.json
+            REDIRECT-DEPLOYED.json
+          retention-days: 90
