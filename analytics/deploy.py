@@ -15,6 +15,9 @@ def patch_html(data):
     if not re.search(rb'</head\s*>',data,re.I):raise ValueError('HTML head required')
     return re.sub(rb'</head\s*>',lambda m:TAG+m.group(),data,count=1,flags=re.I)
 
+def has_head(data):
+    return bool(re.search(rb'</head\s*>',data,re.I))
+
 def main():
     parts=os.environ['SFTP_HOST_PUBLIC_KEY'].strip().split()
     i=next(i for i,p in enumerate(parts) if p.startswith(('ssh-','ecdsa-')))
@@ -65,8 +68,9 @@ def main():
             for name in sorted(page_names):
                 data=read(name)
                 if data is None:raise RuntimeError('Sitemap page missing: '+name)
-                if b'</head' not in data.lower():continue
+                if not has_head(data):continue
                 updates.setdefault(name,patch_html(data))
+            if TAG not in updates.get('index.html',b''):raise RuntimeError('Homepage must be tagged')
             if len(updates)<3:raise RuntimeError('Unexpected public page coverage')
             updates['sitemap.xml']=sitemap
             if b'https://lakelandtouring.uk/analytics-privacy.html' not in sitemap:
