@@ -1,0 +1,53 @@
+name: Install consent-gated Lakeland Touring Analytics
+on:
+  pull_request:
+    paths: ['analytics/**', '.github/workflows/analytics.yml']
+  push:
+    branches: [main]
+    paths: ['analytics/**', '.github/workflows/analytics.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lt-analytics
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node --check analytics/analytics-consent.js
+      - run: node analytics/test-consent.cjs
+      - run: python3 -m py_compile analytics/deploy.py
+      - run: python3 analytics/test-deploy.py
+  deploy:
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip install paramiko==3.5.1
+      - name: Patch current public pages and verify
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 analytics/deploy.py
+      - name: Install live privacy check tools
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify no Google traffic before consent
+        run: node analytics/check-live.cjs
+      - name: Preserve rollback and checks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: analytics-rollback-and-verification
+          path: |
+            analytics-rollback/
+            ANALYTICS-DEPLOYED.json
+            analytics-consent-live.png
+          retention-days: 90
