@@ -75,7 +75,7 @@ function available(PDO $db, string $start, string $end): void {
 function session(): void {
     if (session_status() === PHP_SESSION_NONE) {
         session_name('touring_booking');
-        session_start(['use_strict_mode'=>1,'cookie_secure'=>true,'cookie_httponly'=>true,'cookie_samesite'=>'Strict']);
+        session_start(['use_strict_mode'=>1,'cookie_secure'=>true,'cookie_httponly'=>true,'cookie_samesite'=>'Lax']);
     }
     $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
     $_SESSION['booking_id'] ??= bin2hex(random_bytes(24));
@@ -125,9 +125,10 @@ function reserve(PDO $db, array $cfg, string $id, array $q, array $customer): ar
             $db->exec('COMMIT'); return $existing;
         }
         available($db,$q['start'],$q['end']);
+        $created=time();
         $db->prepare('INSERT INTO bookings (id,start,end,state,quote,customer,created,terms_version) VALUES (?,?,?,?,?,?,?,?)')
-            ->execute([$id,$q['start'],$q['end'],'creating',json_encode($q),json_encode($customer),time(),$cfg['terms_version']]);
-        $db->exec('COMMIT'); return ['state'=>'creating','checkout_url'=>null,'created'=>time()];
+            ->execute([$id,$q['start'],$q['end'],'creating',json_encode($q),json_encode($customer),$created,$cfg['terms_version']]);
+        $db->exec('COMMIT'); return ['state'=>'creating','checkout_url'=>null,'created'=>$created];
     } catch (Throwable $e) { $db->exec('ROLLBACK'); throw $e; }
 }
 function verifyEvent(string $raw, string $signature, string $secret, ?int $now=null): array {

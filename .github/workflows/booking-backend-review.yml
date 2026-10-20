@@ -21,3 +21,5 @@ jobs:
         run: php booking-backend/tests/booking.php
       - name: Frontend race and validation checks
         run: node booking-backend/tests/frontend.cjs
+      - name: Real HTTP handlers with private fixture configuration
+        run: python3 booking-backend/tests/http.py
