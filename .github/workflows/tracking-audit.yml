@@ -1,0 +1,26 @@
+name: Inspect checkout completion tracking
+on:
+  push:
+    branches: [main]
+    paths: ['tracking-audit/**', '.github/workflows/tracking-audit.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Read only checkout structure without exporting private source
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 tracking-audit/payment_audit.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: checkout-tracking-structure
+          path: checkout-audit.json
+          retention-days: 90
