@@ -9,6 +9,6 @@ try{for(const file of fs.readdirSync('touring-destination-review/files').filter(
  await page.goto('https://lakelandtouring.uk/'+file,{waitUntil:'networkidle',timeout:60000});const reject=page.getByRole('button',{name:'Reject analytics',exact:true});if(await reject.isVisible())await reject.click();await page.evaluate(()=>document.fonts.ready);
  const m=await page.evaluate(()=>({viewport:innerWidth,width:document.documentElement.scrollWidth,h1:document.querySelectorAll('h1').length,canonical:document.querySelector('link[rel="canonical"]')?.href,brokenImages:Array.from(document.images).filter(i=>i.complete&&i.naturalWidth===0).map(i=>i.src)}));
  if(m.width>width+1||m.h1!==1||m.brokenImages.length)throw Error(JSON.stringify({file,width,...m}));
- if(!await page.locator('a[href="booking.html"]').first().isVisible())throw Error('Booking link missing');
+ if(!await page.locator('.guide a[href="booking.html"]').first().isVisible())throw Error('Booking link missing');
  await page.screenshot({path:`touring-guide-qa/${file}-${width}.png`,fullPage:true});results.push({file,width,...m});await page.close();
 }fs.writeFileSync('touring-guide-qa/results.json',JSON.stringify(results,null,2));console.log('Four guide pages passed phone and desktop checks');}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});
