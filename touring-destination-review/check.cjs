@@ -11,4 +11,4 @@ try{for(const file of fs.readdirSync('touring-destination-review/files').filter(
  if(m.width>width+1||m.h1!==1||m.brokenImages.length)throw Error(JSON.stringify({file,width,...m}));
  if(!await page.locator('.guide a[href="booking.html"]').first().isVisible())throw Error('Booking link missing');
  await page.screenshot({path:`touring-guide-qa/${file}-${width}.png`,fullPage:true});results.push({file,width,...m});await page.close();
-}fs.writeFileSync('touring-guide-qa/results.json',JSON.stringify(results,null,2));console.log('Four guide pages passed phone and desktop checks');}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});
+}fs.writeFileSync('touring-guide-qa/results.json',JSON.stringify(results,null,2));console.log('All guide pages passed phone and desktop checks');}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});
