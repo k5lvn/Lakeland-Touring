@@ -1,0 +1,25 @@
+name: Validate booking backend candidate
+on:
+  push:
+    branches: ['booking/backend-review-20261020']
+    paths: ['booking-backend/**', '.github/workflows/booking-backend-review.yml']
+  pull_request:
+    paths: ['booking-backend/**', '.github/workflows/booking-backend-review.yml']
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check runtime requirements
+        run: php -r 'foreach(["pdo_sqlite","curl"] as $e) if(!extension_loaded($e)) exit(1);'
+      - name: Lint PHP
+        run: find booking-backend -name '*.php' -print0 | xargs -0 -n 1 php -l
+      - name: Booking and payment integrity without external calls
+        run: php booking-backend/tests/booking.php
+      - name: Frontend race and validation checks
+        run: node booking-backend/tests/frontend.cjs
+      - name: Real HTTP handlers with private fixture configuration
+        run: python3 booking-backend/tests/handlers_http.py

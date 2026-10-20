@@ -1,0 +1,42 @@
+{
+  "site": "touring-booking-standby",
+  "base_url": "https://lakelandtouring.uk/",
+  "remote_root": "/public",
+  "robots_sha256": "1638a63f1cfec3b9110bf5519a113d1324f2ea0b79ed4d15b64ea37057f6bba9",
+  "guards": {
+    "booking.html": "2a7667d3c57bcfa1c13c15e7def244440c8f7561832a91c09a10c3ddb1713005",
+    "booking.js": "1d517d4d092162553c8377aa21da0a756da5fbf2c6dcc34b2f3da4b675e5202c",
+    "robots.txt": "1638a63f1cfec3b9110bf5519a113d1324f2ea0b79ed4d15b64ea37057f6bba9",
+    "sitemap.xml": "07f0f2d88e4726d0556ad6d1361339950b426f10d54419240bcb502a397cdee8"
+  },
+  "files": {
+    "booking-confirmation.php": {
+      "original_sha256": null,
+      "updated_sha256": "87e385c97098e01271a1f59f9b344b0452ec1c6329e0cf2a27fdd7119fcbc01c"
+    },
+    "booking-webhook.php": {
+      "original_sha256": null,
+      "updated_sha256": "661ccc0ea350726f1a60b733146dfe56680b88f1e8aea9e6cf7dd3abd47aa0f4"
+    },
+    "api/quote.php": {
+      "original_sha256": null,
+      "updated_sha256": "08baeeb3657edf253e607c90ca483ac1104cc5011a56b6e84585f97ea8c4f4e1"
+    },
+    "api/booking-disabled.php": {
+      "original_sha256": null,
+      "updated_sha256": "a4d064cb02a105f738ca7d41b989bc59b4f436556600dd8d6bba196d8d4f91d7"
+    },
+    "api/availability.php": {
+      "original_sha256": null,
+      "updated_sha256": "6cba15ec62196d7c51a4be20f2525976d5ea4d772960d2c59e8429c7df909231"
+    },
+    "api/create-checkout-session.php": {
+      "original_sha256": null,
+      "updated_sha256": "965c496428bbea1534bec9243d7732e96cd8fc2492ae75e30ddd530c3aa4ac2d"
+    },
+    "api/common.php": {
+      "original_sha256": null,
+      "updated_sha256": "0510f98721853fb429f87c38efad57c139329fb6260336daf85787d0f1e645d2"
+    }
+  }
+}

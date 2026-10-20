@@ -1,0 +1,59 @@
+name: Install locked booking backend standby
+on:
+  push:
+    branches: [main]
+    paths: ['booking-backend/**', 'booking-standby-20261020/**', '.github/workflows/booking-standby-20261020.yml']
+permissions:
+  contents: read
+concurrency:
+  group: touring-booking-standby-20261020
+  cancel-in-progress: false
+jobs:
+  standby:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate locked backend without external payments
+        run: |
+          php -r 'foreach(["pdo_sqlite","curl"] as $e) if(!extension_loaded($e)) exit(1);'
+          find booking-backend -name '*.php' -print0 | xargs -0 -n 1 php -l
+          php booking-backend/tests/booking.php
+          node booking-backend/tests/frontend.cjs
+          python3 booking-backend/tests/handlers_http.py
+      - name: Prepare exact locked public files
+        run: |
+          python3 - <<'PY'
+          import json,hashlib,shutil
+          from pathlib import Path
+          root=Path('booking-standby-20261020');m=json.loads((root/'manifest.json').read_text())
+          assert 'api/booking-disabled.php' in m['files']
+          for name,entry in m['files'].items():
+              src=Path('booking-backend/public')/name
+              assert hashlib.sha256(src.read_bytes()).hexdigest()==entry['updated_sha256']
+              dest=root/'files'/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dest)
+          PY
+      - name: Install pinned deployment and browser tools
+        run: |
+          python3 -m pip -q install paramiko==3.5.1
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Guard, back up, install and verify disabled PHP routes
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 booking-standby-20261020/deploy.py
+      - name: Check live booking fallback with tracking and writes blocked
+        run: node booking-standby-20261020/check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verified-booking-standby-20261020
+          path: |
+            booking-standby-qa/
+            booking-standby-rollback/
+            booking-standby-20261020/manifest.json
+            RELEASE-VERIFIED.json
+          retention-days: 90
