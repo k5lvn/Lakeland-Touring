@@ -9,7 +9,10 @@ t.auth_password(os.environ['SFTP_USER'].strip(),os.environ['SFTP_PASSWORD']);s=p
 root='/public';out={};paths=['api/create-checkout-session.php']
 # List only public route filenames relevant to checkout completion, never configs.
 for directory in ['', '/api']:
- for name in s.listdir(root+directory):
+ try:names=s.listdir(root+directory)
+ except FileNotFoundError:
+  out[directory or '/']={'exists':False};continue
+ for name in names:
   if re.fullmatch(r'[a-zA-Z0-9_-]*(?:success|thank|confirm|webhook)[a-zA-Z0-9_-]*\.php',name):paths.append((directory+'/'+name).lstrip('/'))
 try:
  for path in paths:
