@@ -22,4 +22,4 @@ jobs:
       - name: Frontend race and validation checks
         run: node booking-backend/tests/frontend.cjs
       - name: Real HTTP handlers with private fixture configuration
-        run: python3 booking-backend/tests/http.py
+        run: python3 booking-backend/tests/handlers_http.py

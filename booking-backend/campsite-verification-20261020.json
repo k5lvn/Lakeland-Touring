@@ -1,0 +1,100 @@
+{
+  "note": "Research ledger, not a list of operator-approved pitches. No operator was contacted. Published prices are examples, not current booking quotes.",
+  "sites": [
+    {
+      "id": "castlerigg-hall",
+      "name": "Castlerigg Hall",
+      "region": "Lake District, Cumbria",
+      "checked": "2026-10-20",
+      "verification_status": "published_details_checked",
+      "operator_contacted": false,
+      "suitability": "unconfirmed",
+      "sources": [
+        "https://www.castlerigg.co.uk/touring-motor-caravan/",
+        "https://www.castlerigg.co.uk/terms-and-conditions/"
+      ],
+      "published": {
+        "touring_caravans": true,
+        "pitches": "Sizes vary; declare unit including towbar and awning dimensions.",
+        "hook_up": "Superior 16A; Standard serviced water/grey-waste drain/hook-up; hook-up-only hardstanding option.",
+        "price_examples": [
+          {
+            "currency": "GBP",
+            "amount": 41,
+            "type": "published_from_price",
+            "pitch": "Superior",
+            "season": "2026 low-season example",
+            "party": "two people, unit and awning",
+            "stay_dates": null,
+            "extras": "Pets, additional people, extra car/boat; actual quote required."
+          }
+        ]
+      },
+      "outstanding": [
+        "Exact pitch dimensions",
+        "Externally commercially hired caravan acceptance",
+        "Our physical caravan size/weight and awning fit",
+        "Date/party quote",
+        "Access confirmation for our outfit"
+      ]
+    },
+    {
+      "id": "park-cliffe",
+      "name": "Park Cliffe",
+      "region": "Windermere, Cumbria",
+      "checked": "2026-10-20",
+      "verification_status": "published_details_checked",
+      "operator_contacted": false,
+      "suitability": "unconfirmed",
+      "sources": [
+        "https://www.parkcliffe.co.uk/accommodation/touring-and-motorhomes/",
+        "https://www.parkcliffe.co.uk/terms-conditions/"
+      ],
+      "published": {
+        "touring_caravans": true,
+        "pitches": "Declare size including towbar and any awnings/tents/gazebos.",
+        "base_party": "One car and one caravan with up to two people; additional people/pets/vehicles incur extra charges.",
+        "arrival": "14:00",
+        "departure": "12:00",
+        "price_examples": []
+      },
+      "outstanding": [
+        "Exact pitch dimensions",
+        "Externally commercially hired caravan acceptance",
+        "Electric hook-up amperage and tariff",
+        "Our physical caravan and awning fit",
+        "Date/party quote"
+      ]
+    },
+    {
+      "id": "troutbeck-head",
+      "name": "Troutbeck Head Club Campsite",
+      "region": "Penrith, Cumbria",
+      "checked": "2026-10-20",
+      "verification_status": "published_details_checked",
+      "operator_contacted": false,
+      "suitability": "unconfirmed",
+      "sources": [
+        "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+        "https://www.caravanclub.co.uk/uk-holidays/useful-information/how-to-book-a-site/length-of-outfit/"
+      ],
+      "published": {
+        "touring_caravans": true,
+        "electric_hook_up": true,
+        "maximum_outfit_length_m": 9,
+        "length_definition": "Caravan shipping length including A-frame; excludes car.",
+        "nonmembers_welcome": true,
+        "opening_2027": "19 March–1 November 2027",
+        "access": "Follow operator final-approach directions, not sat nav.",
+        "price_examples": []
+      },
+      "outstanding": [
+        "Exact allocated pitch and awning width",
+        "Externally commercially hired caravan acceptance",
+        "Our physical caravan shipping length/weight",
+        "Date/party/member quote",
+        "Hook-up amperage"
+      ]
+    }
+  ]
+}
