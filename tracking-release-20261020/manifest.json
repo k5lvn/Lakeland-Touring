@@ -1,0 +1,24 @@
+{
+  "site": "touring",
+  "base_url": "https://lakelandtouring.uk/",
+  "remote_root": "/public",
+  "files": {
+    "analytics-consent.js": {
+      "original_sha256": "c309be9a36bebc67f3711a542a020c3abf221f3272e6e6ae1ec2ec800ecaaf39",
+      "updated_sha256": "99c6ac3afc9a19c774cab685c508c9e0173ec172b113599a3a49479cad8836ad"
+    },
+    "booking.js": {
+      "original_sha256": "56241ef5a148f70c8b876d61e3d51eea4863e35e86d905d9229b9097b943b439",
+      "updated_sha256": "1d517d4d092162553c8377aa21da0a756da5fbf2c6dcc34b2f3da4b675e5202c"
+    },
+    "analytics-privacy.html": {
+      "original_sha256": "8dcb2ae8cc3298e40d18ad81d2e7c0a3a936b9af3c146a2f5d4df2596154cab1",
+      "updated_sha256": "7ae92c84068bb2377943d22f40570dd61f5c76523708a67b1eb3d3d043d7704b"
+    },
+    "booking.html": {
+      "original_sha256": "20ec679ab195e20020831465e02d03dd42cbaf887204721c20ba615a39dc4465",
+      "updated_sha256": "cdfc65afcad18e194af4ee8cecaa25df53564fb3fe4f36748f72f30ffbf4cb87"
+    }
+  },
+  "robots_sha256": "1638a63f1cfec3b9110bf5519a113d1324f2ea0b79ed4d15b64ea37057f6bba9"
+}
