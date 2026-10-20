@@ -1,0 +1,46 @@
+name: Publish remaining website improvements
+on:
+  push:
+    branches: [main]
+    paths: ['site-release-20261020/**', '.github/workflows/site-release-20261020.yml']
+permissions:
+  contents: read
+concurrency:
+  group: site-release-touring-20261020
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned build and validation tools
+        run: |
+          python3 -m pip -q install Pillow==12.3.0 paramiko==3.5.1
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Prepare exact reviewed image changes and destination integration
+        run: python3 site-release-20261020/prepare.py
+      - name: Check homepage phone and desktop layouts
+        run: node site-release-20261020/check.cjs
+      - name: Check all destination pages
+        run: node site-release-20261020/guides-check.cjs
+      - name: Back up, publish and verify authorized release
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 site-release-20261020/deploy.py
+      - name: Preserve release, review and rollback evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-site-release-touring-20261020
+          path: |
+            site-release-20261020/manifest.json
+            site-release-20261020/index.html.diff
+            release-qa/
+            release-rollback/
+            RELEASE-VERIFIED.json
+          retention-days: 90

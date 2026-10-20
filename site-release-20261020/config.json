@@ -1,0 +1,40 @@
+{
+  "site": {
+    "id": "touring",
+    "url": "https://lakelandtouring.uk/",
+    "index_sha256": "cbb9bc663aaa9898f05d0316416262811a863d9633d521e49d1cbc97d7757f2f",
+    "assets": [
+      {
+        "url": "https://lakelandtouring.uk/Assets/buttermere-4k.jpg",
+        "original_path": "/Assets/buttermere-4k.jpg",
+        "new_path": "/seo-performance/buttermere-4k.webp",
+        "original_bytes": 1521633,
+        "new_bytes": 1112652,
+        "original_width": 4096,
+        "original_height": 2731,
+        "encoded_width": 2400,
+        "encoded_height": 1600,
+        "encoding": "WebP quality 94",
+        "source_sha256": "ef41deca8bbc673dd06df22d9baeaa283e3337c3abb8ec8379ea4806ca204625",
+        "updated_sha256": "52cda6c138c45e64c10265dbcf5f8fecca3119c0e673a0c02f6866df6179ef6a"
+      },
+      {
+        "url": "https://lakelandtouring.uk/Assets/lakeland-touring-official.png?v=20261015",
+        "original_path": "/Assets/lakeland-touring-official.png",
+        "new_path": "/seo-performance/lakeland-touring-official.webp",
+        "original_bytes": 1381809,
+        "new_bytes": 325460,
+        "original_width": 2172,
+        "original_height": 724,
+        "encoded_width": 1200,
+        "encoded_height": 400,
+        "encoding": "lossless WebP",
+        "source_sha256": "878570764562212e257e43e8cbf014a23c92b61e8a0f965102b304ad9a9a6890",
+        "updated_sha256": "3166834c4acddfd35c53aba58e323e5df8e34b65837b36f6cd61f91a2cb285b7"
+      }
+    ]
+  },
+  "remote_root": "/public",
+  "robots_sha256": "1638a63f1cfec3b9110bf5519a113d1324f2ea0b79ed4d15b64ea37057f6bba9",
+  "sitemap_sha256": "b23ade75273233158d1d48d731dc4bd87c307a3fb599d7acde16684893eee9c8"
+}
