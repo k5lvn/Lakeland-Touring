@@ -1,0 +1,351 @@
+{
+  "checked_on": "2026-10-20",
+  "order": [
+    "lake-district",
+    "somerset",
+    "cornwall",
+    "dorset",
+    "devon",
+    "northumberland",
+    "peak-district",
+    "yorkshire",
+    "dumfries-galloway",
+    "cotswolds"
+  ],
+  "featured_region": "lake-district",
+  "ranking": "Owner-curated shortlist, not a measured national league table",
+  "parks": [
+    {
+      "id": "castlerigg",
+      "name": "Castlerigg Hall",
+      "region": "lake-district",
+      "source_url": "https://www.castlerigg.co.uk/touring-motor-caravan/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Family park; confirm party rules",
+      "facilities": "Hardstanding options include electric and fully serviced pitches. Superior pitches list 16A.",
+      "price_note": "2026 low-season examples for two people, unit and awning: electric-only from £31.25; Standard serviced from £40; Superior from £41. Extras apply.",
+      "access_or_size_note": "Pitch sizes vary; confirm full caravan/awning fit.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "park-cliffe",
+      "name": "Park Cliffe Windermere",
+      "region": "lake-district",
+      "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/park-cliffe-windermere-camping-and-caravan-park/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Touring listed; confirm party rules",
+      "facilities": "Caravans and motorhomes are listed; the Club reports it has taken over operation.",
+      "price_note": "Get a current quote for your dates and pitch.",
+      "access_or_size_note": "Caravans and motorhomes must approach from Newby Bridge according to the operator.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "troutbeck",
+      "name": "Troutbeck Head Club Campsite",
+      "region": "lake-district",
+      "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Families listed; confirm dates",
+      "facilities": "Electric hook-up; 9m published maximum outfit length.",
+      "price_note": "Get a current quote for your dates, party and membership.",
+      "access_or_size_note": "Use operator directions; some sat-nav approaches are unsuitable for towing.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "old-oaks",
+      "name": "Old Oaks Touring & Glamping Park",
+      "region": "somerset",
+      "source_url": "https://www.theoldoaks.co.uk/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Adults only",
+      "facilities": "Touring and dog facilities are listed by the operator.",
+      "price_note": "Get a current adult-party quote.",
+      "access_or_size_note": "Check full outfit dimensions and hired-caravan acceptance. Dog swimming facilities must not be described as a guest swimming pool.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "hendra",
+      "name": "Hendra Holiday Park",
+      "region": "cornwall",
+      "source_url": "https://www.hendra-holidays.com/touring-caravan-sites-in-cornwall/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Family holiday park",
+      "facilities": "Touring caravan pitches are offered; electric and serviced options depend on pitch selection.",
+      "price_note": "Get a current full-party quote; holiday-home prices are a different product.",
+      "access_or_size_note": "Confirm the exact pitch and caravan dimensions before booking.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "ayr",
+      "name": "Ayr Holiday Park",
+      "region": "cornwall",
+      "source_url": "https://www.ayrholidaypark.co.uk/touring-camping/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Family facilities listed",
+      "facilities": "Almost all pitches list 16A electric hook-up and water. Touring booking is by phone: 01736 795855.",
+      "price_note": "Illustration for 20 October 2026: £38/night for a caravan/car, two adults and serviced-pitch supplement (£13.50 + £15.50 + £9); £45 with a £7 awning. No children, dogs or extra car. Tariff calculation, not an availability quote.",
+      "access_or_size_note": "The site is sloping and terraced; follow the operator’s approach and confirm pitch fit.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "south-lytchett",
+      "name": "South Lytchett Manor",
+      "region": "dorset",
+      "source_url": "https://southlytchettmanor.co.uk/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Family activities listed",
+      "facilities": "Touring park near Poole; dogs are welcomed.",
+      "price_note": "The homepage advertises pitches from £28; a full party/pitch quote is still needed.",
+      "access_or_size_note": "Confirm hook-up, amperage and allocated pitch dimensions.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "back-beyond",
+      "name": "Back of Beyond",
+      "region": "dorset",
+      "source_url": "https://backofbeyondtouringpark.co.uk/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Adults only",
+      "facilities": "Touring, camping and glamping are advertised near the New Forest.",
+      "price_note": "Request an adult-party quote for the selected pitch.",
+      "access_or_size_note": "Confirm current rules, full outfit dimensions and hired-caravan permission.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "cofton",
+      "name": "Cofton Holidays",
+      "region": "devon",
+      "source_url": "https://coftonholidays.co.uk/accommodation/campsites-devon/touring-caravan-site-in-devon/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Family resort; confirm party rules",
+      "facilities": "Touring pitches are explicitly offered at Dawlish, South Devon, including hardstanding and serviced options.",
+      "price_note": "Get a current quote for your chosen touring pitch.",
+      "access_or_size_note": "This is a Dawlish base, not an Exmouth or North Devon campsite.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "seafield",
+      "name": "Seafield Park",
+      "region": "northumberland",
+      "source_url": "https://www.seafieldpark.co.uk/touring/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Baby-changing facilities listed; confirm party rules",
+      "facilities": "Super pitches list water, electric and drainage; maximum vehicle length 10m. Awnings fit some pitches; no rear awnings.",
+      "price_note": "Published 2026 base tariff: £40–£63/night for up to two people; awning £5, extra adult £12.50, extra child £10. Seasonal bands apply. Verify the final total.",
+      "access_or_size_note": "Confirm how the 10m limit applies to your caravan and pitch.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ],
+      "price_source_url": "https://www.seafieldpark.co.uk/wp-content/uploads/2025/03/SEAFIELD-TOURING-PRICES-2026.pdf"
+    },
+    {
+      "id": "herding",
+      "name": "Herding Hill Farm",
+      "region": "northumberland",
+      "source_url": "https://www.herdinghillfarm.co.uk/on-site/accessibility",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Mixed accommodation; confirm party rules",
+      "facilities": "Larger hardstandings list 16A; smaller touring/grass pitches list 10A.",
+      "price_note": "Get a current quote for the required pitch.",
+      "access_or_size_note": "Do not use steep Shield Hill for caravans; operator gives an alternative via the B6318 Military Road.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "laneside",
+      "name": "Laneside Caravan Park",
+      "region": "peak-district",
+      "source_url": "https://www.lanesidecaravanpark.co.uk/caravan-site-peak-district/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Separate adults-only field; select the right area",
+      "facilities": "Electric pitches list 12–16A. The operator says it cannot accommodate units larger than 8.2m.",
+      "price_note": "Published low-season 2026 serviced pitch: £32 Sun–Thu or £41.50 Fri–Sat, including one unit, two people, car and awning. Confirm dates and extras.",
+      "access_or_size_note": "The 8.2m unit limit needs checking against the caravan’s exact overall length.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ],
+      "price_source_url": "https://www.lanesidecaravanpark.co.uk/tariffs-availability/"
+    },
+    {
+      "id": "middlewood",
+      "name": "Middlewood Farm",
+      "region": "yorkshire",
+      "source_url": "https://www.middlewoodfarm.com/touring-caravans-motorhome-sites-north-yorkshire",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Family-friendly park",
+      "facilities": "Hardstanding and electric pitches are offered near Robin Hood’s Bay; tourer season listed as 3 February–3 January.",
+      "price_note": "Get a current touring-pitch quote.",
+      "access_or_size_note": "Use the operator’s longer towing approach; the first Hawsker turn is described for cars and small campervans.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "york",
+      "name": "York Caravan Park",
+      "region": "yorkshire",
+      "source_url": "https://www.yorkcaravanpark.com/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Adults only",
+      "facilities": "Fully serviced touring pitches in York.",
+      "price_note": "Request a current adult-party quote.",
+      "access_or_size_note": "This is a York city base, separate from a Whitby/Robin Hood’s Bay coastal stay.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "hoddom",
+      "name": "Hoddom Castle Caravan Park",
+      "region": "dumfries-galloway",
+      "source_url": "https://www.hoddomcastle.co.uk/touring-and-camping",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Confirm party rules",
+      "facilities": "Caravan pitches are hardstanding with electric and room for awnings. Dogs must be on a lead.",
+      "price_note": "Get a current quote for the caravan pitch and your party.",
+      "access_or_size_note": "Arrival is listed as 2–6pm. Confirm dimensions, amperage and hire permission.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "bruces",
+      "name": "Bruce’s Cave Camping & Caravan Holiday Park",
+      "region": "dumfries-galloway",
+      "source_url": "https://www.brucescave.co.uk/tariff/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Confirm party rules",
+      "facilities": "Published electric supply is 6A, with a no-heaters restriction. Full facilities April–October; reduced facilities November–March.",
+      "price_note": "Published per-unit nightly figures checked 20 October: caravan £20 + electric £5 = £25; £28 with full awning. Extra car £2. Confirm applicability to your party.",
+      "access_or_size_note": "Confirm what the heating restriction means for your stay and whether the pitch fits the caravan.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    },
+    {
+      "id": "cirencester",
+      "name": "Cirencester Park Club Campsite",
+      "region": "cotswolds",
+      "source_url": "https://www.caravanclub.co.uk/club-sites/england/cotswolds/gloucestershire/cirencester-park-club-campsite/",
+      "checked_on": "2026-10-20",
+      "status": "published_operator_information_checked",
+      "overall_caravan_suitability": "not_confirmed",
+      "age_or_party_note": "Families listed; confirm dates and rules",
+      "facilities": "Non-members welcome; open all year; published maximum outfit length 9m.",
+      "price_note": "Get a current quote for the party, membership and chosen electric pitch.",
+      "access_or_size_note": "Follow current approach/check-in instructions and confirm actual pitch dimensions.",
+      "unresolved": [
+        "Actual caravan plate, overall dimensions and MTPLM",
+        "Commercially hired caravan acceptance",
+        "Allocated pitch and awning/car fit",
+        "Date/party-specific quote"
+      ]
+    }
+  ],
+  "unconfirmed_candidates": [
+    {
+      "name": "Devon Cliffs",
+      "url": "https://www.haven.com/parks/devon/devon-cliffs",
+      "reason": "Operator page describes its own caravan/lodge accommodation; visiting touring pitches not verified. Not presented as a touring candidate."
+    }
+  ]
+}
