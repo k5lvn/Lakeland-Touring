@@ -1,10 +1,12 @@
 """Exercise real PHP JSON handlers without calling Stripe or sending messages."""
-import json, os, socket, subprocess, tempfile, time, urllib.request, urllib.error
+import json, os, socket, subprocess, tempfile, time, urllib.request, urllib.error, shutil
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1] / 'public'
 with tempfile.TemporaryDirectory(prefix='touring-http-') as td:
     private = Path(td)
+    fixture_root = private / 'webroot'
+    shutil.copytree(root, fixture_root)
     config = private / 'config.php'
     config.write_text("<?php return " + "[" + ",".join([
         "'enabled'=>true", "'policy_verified'=>true", "'inventory_verified'=>true", "'merchant_verified'=>true",
@@ -17,7 +19,7 @@ with tempfile.TemporaryDirectory(prefix='touring-http-') as td:
     with socket.socket() as sock:
         sock.bind(('127.0.0.1',0)); port=sock.getsockname()[1]
     env=dict(os.environ,TOURING_BOOKING_CONFIG=str(config))
-    server=subprocess.Popen(['php','-S',f'127.0.0.1:{port}','-t',str(root)],env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    server=subprocess.Popen(['php','-S',f'127.0.0.1:{port}','-t',str(fixture_root)],env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     base=f'http://127.0.0.1:{port}'
     def call(path,data=None,cookie=None,origin=None,kind='application/json'):
         headers={'Content-Type':kind}
@@ -32,6 +34,12 @@ with tempfile.TemporaryDirectory(prefix='touring-http-') as td:
             try:
                 with socket.create_connection(('127.0.0.1',port),timeout=.1):break
             except OSError:time.sleep(.1)
+        # The shipped release lock wins even over an otherwise enabled private config.
+        for route,data in [('/api/availability.php',None),('/api/quote.php',{}),('/api/create-checkout-session.php',{}),('/booking-webhook.php',{})]:
+            status,headers,response=call(route,data)
+            assert status==503 and 'contact us' in response['error'] and 'Set-Cookie' not in headers
+        assert not (private/'touring-bookings.sqlite').exists()
+        (fixture_root/'api/booking-disabled.php').unlink()
         status,headers,availability=call('/api/availability.php')
         assert status==200 and availability['bookings']==[]
         cookie=headers['Set-Cookie'].split(';')[0]
@@ -48,6 +56,6 @@ with tempfile.TemporaryDirectory(prefix='touring-http-') as td:
         assert call('/booking-webhook.php',{},cookie)[0]==400
         config.write_text("<?php return ['enabled'=>false];")
         assert call('/api/availability.php')[0]==503
-        print('Passed 11 HTTP configuration, CSRF, origin, method and pricing checks; no external requests.')
+        print('Passed 16 HTTP release-lock, configuration, CSRF, origin, method and pricing checks; no external requests.')
     finally:
         server.terminate();server.wait(timeout=5)

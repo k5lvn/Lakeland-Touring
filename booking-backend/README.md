@@ -1,6 +1,8 @@
-# Booking backend review — not deployed or enabled
+# Booking backend — locked standby release
 
-The live APIs are missing. This isolated replacement provides availability, authoritative server quotes, SQLite reservations, hosted Stripe Checkout and signed/idempotent payment webhooks. Existing success.php/webhook.php are not overwritten; this package uses dedicated completion routes.
+The locked standby release installs replacement APIs without opening dates or payments. This isolated replacement provides availability, authoritative server quotes, SQLite reservations, hosted Stripe Checkout and signed/idempotent payment webhooks. Existing success.php/webhook.php are not overwritten; this package uses dedicated completion routes.
+
+The shipped `public/api/booking-disabled.php` release lock overrides all private enable flags. It must remain installed until the activation checks below are complete. Only test fixtures remove their own copied lock; tests never remove the source lock. The standby deployment preserves the existing booking page and JavaScript contact fallback.
 
 ## Activation dependencies
 
@@ -10,7 +12,7 @@ The live APIs are missing. This isolated replacement provides availability, auth
 4. Confirm the correct Stripe account, mode, enabled charges and signing secret through the existing private hosting setup. Never put keys/customer data in this repository. No live payment or email has been attempted.
 5. Install PHP 8.2+ with PDO SQLite and cURL; create a private writable directory outside the document root. Copy config.example.php to a private file, populate it there, and set TOURING_BOOKING_CONFIG to that absolute path. Keep all verification flags false until these checks pass.
 6. Review the dedicated booking-webhook.php endpoint in the merchant's Stripe setup for checkout.session.completed and checkout.session.expired. This creates a new integration endpoint and must be reviewed before merchant activation.
-7. Deploy public/ files under the current document root and integrate the frontend candidate below. Existing production files must be backed up and hash-checked first. No automatic deployment is included in this PR.
+7. Deploy public/ files under the current document root and integrate the frontend candidate below. Existing production files must be backed up and hash-checked first. The standby workflow deploys only locked public backend files. Frontend integration and removal of the release lock require a separate activation release.
 
 ## Behaviour and operational limits
 

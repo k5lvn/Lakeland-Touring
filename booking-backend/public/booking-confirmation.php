@@ -13,5 +13,5 @@ try {
         $message.=$q['balance_pence']>0?'The remaining hire balance is £'.number_format($q['balance_pence']/100,2).', due '.$q['balance_due_date'].'.':'Your hire charge is paid in full.';
         $message.=' The refundable security deposit and towing-suitability checks remain separate. Contact us to arrange collection.';
     }
-} catch(Throwable $e) { http_response_code(503); }
+} catch(Throwable $e) { http_response_code(503); $message='Online booking is not open yet. Please contact us to discuss your dates.'; }
 ?><!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Booking payment status | Lakeland Touring</title><link rel="stylesheet" href="styles.css"><main class="section"><h1>Booking payment status</h1><p><?=htmlspecialchars($message,ENT_QUOTES,'UTF-8')?></p><p><a href="tel:+441228307953">01228 307953</a> · <a href="mailto:LakelandTouring@Worx365Group.uk">Email Lakeland Touring</a></p><a href="booking.html">Return to availability</a></main></html>

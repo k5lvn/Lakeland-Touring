@@ -34,6 +34,7 @@ function quote(array $cfg, string $start, string $end, ?DateTimeImmutable $today
         'pay_now_pence'=>$now,'balance_pence'=>$hire-$now,'balance_due_date'=>$due->format('Y-m-d')];
 }
 function config(): array {
+    if (is_file(__DIR__.'/booking-disabled.php')) throw new Failure('Online booking is unavailable. Please contact us.', 503);
     $path = getenv('TOURING_BOOKING_CONFIG') ?: '';
     $real = realpath($path); $doc = realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: '';
     if (!$real || !$doc || str_starts_with($real, $doc . DIRECTORY_SEPARATOR)) throw new Failure('Online booking is unavailable. Please contact us.', 503);
