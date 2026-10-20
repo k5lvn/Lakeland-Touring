@@ -53,13 +53,13 @@ try{
   await page.route('**/api/availability.php',r=>r.fulfill({status:state==='404'?404:200,contentType:'application/json',body:JSON.stringify(state==='valid'?{bookings:[]}:{unexpected:true})}));
   await page.route('**/api/quote.php',r=>{quoteRequests++;return r.abort();});
   await page.goto(base+'booking.html',{waitUntil:'networkidle',timeout:60000});
-  await page.locator('#availabilityStatus').waitFor();
+  const reject=page.getByRole('button',{name:'Reject analytics',exact:true});if(await reject.isVisible())await reject.click();await page.locator('#availabilityStatus').waitFor();
   const booking=await page.evaluate(()=>({enabled:document.querySelectorAll('#calendar .day:not(:disabled)').length,continueDisabled:document.querySelector('#continueBtn').disabled,checkoutDisabled:document.querySelector('#checkoutBtn').disabled,message:document.querySelector('#availabilityStatus').textContent}));
   if(state!=='valid'&&(booking.enabled||!booking.continueDisabled||!booking.checkoutDisabled||!booking.message.includes('contact us')))throw Error('Availability did not fail closed: '+JSON.stringify(booking));
   if(state==='valid'&&booking.enabled===0)throw Error('Valid availability not enabled');
   if(quoteRequests)throw Error('Quote requested without dates');
   results.push({case:'availability',state,...booking,writes:c.writes()});
-  if(state==='404')await page.screenshot({path:'tracking-qa/booking-unavailable-390.png',fullPage:true});await c.ctx.close();
+  if(state==='404')await page.locator('.booking-section').screenshot({path:'tracking-qa/booking-unavailable-390.png'});await c.ctx.close();
  }
  fs.writeFileSync('tracking-qa/results.json',JSON.stringify(results,null,2));console.log('Consent, lead semantics, affected layouts and availability checks passed. No Google hits or real submissions forwarded.');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});
