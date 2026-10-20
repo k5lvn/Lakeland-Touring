@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "files": [
+    {
+      "repo": "Lakeland-Touring",
+      "path": "analytics-privacy.html",
+      "status": "passed"
+    }
+  ],
+  "checks": [
+    "scripts, forms, H1s and styles unchanged",
+    "hashes verified",
+    "no noindex",
+    "unique privacy canonical and description"
+  ]
+}

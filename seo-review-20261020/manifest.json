@@ -1,0 +1,13 @@
+{
+  "site": "lakelandtouring.uk",
+  "base_url": "https://lakelandtouring.uk/",
+  "remote_root": "/public",
+  "status": "review-only",
+  "files": {
+    "analytics-privacy.html": {
+      "original_sha256": "c1228a07d67d8dd5918d205217d0bb668efebde7e7117d3ef88f0c2ec62cbb91",
+      "updated_sha256": "8dcb2ae8cc3298e40d18ad81d2e7c0a3a936b9af3c146a2f5d4df2596154cab1",
+      "reason": "Add correct self-canonical and factual snippet; preserve privacy controls"
+    }
+  }
+}
