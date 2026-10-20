@@ -1,0 +1,432 @@
+{
+  "checked_on": "2026-10-20",
+  "method": "Primary operator pages; no operator contact made; no campsite or caravan bookings submitted.",
+  "caravan": {
+    "website_claim": "2020 Elddis Avanté 866, six berth, twin axle",
+    "plate_verified": false,
+    "shipping_length_m": null,
+    "width_m": null,
+    "mtplm_kg": null,
+    "note": "Do not substitute 868 specifications or another model year. Physical plate and exact dimensions required before compatibility endorsement."
+  },
+  "records": [
+    {
+      "id": "keswick",
+      "name": "Keswick Camping and Caravanning Club Site",
+      "region": "Lake District",
+      "official_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+      "booking_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+      "checked_on": "2026-10-20",
+      "overall_suitability": "not_confirmed",
+      "editorial_note": "The operator requires a towing vehicle to remain on site overnight because flooding is possible. Pitch and awning restrictions may apply.",
+      "fields": {
+        "location": {
+          "value": "Keswick, Cumbria",
+          "status": "official_source_verified",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "touring_caravans": {
+          "value": true,
+          "status": "official_source_verified",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "electric_hookup": {
+          "value": true,
+          "status": "official_source_verified",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "electric_amps": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "maximum_outfit_length_m": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "opening_dates": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "phone": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "commercially_hired_caravan_accepted": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "allocated_pitch_length_width": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "twin_axle_8ft_caravan_fit": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "car_plus_caravan_plus_awning_fit": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "nightly_family_total_gbp": {
+          "value": null,
+          "status": "date_party_and_pitch_quote_required",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "weight_access_limits": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "children_policy": {
+          "value": "Families listed among suitable visitors",
+          "status": "official_source_verified",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "pets_policy": {
+          "value": "Dogs/facilities listed; confirm conditions with operator",
+          "status": "official_source_verified",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        },
+        "published_adult_from_price_gbp": {
+          "value": {
+            "amount": 14.15,
+            "assumptions": "Operator’s members adult price only; additional charges apply. Not a pitch or family nightly total.",
+            "not_for_family_budget_comparison": true
+          },
+          "status": "official_source_verified",
+          "source_url": "https://www.campingandcaravanningclub.co.uk/campsites/uk/cumbria/keswick/keswick-camping-and-caravanning-club-site/",
+          "checked_on": "2026-10-20"
+        }
+      }
+    },
+    {
+      "id": "troutbeck",
+      "name": "Troutbeck Head Club Campsite",
+      "region": "Lake District",
+      "official_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+      "booking_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+      "checked_on": "2026-10-20",
+      "overall_suitability": "not_confirmed",
+      "editorial_note": "Follow the operator’s recommended final approach; it warns that some roads chosen by sat nav are unsuitable for towing.",
+      "fields": {
+        "location": {
+          "value": "Troutbeck, Penrith, Cumbria, CA11 0SS",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "touring_caravans": {
+          "value": true,
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "electric_hookup": {
+          "value": true,
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "electric_amps": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "maximum_outfit_length_m": {
+          "value": 9,
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "opening_dates": {
+          "value": "20 March–2 November 2026; 19 March–1 November 2027",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "phone": {
+          "value": "01768 483521",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "commercially_hired_caravan_accepted": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "allocated_pitch_length_width": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "twin_axle_8ft_caravan_fit": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "car_plus_caravan_plus_awning_fit": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "nightly_family_total_gbp": {
+          "value": null,
+          "status": "date_party_and_pitch_quote_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "weight_access_limits": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "children_policy": {
+          "value": "Listed as family-friendly",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "pets_policy": {
+          "value": "Dogs/facilities listed; confirm conditions with operator",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/lake-district/cumbria/troutbeck-head-club-campsite/",
+          "checked_on": "2026-10-20"
+        }
+      }
+    },
+    {
+      "id": "melrose",
+      "name": "Melrose Gibson Park Club Campsite",
+      "region": "Scottish Borders",
+      "official_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+      "booking_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+      "checked_on": "2026-10-20",
+      "overall_suitability": "not_confirmed",
+      "editorial_note": "The operator gives a different postcode for sat nav: TD6 9RX. Follow its final-approach directions.",
+      "fields": {
+        "location": {
+          "value": "High Street, Melrose, Scottish Borders, TD6 9RY",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "touring_caravans": {
+          "value": true,
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "electric_hookup": {
+          "value": true,
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "electric_amps": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "maximum_outfit_length_m": {
+          "value": 9,
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "opening_dates": {
+          "value": "Open all year",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "phone": {
+          "value": "01896 822969",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "commercially_hired_caravan_accepted": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "allocated_pitch_length_width": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "twin_axle_8ft_caravan_fit": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "car_plus_caravan_plus_awning_fit": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "nightly_family_total_gbp": {
+          "value": null,
+          "status": "date_party_and_pitch_quote_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "weight_access_limits": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "children_policy": {
+          "value": "Listed as family-friendly",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "pets_policy": {
+          "value": "Dogs/facilities listed; confirm conditions with operator",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/scotland/scottish-borders/melrose-gibson-park-club-campsite/",
+          "checked_on": "2026-10-20"
+        }
+      }
+    },
+    {
+      "id": "breamish",
+      "name": "River Breamish Club Campsite",
+      "region": "Northumberland",
+      "official_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+      "booking_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+      "checked_on": "2026-10-20",
+      "overall_suitability": "not_confirmed",
+      "editorial_note": "An inland base for the Breamish Valley and wider Northumberland; it is not a beachfront campsite.",
+      "fields": {
+        "location": {
+          "value": "Powburn / Branton, Northumberland, NE66 4HY",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "touring_caravans": {
+          "value": true,
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "electric_hookup": {
+          "value": true,
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "electric_amps": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "maximum_outfit_length_m": {
+          "value": 9.3,
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "opening_dates": {
+          "value": "20 March–2 November 2026; 19 March–1 November 2027",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "phone": {
+          "value": "01665 578320",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "commercially_hired_caravan_accepted": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "allocated_pitch_length_width": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "twin_axle_8ft_caravan_fit": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "car_plus_caravan_plus_awning_fit": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "nightly_family_total_gbp": {
+          "value": null,
+          "status": "date_party_and_pitch_quote_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "weight_access_limits": {
+          "value": null,
+          "status": "confirmation_required",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "children_policy": {
+          "value": "Listed as family-friendly",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        },
+        "pets_policy": {
+          "value": "Dogs/facilities listed; confirm conditions with operator",
+          "status": "official_source_verified",
+          "source_url": "https://www.caravanclub.co.uk/club-sites/england/north-east-england/northumberland/river-breamish-club-campsite/",
+          "checked_on": "2026-10-20"
+        }
+      }
+    }
+  ]
+}
