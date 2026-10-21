@@ -17,7 +17,7 @@ const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${Str
    if(u.pathname==='/api/availability.php')return route.fulfill({json:availability()});
    if(u.pathname==='/api/quote.php'){
     quotes++;const input=route.request().postDataJSON();own={start:input.start,end:input.end,state:'held',hold_until:own?.hold_until||now()+900};
-    return route.fulfill({json:{...own,server_time:now(),hire_pence:59500,pay_now_pence:25000,balance_pence:34500,nights:2,balance_due_date:day(1)}});
+    return route.fulfill({json:{...own,server_time:now(),hire_pence:59500,pay_now_pence:25000,balance_pence:34500,nights:7,balance_due_date:day(1)}});
    }
    if(u.pathname==='/api/release-hold.php'){own=null;releases++;return route.fulfill({json:{released:true}});}
    if(u.pathname.startsWith('/api/'))throw Error('Unexpected API operation: '+u.pathname);
@@ -33,8 +33,8 @@ const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${Str
   assert.equal(await held.isDisabled(),true);assert.equal(await booked.isDisabled(),true);
   assert.match(await held.getAttribute('aria-label'),/held by another customer/);
   const fmt=n=>new Date(month.getFullYear(),month.getMonth(),n).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-  await page.getByRole('button',{name:fmt(3)+', available, peak period',exact:true}).click();
-  await page.getByRole('button',{name:fmt(5)+', available, peak period',exact:true}).click();
+  await page.getByRole('button',{name:fmt(1)+', available, peak period',exact:true}).click();
+  await page.getByRole('button',{name:fmt(8)+', available, peak period',exact:true}).click();
   await page.locator('#availabilityStatus').filter({hasText:/Your dates are held for (15|14):/}).waitFor();
   assert.equal(await page.locator('#continueBtn').isEnabled(),true);
   const before=quotes;await page.evaluate(()=>loadAvailability(true));assert.equal(quotes,before,'Polling must not POST another quote');
