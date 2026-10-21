@@ -141,6 +141,8 @@ with tempfile.TemporaryDirectory(prefix='garage-bookings-') as folder:
             page = a.post('confirm-balance', booking_id=bid, received=1, reference='receipt-balance')
             check('PRIVATE-CUSTOMER &lt;script&gt;' in page and '<script>' not in page)
             check('private-customer@example.test' in page and 'PRIVATE-PHONE' in page)
+            threshold = (arrival - dt.timedelta(weeks=12)).isoformat()
+            check(f'or {threshold} (12 weeks before arrival)' in page)
             check('administrator access' in a.post('record-fee', booking_id=bid, received=1, reference='fee'))
             check('actually received' in admin.post('record-fee', booking_id=bid, reference='fee'))
             admin.post('record-fee', booking_id=bid, received=1, reference='fee')
