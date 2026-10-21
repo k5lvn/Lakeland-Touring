@@ -5,7 +5,14 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
  const browser=await chromium.launch({headless:true});
  try{for(const width of [390,1440]){
   const context=await browser.newContext({viewport:{width,height:1000}}),page=await context.newPage();
-  await context.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
+  await context.route('**/*',async r=>{
+   if(new URL(r.request().url()).hostname!=='127.0.0.1')return r.abort();
+   // The real application always redirects to its HTTPS production origin.
+   // Keep fixture redirects on the disposable server; never forward them externally.
+   const response=await r.fetch({maxRedirects:0}),headers=response.headers();
+   if(headers.location?.startsWith('https://lakelandtouring.uk/garage.php'))headers.location=headers.location.replace('https://lakelandtouring.uk/garage.php',base);
+   await r.fulfill({response,headers});
+  });
   await page.goto(base);
   await page.locator('form').filter({has:page.locator('[name="action"][value="login"]')}).locator('[name="email"]').fill('a@example.test');
   await page.locator('form').filter({has:page.locator('[name="action"][value="login"]')}).locator('[name="password"]').fill('fixture-password-123');
