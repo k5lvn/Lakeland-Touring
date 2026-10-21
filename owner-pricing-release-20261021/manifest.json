@@ -1,0 +1,25 @@
+{
+  "site": "touring",
+  "base_url": "https://lakelandtouring.uk/",
+  "remote_root": "/public",
+  "files": {
+    "index.html": {
+      "original_sha256": "91d5998223ee53f3666705aba32639b29e3ed75b859d23568ecc79ba8c55fdf8",
+      "updated_sha256": "e4dc576b09d0fc43ec9bb0d0e17d4da06d304120ddd611ed1830f67eb54fe362"
+    },
+    "booking.html": {
+      "original_sha256": "2a7667d3c57bcfa1c13c15e7def244440c8f7561832a91c09a10c3ddb1713005",
+      "updated_sha256": "3a8e9389207dde834a3f0c0a7edf737a1c43c2e37e251adacc4841214f5ebd12"
+    },
+    "owners-garage.html": {
+      "original_sha256": "fa713c0d0fe3ea48b0e75658796c2b94ef2ca9471d2dcf1892ba9668bd46d3d9",
+      "updated_sha256": "7106c941e82724401a1b2af953f3654635eaf8ba60b89d07087e7c2eab6db55d"
+    }
+  },
+  "robots_sha256": "1638a63f1cfec3b9110bf5519a113d1324f2ea0b79ed4d15b64ea37057f6bba9",
+  "guards": {
+    "sitemap.xml": "07f0f2d88e4726d0556ad6d1361339950b426f10d54419240bcb502a397cdee8",
+    "owner-terms.html": "7abe5c663d10e8f36489ded64e16b143cf1e2c0d6581c7160870a2418fcb2bc8",
+    "booking.js": "1d517d4d092162553c8377aa21da0a756da5fbf2c6dcc34b2f3da4b675e5202c"
+  }
+}
