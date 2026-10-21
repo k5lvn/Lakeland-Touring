@@ -21,8 +21,13 @@ $gateway=fn($method,$path)=>['id'=>'cs_fixture','client_reference_id'=>'two','li
 ok(releaseHold($db,$cfg,'two',$gateway));available($db,$q['start'],$q['end']);ok(true);
 hold($db,$cfg,'three',$q);$db->exec("UPDATE bookings SET hold_until=1 WHERE id='three'");reconcileHolds($db,$cfg);available($db,$q['start'],$q['end']);ok(true);
 hold($db,$cfg,'four',$q);$db->exec("UPDATE bookings SET state='paid' WHERE id='four'");ok(!releaseHold($db,$cfg,'four'));rejects(fn()=>available($db,$q['start'],$q['end']));
-$b=['arrival'=>'2027-03-01','deposit_confirmed_pence'=>25000,'agreed_commission_pence'=>5000];
+$plan=\TouringOperations\ownerPricingPlan();
+ok($plan['annual_advertising_pence']===4900&&$plan['annual_unit']==='vehicle'&&$plan['annual_months']===12);
+ok($plan['booking_admin_pence']===2500&&$plan['booking_unit']==='confirmed_booking'&&$plan['automatic_renewal']===false);
+$b=['arrival'=>'2027-03-01','deposit_confirmed_pence'=>25000,'agreed_commission_pence'=>$plan['booking_admin_pence']];
 $c=\TouringOperations\commission($b,new DateTimeImmutable('2026-12-07',new DateTimeZone('Europe/London')));ok($c['payable']&&$c['source']==='owner_booking_deposit');
+ok($c['amount_pence']===2500&&$b['deposit_confirmed_pence']-$c['amount_pence']===22500);
+ok(!\TouringOperations\commission($b,new DateTimeImmutable('2026-12-06'))['payable']);
 $b['balance_confirmed_at']='2026-11-01T10:00:00+00:00';$c=\TouringOperations\commission($b,new DateTimeImmutable('2026-11-02'));ok($c['payable']&&$c['customer_details_releasable']&&$c['trigger']==='full_balance_received');
 $b['agreed_commission_pence']=null;ok(!\TouringOperations\commission($b,new DateTimeImmutable('2026-12-08'))['payable']);
 $v=['verified'=>true,'verified_at'=>'2026-10-22T12:00:00+01:00','verified_by'=>'fixture','evidence_reference'=>'fixture-only'];

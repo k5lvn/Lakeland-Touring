@@ -6,6 +6,14 @@ use DateTimeImmutable;
 use DateTimeZone;
 use InvalidArgumentException;
 
+// Persist these amounts with an explicitly accepted new-plan agreement.
+// Do not infer acceptance or reprice existing advertising agreements.
+function ownerPricingPlan(): array {
+    return ['version'=>'owner-admin-20261021','annual_advertising_pence'=>4900,
+        'annual_unit'=>'vehicle','annual_months'=>12,'booking_admin_pence'=>2500,
+        'booking_unit'=>'confirmed_booking','automatic_renewal'=>false];
+}
+
 // Owner confirmations are evidence of receipt, not automatic bank verification.
 // Integration must enforce owner/listing permissions before calling these rules.
 function commission(array $booking, DateTimeImmutable $now): array {
