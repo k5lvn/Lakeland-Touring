@@ -6,7 +6,7 @@ const c=await b.newContext({viewport:{width,height:1000}}),p=await c.newPage();
 await c.route('**/*',async r=>{const u=new URL(r.request().url());if(r.request().method()!=='GET'||/analytics|googletag|facebook|doubleclick/i.test(u.href))return r.abort();
 if(u.hostname==='lakelandtouring.uk'&&u.pathname.startsWith('/api/'))return r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Online booking is unavailable. Please contact us.'})});
 const path=u.pathname==='/'?'index.html':u.pathname.slice(1);if(u.hostname==='lakelandtouring.uk'&&Object.hasOwn(m.files,path))return r.fulfill({contentType:'text/html',body:fs.readFileSync(`${root}/files/${path}`)});
-if(u.hostname!=='lakelandtouring.uk'&&!['fonts.googleapis.com','fonts.gstatic.com'].includes(u.hostname))return r.abort();return r.continue();});
+if(u.hostname!=='lakelandtouring.uk'&&!['fonts.googleapis.com','fonts.gstatic.com'].includes(u.hostname)&&u.href!=='https://worx365group.uk/assets/worx365-logo-transparent.png')return r.abort();return r.continue();});
 await p.goto(m.base_url+name,{waitUntil:'networkidle',timeout:60000});
 await p.evaluate(async()=>{for(let y=0;y<document.body.scrollHeight;y+=700){scrollTo(0,y);await new Promise(r=>setTimeout(r,60));}scrollTo(0,0)});await p.waitForTimeout(400);
 assert.equal(await p.locator('h1').count(),1);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2),false);
