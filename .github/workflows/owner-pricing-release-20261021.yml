@@ -1,0 +1,73 @@
+name: Review and publish approved Touring owner pricing
+on:
+  pull_request:
+    paths: ['owner-pricing-release-20261021/**', '.github/workflows/owner-pricing-release-20261021.yml']
+  push:
+    branches: [main]
+    paths: ['owner-pricing-release-20261021/**', '.github/workflows/owner-pricing-release-20261021.yml']
+permissions:
+  contents: read
+concurrency:
+  group: touring-owner-pricing-release-20261021
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Guard public baseline, exact candidates and crawling
+        run: |
+          python3 - <<'PY'
+          import json,hashlib,urllib.request,re
+          from pathlib import Path
+          from urllib.robotparser import RobotFileParser
+          root=Path('owner-pricing-release-20261021');m=json.loads((root/'manifest.json').read_text())
+          assert set(m['files'])=={'index.html','booking.html','owners-garage.html'}
+          for n,h in m['files'].items():
+              b=urllib.request.urlopen(m['base_url']+n,timeout=45).read()
+              assert hashlib.sha256(b).hexdigest()==h['original_sha256'],n+' baseline changed'
+
+          for n,h in {**m['guards'],'robots.txt':m['robots_sha256']}.items():
+              b=urllib.request.urlopen(m['base_url']+n,timeout=45).read();assert hashlib.sha256(b).hexdigest()==h,n+' guard changed'
+          parser=RobotFileParser();parser.parse(urllib.request.urlopen(m['base_url']+'robots.txt',timeout=45).read().decode().splitlines())
+          sitemap=urllib.request.urlopen(m['base_url']+'sitemap.xml',timeout=45).read().decode()
+          for n in m['files']:
+              assert parser.can_fetch('Googlebot',m['base_url']+n)
+              assert n in sitemap or n=='index.html'
+          PY
+      - run: python3 owner-pricing-release-20261021/build_checked.py
+      - run: npm install --no-save --package-lock=false playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: node owner-pricing-release-20261021/check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: touring-owner-pricing-review
+          path: owner-pricing-release-20261021/qa/
+          retention-days: 90
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: review
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 owner-pricing-release-20261021/build_checked.py
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Back up, publish approved HTML and verify
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 owner-pricing-release-20261021/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verified-touring-owner-pricing-release
+          path: |
+            owner-pricing-rollback/
+            owner-pricing-release-20261021/manifest.json
+            RELEASE-VERIFIED.json
+          retention-days: 90
