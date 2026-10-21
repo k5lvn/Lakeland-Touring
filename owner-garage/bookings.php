@@ -152,6 +152,15 @@ function act(PDO $db, int $actorId, string $action, array $input, array $config,
                 } elseif($action==='verify-evidence') {
                     $kind=text($input,'kind');if(!in_array($kind,['identity','licence','insurance'],true)||empty($input['verified']))throw new RuntimeException('Confirm the evidence check.');
                     if(!$b[$kind.'_at']){query($db,"UPDATE garage_bookings SET {$kind}_at=?,{$kind}_by=?,{$kind}_ref=? WHERE id=?",[$stamp,$actorId,text($input,'reference'),$b['id']]);audit($db,$actorId,$kind.'_verified',$now,$b);}
+                } elseif($action==='invalidate-evidence') {
+                    $kind=text($input,'kind');
+                    if(!in_array($kind,['identity','licence','insurance'],true)||empty($input['invalidated']))throw new RuntimeException('Confirm the evidence withdrawal.');
+                    $reason=text($input,'reason',1000);
+                    if($b[$kind.'_at']){
+                        $previous=['verified_at'=>$b[$kind.'_at'],'verified_by'=>$b[$kind.'_by'],'evidence_reference'=>$b[$kind.'_ref']];
+                        query($db,"UPDATE garage_bookings SET {$kind}_at=NULL,{$kind}_by=NULL,{$kind}_ref=NULL WHERE id=?",[$b['id']]);
+                        audit($db,$actorId,$kind.'_invalidated',$now,$b,['reason'=>$reason,'previous'=>$previous]);
+                    }
                 } elseif($action==='authorise-handover') {
                     if(!allowedHandover($b,$config['non_working_dates']))throw new RuntimeException('Handover requires a confirmed booking, full balance, appointment and all evidence checked at least two working days beforehand.');
                     $appointment=new DateTimeImmutable($b['appointment_at']);

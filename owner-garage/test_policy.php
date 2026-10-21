@@ -25,8 +25,20 @@ $b=query($db,'SELECT * FROM garage_bookings')->fetch();ok(fee($b,$at('2026-11-01
 act($db,1,'appointment',['booking_id'=>$id,'appointment'=>'2027-03-01T10:00'],$cfg,$at('2027-02-20'));
 foreach(['identity','licence','insurance'] as $kind)act($db,1,'verify-evidence',['booking_id'=>$id,'kind'=>$kind,'verified'=>1,'reference'=>'fixture'],$cfg,$at('2027-02-25 10:00'));
 $b=query($db,'SELECT * FROM garage_bookings')->fetch();ok(allowedHandover($b,[]));ok(!allowedHandover($b,['2027-02-26']));
+// Withdrawn evidence must block handover; a recheck gets a new server time.
+$withdraw=['booking_id'=>$id,'kind'=>'insurance','invalidated'=>1,'reason'=>'Policy withdrawn'];
+act($db,2,'invalidate-evidence',$withdraw,$cfg,$at('2027-02-25 10:30'));
+$b=query($db,'SELECT * FROM garage_bookings')->fetch();ok($b['insurance_at']===null&&$b['insurance_by']===null&&$b['insurance_ref']===null);ok(!allowedHandover($b,[]));
+$history=query($db,'SELECT actor_id,detail FROM garage_booking_audit WHERE event="insurance_invalidated"')->fetch();$detail=json_decode($history['detail'],true);
+ok((int)$history['actor_id']===2&&$detail['previous']['evidence_reference']==='fixture'&&$detail['previous']['verified_by']===1&&$detail['reason']==='Policy withdrawn');
+$count=query($db,'SELECT count(*) FROM garage_booking_audit')->fetchColumn();act($db,2,'invalidate-evidence',$withdraw,$cfg,$at('2027-02-25 10:31'));ok(query($db,'SELECT count(*) FROM garage_booking_audit')->fetchColumn()===$count);
+act($db,1,'verify-evidence',['booking_id'=>$id,'kind'=>'insurance','verified'=>1,'reference'=>'replacement-policy'],$cfg,$at('2027-02-25 10:40'));
+$b=query($db,'SELECT * FROM garage_bookings')->fetch();ok($b['insurance_ref']==='replacement-policy'&&$b['insurance_at']==='2027-02-25T10:40:00+00:00');ok(!allowedHandover($b,[]));
+// A later collection slot restores the required two-working-day interval.
+act($db,1,'appointment',['booking_id'=>$id,'appointment'=>'2027-03-01T11:00'],$cfg,$at('2027-02-25 10:45'));
+$b=query($db,'SELECT * FROM garage_bookings')->fetch();ok(allowedHandover($b,[]));
 refuses(fn()=>act($db,1,'authorise-handover',['booking_id'=>$id,'checked'=>1],$cfg,$at('2027-02-26 10:00')));
-act($db,1,'authorise-handover',['booking_id'=>$id,'checked'=>1],$cfg,$at('2027-03-01 10:00'));
+act($db,1,'authorise-handover',['booking_id'=>$id,'checked'=>1],$cfg,$at('2027-03-01 11:00'));
 ok(query($db,'SELECT handover_at FROM garage_bookings')->fetchColumn()!==false);
 refuses(fn()=>act($db,2,'cancel-booking',['booking_id'=>$id,'reason'=>'fixture'],$cfg,$at('2027-03-01 11:00')));
 // Cancellation before the threshold earns no later fee; earned fees survive cancellation.

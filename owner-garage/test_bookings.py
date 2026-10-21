@@ -150,6 +150,25 @@ with tempfile.TemporaryDirectory(prefix='garage-bookings-') as folder:
             check('evidence check' in a.post('verify-evidence', booking_id=bid, kind='insurance', reference='fixture'))
             a.post('verify-evidence', booking_id=bid, kind='insurance', verified=1, reference='insurance-ref')
             check(db.execute('SELECT insurance_by FROM garage_bookings').fetchone()[0] == 1)
+            # Withdrawal is owner-scoped, CSRF-protected and requires an explicit reason/check.
+            check('Withdraw insurance check' in a.request('?view=bookings')[1])
+            check('not found' in b.post('invalidate-evidence', booking_id=bid, kind='insurance', invalidated=1, reason='invalid'))
+            check('session expired' in a.request('?view=bookings', dict(action='invalidate-evidence', booking_id=bid, kind='insurance', invalidated=1, reason='invalid', csrf='wrong'))[1])
+            check('Confirm the evidence withdrawal' in a.post('invalidate-evidence', booking_id=bid, kind='insurance', reason='invalid'))
+            check('required fields' in a.post('invalidate-evidence', booking_id=bid, kind='insurance', invalidated=1))
+            check('Confirm the evidence withdrawal' in a.post('invalidate-evidence', booking_id=bid, kind='insurance_at', invalidated=1, reason='invalid'))
+            check(db.execute('SELECT insurance_by FROM garage_bookings').fetchone()[0] == 1)
+            page = a.post('invalidate-evidence', booking_id=bid, kind='insurance', invalidated=1, reason='Policy revoked')
+            check('Record insurance check' in page and 'Withdraw insurance check' not in page)
+            check(db.execute('SELECT insurance_at,insurance_by,insurance_ref FROM garage_bookings').fetchone() == (None,None,None))
+            audit = db.execute("SELECT actor_id,detail FROM garage_booking_audit WHERE event='insurance_invalidated'").fetchone()
+            check(audit[0] == 1 and json.loads(audit[1])['previous']['evidence_reference'] == 'insurance-ref')
+            count = db.execute('SELECT count(*) FROM garage_booking_audit').fetchone()[0]
+            a.post('invalidate-evidence', booking_id=bid, kind='insurance', invalidated=1, reason='duplicate')
+            check(db.execute('SELECT count(*) FROM garage_booking_audit').fetchone()[0] == count)
+            admin.post('verify-evidence', booking_id=bid, kind='insurance', verified=1, reference='replacement')
+            check(db.execute('SELECT insurance_by,insurance_ref FROM garage_bookings').fetchone() == (3,'replacement'))
+
             check('arrival-day appointment' in a.post('appointment', booking_id=bid, appointment=arrival.isoformat()+'T18:00'))
             check('administrator access' in a.post('cancel-booking', booking_id=bid, reason='fixture'))
             admin.post('cancel-booking', booking_id=bid, reason='Fixture cancellation')
@@ -168,6 +187,9 @@ with tempfile.TemporaryDirectory(prefix='garage-bookings-') as folder:
                     db.rollback()
             check(db.execute('SELECT paid_until FROM vehicles WHERE id=1').fetchone()[0] == original_expiry)
             if '--browser' in __import__('sys').argv:
+                # Reopen only the disposable fixture to exercise correction controls visually.
+                db.execute("UPDATE garage_bookings SET state='confirmed',cancelled_at=NULL")
+                db.commit()
                 subprocess.run(['node', str(ROOT/'test_bookings.cjs'), base], check=True, env=os.environ)
             print(f'Passed {checks} owner/admin HTTP checks: private feature flag, CSRF, isolation, acceptance, payment evidence, fee receipt, redaction, cancellation, restriction and immutable audit.')
         finally:

@@ -91,7 +91,7 @@ try{
     }else q('UPDATE vehicles SET status="draft" WHERE id=?',[$listing]);
     go('?view=admin');
    }
-   if(in_array($action,['accept-plan','create-booking','confirm-deposit','confirm-balance','confirm-booking','record-fee','cancel-booking','appointment','verify-evidence','authorise-handover','terminate-advertising'],true)){
+   if(in_array($action,['accept-plan','create-booking','confirm-deposit','confirm-balance','confirm-booking','record-fee','cancel-booking','appointment','verify-evidence','invalidate-evidence','authorise-handover','terminate-advertising'],true)){
     if(!$bookingEnabled)throw new RuntimeException('The new owner booking service is not active.');
     \TouringGarage\act($db,(int)$owner['id'],$action,$_POST,$bookingConfig);
     go('?view=bookings');

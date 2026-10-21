@@ -48,7 +48,10 @@ function render(PDO $db, array $actor, bool $admin, string $flash, array $config
             $out.='<details><summary>Collection appointment and checks</summary><p>Collection must be Monday–Friday, 09:00–16:00, by appointment. Identity, licence and insurance evidence must be checked at least two working days beforehand.</p><p>Appointment: '.\h($b['appointment_at']??'not set').'</p>';
             $out.=form('appointment',$id,input('appointment','Collection appointment','datetime-local'),'Set appointment');
             foreach(['identity','licence','insurance'] as $kind){
-                if($b[$kind.'_at'])$out.='<p>'.\h(ucfirst($kind)).' checked: '.\h($b[$kind.'_at']).'</p>';
+                if($b[$kind.'_at']){
+                    $out.='<p>'.\h(ucfirst($kind)).' checked: '.\h($b[$kind.'_at']).'</p>';
+                    $out.='<details><summary>Withdraw '.\h($kind).' check</summary><p>Use this if the evidence is incorrect, expired or no longer valid. Handover will be blocked until new evidence is checked in time. The original check remains in the audit record.</p>'.form('invalidate-evidence',$id,'<input type="hidden" name="kind" value="'.$kind.'">'.input('reason','Reason for withdrawing the check').check('invalidated','I confirm this evidence check is no longer valid.'),'Withdraw '.$kind.' check').'</details>';
+                }
                 else $out.=form('verify-evidence',$id,'<input type="hidden" name="kind" value="'.$kind.'">'.input('reference',ucfirst($kind).' evidence reference (store documents securely)').check('verified','I checked the '.$kind.' evidence.'),'Record '.$kind.' check');
             }
             $out.='<p>Handover prerequisites: '.(allowedHandover($b,$config['non_working_dates'])?'complete':'incomplete').'.</p>'.form('authorise-handover',$id,check('checked','I checked the prerequisites and am handing the vehicle over at the agreed appointment.'),'Record handover').'</details>';
