@@ -23,7 +23,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
   assert.equal(await page.locator('.customer-details').count(),1);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2),false);
   await page.getByText('Collection appointment and checks',{exact:true}).click();
-  await page.getByText('Withdraw insurance check',{exact:true}).click();
+  await page.locator('summary').filter({hasText:/^Withdraw insurance check$/}).click();
   const withdrawal=page.locator('form').filter({has:page.locator('[name="action"][value="invalidate-evidence"]')}).filter({has:page.locator('[name="kind"][value="insurance"]')});
   await withdrawal.locator('[name="reason"]').fill('Fixture policy replaced');
   await withdrawal.locator('[name="invalidated"]').check();
@@ -35,7 +35,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
   await replacement.locator('[name="verified"]').check();
   await replacement.getByRole('button',{name:'Record insurance check',exact:true}).click();
   await page.getByText('Collection appointment and checks',{exact:true}).click();
-  await page.getByText('Withdraw insurance check',{exact:true}).click();
+  await page.locator('summary').filter({hasText:/^Withdraw insurance check$/}).click();
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2),false);
   await page.screenshot({path:path.join(out,`owner-bookings-${width}.png`),fullPage:true});
   await page.getByText('Booking history',{exact:true}).click();
