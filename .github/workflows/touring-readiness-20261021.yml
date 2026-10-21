@@ -1,0 +1,26 @@
+name: Inspect Touring booking readiness
+on:
+  push:
+    branches: [main]
+    paths: ['operations-readiness-20261021/**', '.github/workflows/touring-readiness-20261021.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Read-only allowlisted configuration checks
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 operations-readiness-20261021/inspect.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: touring-readiness-20261021
+          path: touring-readiness-result.json
+          retention-days: 90
