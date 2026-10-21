@@ -32,6 +32,17 @@ try{
  $db=new PDO('sqlite:'.$storage.'/garage.sqlite',null,null,[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC]);
  $db->exec('PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS owners(id INTEGER PRIMARY KEY,email TEXT UNIQUE NOT NULL,password TEXT NOT NULL,name TEXT NOT NULL,verified INTEGER DEFAULT 0,token TEXT,token_kind TEXT,token_until INTEGER); CREATE TABLE IF NOT EXISTS vehicles(id INTEGER PRIMARY KEY,owner_id INTEGER NOT NULL REFERENCES owners(id),title TEXT NOT NULL,type TEXT NOT NULL,location TEXT NOT NULL,description TEXT NOT NULL,price TEXT NOT NULL,contact TEXT NOT NULL,status TEXT DEFAULT "draft",paid_until INTEGER DEFAULT 0,created INTEGER NOT NULL); CREATE TABLE IF NOT EXISTS photos(id INTEGER PRIMARY KEY,vehicle_id INTEGER NOT NULL REFERENCES vehicles(id) ON DELETE CASCADE,file TEXT NOT NULL); CREATE TABLE IF NOT EXISTS attempts(key TEXT PRIMARY KEY,count INTEGER NOT NULL,until INTEGER NOT NULL);');chmod($storage.'/garage.sqlite',0600);
 }catch(Throwable $e){error_log('Touring garage storage unavailable');http_response_code(503);page('Owner’s Garage','<h1>Owner’s Garage</h1><p>Account access is temporarily unavailable. Please contact our team.</p><a class="button" href="mailto:'.GARAGE_EMAIL.'">Contact us →</a>'.notice());}
+// New booking service is opt-in through a private config, never a request parameter.
+$bookingConfig=['enabled'=>false,'non_working_dates'=>null];
+if(is_file($storage.'/booking-config.php')){
+ $candidate=require $storage.'/booking-config.php';
+ if(is_array($candidate))$bookingConfig=array_replace($bookingConfig,$candidate);
+}
+$bookingEnabled=($bookingConfig['enabled']??false)===true && is_array($bookingConfig['non_working_dates']);
+if($bookingEnabled){
+ foreach($bookingConfig['non_working_dates'] as $closed)if(!is_string($closed)||!preg_match('/^\d{4}-\d{2}-\d{2}$/D',$closed))$bookingEnabled=false;
+}
+if($bookingEnabled){require_once __DIR__.'/garage-bookings.php';require_once __DIR__.'/garage-bookings-ui.php';\TouringGarage\schema($db);}
 ini_set('session.use_strict_mode','1');ini_set('session.use_only_cookies','1');session_name('touringgarage');session_set_cookie_params(['lifetime'=>0,'path'=>'/','secure'=>true,'httponly'=>true,'samesite'=>'Lax']);session_start();$_SESSION['csrf']??=bin2hex(random_bytes(32));
 $owner=isset($_SESSION['owner'])?q('SELECT * FROM owners WHERE id=?',[$_SESSION['owner']])->fetch():false;
 if($owner&&((time()-(int)($_SESSION['last']??0)>3600)||!hash_equals($owner['password'],(string)($_SESSION['password_stamp']??'')))){$_SESSION=[];go();}
@@ -75,9 +86,15 @@ try{
      if(empty($_POST['checked']))throw new RuntimeException('Confirm the listing review and annual payment first.');
      $until=strtotime((string)($_POST['paid_until']??''));if(!$until||$until<time()||$until>strtotime('+2 years'))throw new RuntimeException('Enter a valid paid expiry date within two years.');
      if(!q('SELECT COUNT(*) FROM photos WHERE vehicle_id=?',[$listing])->fetchColumn())throw new RuntimeException('Listing requires a photo.');
+     if($bookingEnabled&&\TouringGarage\query($db,'SELECT 1 FROM garage_restrictions WHERE owner_id=?',[$record['owner_id']])->fetchColumn())throw new RuntimeException('Advertising rights have ended.');
      q('UPDATE vehicles SET status="live",paid_until=? WHERE id=?',[$until,$listing]);
     }else q('UPDATE vehicles SET status="draft" WHERE id=?',[$listing]);
     go('?view=admin');
+   }
+   if(in_array($action,['accept-plan','create-booking','confirm-deposit','confirm-balance','confirm-booking','record-fee','cancel-booking','appointment','verify-evidence','authorise-handover','terminate-advertising'],true)){
+    if(!$bookingEnabled)throw new RuntimeException('The new owner booking service is not active.');
+    \TouringGarage\act($db,(int)$owner['id'],$action,$_POST,$bookingConfig);
+    go('?view=bookings');
    }
    $id=(int)($_POST['id']??0);$v=$id?q('SELECT * FROM vehicles WHERE id=? AND owner_id=?',[$id,$owner['id']])->fetch():false;
    if($id&&!$v)throw new RuntimeException('Vehicle not found in your garage.');
@@ -111,6 +128,12 @@ try{
 $flash=($error?'<p role="alert" class="garage-error">'.h($error).'</p>':'').($message?'<p role="status" class="garage-success">'.h($message).'</p>':'');
 $nav='<div class="garage-tabs"><a href="owners-garage.html">How it works</a><a href="?view=browse">Browse vehicles</a><a href="garage.php">'.($owner?'My garage':'Owner sign in').'</a></div>';
 if($owner&&isset($_SESSION['last'])&&time()-$_SESSION['last']>3600){$_SESSION=[];go();}if($owner)$_SESSION['last']=time();
+if($bookingEnabled&&$owner)$nav.='<p><a class="button" href="?view=bookings">Bookings and payment confirmations</a></p>';
+if($view==='bookings'){
+ if(!$owner){http_response_code(403);page('Sign in required','<h1>Sign in to view your bookings</h1>');}
+ if(!$bookingEnabled){http_response_code(503);page('Bookings unavailable','<h1>Owner bookings are not active yet</h1>');}
+ page('Bookings',$nav.\TouringGarage\render($db,$owner,(bool)$isAdmin,$flash,$bookingConfig));
+}
 if($view==='photo'){
  $p=q('SELECT p.file,v.owner_id,v.status,v.paid_until FROM photos p JOIN vehicles v ON v.id=p.vehicle_id WHERE p.id=?',[(int)($_GET['id']??0)])->fetch();
  if(!$p||!(($p['status']==='live'&&$p['paid_until']>time())||($owner&&(int)$owner['id']===(int)$p['owner_id'])||$isAdmin)){http_response_code(404);exit;}
@@ -141,7 +164,7 @@ if(in_array($view,['browse','vehicle'],true)){
  page($view==='vehicle'?$rows[0]['title']:'Owner vehicles',$body.'</div>'.notice());
 }
 if(!$owner){
- $body=$nav.'<h1>Owner’s Garage</h1><p>Your email address is your username. One annual advertising fee. No booking commission.</p>'.$flash.'<div class="garage-layout"><section class="garage-box"><h2>Sign in</h2><form method="post">'.token().'<input type="hidden" name="action" value="login">'.field('email','Email address','email').field('password','Password','password').'<button class="button">Open my garage →</button></form></section><section class="garage-box"><h2>Create your garage</h2><p>£49 per vehicle for 12 months. Create your account and prepare a draft free. We review your listing and arrange payment by invoice before it goes live. No automatic renewal.</p><form method="post">'.token().'<input type="hidden" name="action" value="register">'.field('name','Your name').field('email','Email address','email').field('password','Password (12 characters minimum)','password').'<label class="garage-check"><input type="checkbox" name="terms" required> <span>I accept the <a href="owner-terms.html">owner advertising terms</a> and <a href="garage-privacy.html">privacy notice</a>.</span></label><button class="button">Create my garage →</button></form></section></div><details><summary>Forgotten password or need a verification link?</summary><form method="post">'.token().field('email','Account email','email').'<button class="button" name="action" value="forgot">Reset password</button> <button class="button ghost" name="action" value="resend">Resend verification</button></form></details>';page('Owner sign in',$body.notice());
+ $body=$nav.'<h1>Owner’s Garage</h1><p>Your email address is your username. '.($bookingEnabled?'£49 per vehicle annually, plus a £25 admin fee per confirmed booking.':'One annual advertising fee. No booking commission.').'</p>'.$flash.'<div class="garage-layout"><section class="garage-box"><h2>Sign in</h2><form method="post">'.token().'<input type="hidden" name="action" value="login">'.field('email','Email address','email').field('password','Password','password').'<button class="button">Open my garage →</button></form></section><section class="garage-box"><h2>Create your garage</h2><p>£49 per vehicle for 12 months. Create your account and prepare a draft free. We review your listing and arrange payment by invoice before it goes live. No automatic renewal.</p><form method="post">'.token().'<input type="hidden" name="action" value="register">'.field('name','Your name').field('email','Email address','email').field('password','Password (12 characters minimum)','password').'<label class="garage-check"><input type="checkbox" name="terms" required> <span>I accept the <a href="owner-terms.html">owner advertising terms</a> and <a href="garage-privacy.html">privacy notice</a>.</span></label><button class="button">Create my garage →</button></form></section></div><details><summary>Forgotten password or need a verification link?</summary><form method="post">'.token().field('email','Account email','email').'<button class="button" name="action" value="forgot">Reset password</button> <button class="button ghost" name="action" value="resend">Resend verification</button></form></details>';page('Owner sign in',$body.notice());
 }
 if($view==='edit'){
  $id=(int)($_GET['id']??0);$v=$id?q('SELECT * FROM vehicles WHERE id=? AND owner_id=?',[$id,$owner['id']])->fetch():[];if($id&&!$v){http_response_code(404);page('Not found','<h1>Vehicle not found</h1>');}
@@ -153,6 +176,6 @@ if($view==='edit'){
  $body.='</div><form method="post" enctype="multipart/form-data">'.token().'<input type="hidden" name="action" value="upload"><input type="hidden" name="id" value="'.$id.'"><label for="photo">Add a photo</label><input id="photo" type="file" name="photo" accept="image/jpeg,image/png" required><button class="button">Upload photo →</button></form><form method="post">'.token().'<input type="hidden" name="action" value="review"><input type="hidden" name="id" value="'.$id.'"><p>Ready? We will review your listing and arrange the £49 annual payment before publication. For an existing paid listing, we review your changes without charging again.</p><button class="button">Request review / renewal →</button></form>';}
  page('Edit vehicle',$body.notice());
 }
-$body=$nav.($isAdmin?'<p><a class="button" href="?view=admin">Review owner listings →</a></p>':'').'<h1>Hello, '.h($owner['name']).'.</h1><p>Welcome to your garage. £49 per vehicle for 12 months, with no booking commission or automatic renewal.</p>'.$flash.(isset($_GET['sent'])?'<p class="garage-success">Review requested. We will contact you about approval and invoicing.</p>':'').'<a class="button" href="?view=edit">Add a vehicle →</a><div class="garage-grid" style="margin-top:30px">';
+$body=$nav.($isAdmin?'<p><a class="button" href="?view=admin">Review owner listings →</a></p>':'').'<h1>Hello, '.h($owner['name']).'.</h1><p>Welcome to your garage. '.($bookingEnabled?'The new booking plan is £49 per vehicle annually plus £25 per confirmed booking. Accept it for each vehicle under Bookings. Existing agreements keep their recorded terms.':'£49 per vehicle for 12 months, with no booking commission or automatic renewal.').'</p>'.$flash.(isset($_GET['sent'])?'<p class="garage-success">Review requested. We will contact you about approval and invoicing.</p>':'').'<a class="button" href="?view=edit">Add a vehicle →</a><div class="garage-grid" style="margin-top:30px">';
 foreach(q('SELECT * FROM vehicles WHERE owner_id=? ORDER BY created DESC',[$owner['id']])->fetchAll() as $v){$body.='<article class="garage-box"><h2>'.h($v['title']).'</h2><p class="garage-status">'.h(ucfirst($v['status'])).($v['paid_until']?' · Annual expiry '.date('j M Y',(int)$v['paid_until']):' · Payment pending').'</p><a class="button" href="?view=edit&amp;id='.$v['id'].'">Manage vehicle →</a><form method="post">'.token().'<input type="hidden" name="id" value="'.$v['id'].'"><button class="button ghost" name="action" value="unpublish">Keep offline</button></form></article>';}
 $body.='</div><form method="post">'.token().'<button class="button ghost" name="action" value="logout">Sign out</button></form>';page('My garage',$body.notice());

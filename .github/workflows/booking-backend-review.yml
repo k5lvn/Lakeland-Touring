@@ -2,9 +2,9 @@ name: Validate booking backend candidate
 on:
   push:
     branches: ['booking/backend-review-20261020', 'booking/holds-operations-20261021']
-    paths: ['booking-backend/**', '.github/workflows/booking-backend-review.yml']
+    paths: ['booking-backend/**', 'owner-garage/**', '.github/workflows/booking-backend-review.yml']
   pull_request:
-    paths: ['booking-backend/**', '.github/workflows/booking-backend-review.yml']
+    paths: ['booking-backend/**', 'owner-garage/**', '.github/workflows/booking-backend-review.yml']
 permissions:
   contents: read
 jobs:
@@ -16,7 +16,7 @@ jobs:
       - name: Check runtime requirements
         run: php -r 'foreach(["pdo_sqlite","curl"] as $e) if(!extension_loaded($e)) exit(1);'
       - name: Lint PHP
-        run: find booking-backend -name '*.php' -print0 | xargs -0 -n 1 php -l
+        run: find booking-backend owner-garage -name '*.php' -print0 | xargs -0 -n 1 php -l
       - name: Booking and payment integrity without external calls
         run: php booking-backend/tests/booking.php
       - name: Date holds and operational policy
@@ -31,6 +31,8 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.56.1
           npx playwright install --with-deps chromium
+      - name: Owner booking permissions, pricing, audit and phone/desktop journey
+        run: python3 owner-garage/test_bookings.py --browser
       - name: Candidate calendar at phone and desktop widths
         run: node booking-backend/tests/browser.cjs
       - uses: actions/upload-artifact@v4
