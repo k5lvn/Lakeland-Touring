@@ -18,7 +18,7 @@ jobs:
           SFTP_USER: ${{ secrets.SFTP_USER }}
           SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
           SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
-        run: python3 operations-readiness-20261021/inspect.py
+        run: python3 operations-readiness-20261021/diagnostics.py
       - uses: actions/upload-artifact@v4
         with:
           name: touring-readiness-20261021
