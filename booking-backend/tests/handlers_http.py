@@ -35,7 +35,7 @@ with tempfile.TemporaryDirectory(prefix='touring-http-') as td:
                 with socket.create_connection(('127.0.0.1',port),timeout=.1):break
             except OSError:time.sleep(.1)
         # The shipped release lock wins even over an otherwise enabled private config.
-        for route,data in [('/api/availability.php',None),('/api/quote.php',{}),('/api/create-checkout-session.php',{}),('/booking-webhook.php',{})]:
+        for route,data in [('/api/availability.php',None),('/api/quote.php',{}),('/api/release-hold.php',{}),('/api/create-checkout-session.php',{}),('/booking-webhook.php',{})]:
             status,headers,response=call(route,data)
             assert status==503 and 'contact us' in response['error'] and 'Set-Cookie' not in headers
         assert not (private/'touring-bookings.sqlite').exists()
@@ -47,6 +47,19 @@ with tempfile.TemporaryDirectory(prefix='touring-http-') as td:
         body={'start':'2030-03-01','end':'2030-03-08','csrf':availability['csrf']}
         status,_,q=call('/api/quote.php',body,cookie)
         assert status==200 and q['hire_pence']==59500 and q['pay_now_pence']==25000
+        assert 899 <= q['hold_until']-q['server_time'] <= 900
+        status,_,again=call('/api/quote.php',body,cookie)
+        assert status==200 and again['hold_until']==q['hold_until']
+        _,_,mine=call('/api/availability.php',cookie=cookie)
+        assert mine['own_hold']['start']==body['start'] and mine['holds']==[]
+        _,headers2,other=call('/api/availability.php')
+        cookie2=headers2['Set-Cookie'].split(';')[0]
+        assert len(other['holds'])==1 and other['own_hold'] is None
+        assert not any(k in other['holds'][0] for k in ['id','email','name','customer','quote'])
+        assert call('/api/quote.php',{**body,'csrf':other['csrf']},cookie2)[0]==409
+        assert call('/api/release-hold.php',{'csrf':'wrong'},cookie)[0]==403
+        assert call('/api/release-hold.php',{'csrf':availability['csrf']},cookie)[0]==200
+        assert call('/api/quote.php',{**body,'csrf':other['csrf']},cookie2)[0]==200
         assert call('/api/quote.php',{**body,'csrf':'bad'},cookie)[0]==403
         assert call('/api/quote.php',body,cookie,'https://attacker.invalid')[0]==403
         assert call('/api/quote.php',body,cookie,kind='text/plain')[0]==415
@@ -56,6 +69,6 @@ with tempfile.TemporaryDirectory(prefix='touring-http-') as td:
         assert call('/booking-webhook.php',{},cookie)[0]==400
         config.write_text("<?php return ['enabled'=>false];")
         assert call('/api/availability.php')[0]==503
-        print('Passed 16 HTTP release-lock, configuration, CSRF, origin, method and pricing checks; no external requests.')
+        print('Passed HTTP release-lock, fixed 15-minute hold, two-session exclusivity, privacy, release, CSRF, origin, method and pricing checks; no external requests.')
     finally:
         server.terminate();server.wait(timeout=5)

@@ -1,7 +1,7 @@
 name: Validate booking backend candidate
 on:
   push:
-    branches: ['booking/backend-review-20261020']
+    branches: ['booking/backend-review-20261020', 'booking/holds-operations-20261021']
     paths: ['booking-backend/**', '.github/workflows/booking-backend-review.yml']
   pull_request:
     paths: ['booking-backend/**', '.github/workflows/booking-backend-review.yml']
@@ -19,6 +19,10 @@ jobs:
         run: find booking-backend -name '*.php' -print0 | xargs -0 -n 1 php -l
       - name: Booking and payment integrity without external calls
         run: php booking-backend/tests/booking.php
+      - name: Date holds and operational policy
+        run: php booking-backend/tests/holds.php
+      - name: Concurrent independent-process date selection
+        run: python3 booking-backend/tests/concurrency.py
       - name: Frontend race and validation checks
         run: node booking-backend/tests/frontend.cjs
       - name: Real HTTP handlers with private fixture configuration

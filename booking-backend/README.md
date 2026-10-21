@@ -16,7 +16,7 @@ The shipped `public/api/booking-disabled.php` release lock overrides all private
 
 ## Behaviour and operational limits
 
-Collection and return intervals are end-exclusive. Turnaround buffers must be entered as explicit blocks if required. A database write transaction prevents overlapping holds. Only a verified Stripe expiration releases an unpaid hold; browser cancellation and clock expiry do not. A timeout keeps the hold for reconciliation because a payment session may already exist. For an unresolved `creating` row, retry using the original idempotency key/parameters or reconcile against Stripe before manually releasing it. Never free a hold just because it is old.
+Collection and return intervals are end-exclusive. Turnaround buffers must be entered as explicit blocks if required. A database write transaction prevents overlapping holds. Selecting a complete date range now creates a fixed 15-minute exclusive hold. It expires locally only before checkout creation. Cancellation of an active checkout first expires it through Stripe and confirms it cannot be paid; a browser redirect is never sufficient payment evidence. A timeout keeps the hold for reconciliation because a payment session may already exist. For an unresolved `creating` row, retry using the original idempotency key/parameters or reconcile against Stripe before manually releasing it. Never free a hold just because it is old.
 
 For payments made more than 12 weeks before collection, only the booking deposit is collected. This package records the balance and due date; it does not automatically charge balances or security deposits, send reminders, grant towing approval, issue refunds or deliver confirmation emails. These operational flows must be arranged before activation. No purchase analytics event is emitted: verified payment reporting and consent/deduplication require a separate implementation.
 
@@ -34,3 +34,18 @@ Primary references checked 20 October 2026:
 - https://docs.stripe.com/api/checkout/sessions/create
 - https://docs.stripe.com/webhooks/signature
 - https://docs.stripe.com/payments/checkout/fulfill-orders
+
+
+## 21 October review branch — approved hold and operational rules
+
+This candidate is not deployed. Keep the existing production release lock in place.
+
+- `quote.php` creates an exclusive 900-second selection hold inside a SQLite write transaction. Repeating the quote does not renew it. Changing or releasing selected dates must finish safe cancellation first.
+- Availability distinguishes paid/blocked dates from other customers' temporary holds, omits customer details and IDs, and exposes only this browser's own selection. The candidate calendar polls every ten seconds and uses green/amber/red, text labels, a legend, peak markers from explicit configuration, and a server-clock countdown. No seasonal dates are invented.
+- Stripe Checkout's native session expiry has a 30-minute minimum. The private CLI reconciler must run at least every minute and also runs during availability/quote reads. On deadline it expires an open Stripe session and verifies expiration before reopening dates. Failures and uncertain session creation keep dates blocked. Exact-to-the-second cancellation at minute 15 is not guaranteed by a minute scheduler or a remote payment service; do not advertise automatic release until scheduler and real Stripe tests are verified.
+- Schedule the private `reconcile.php` with `TOURING_BOOKING_CONFIG` and `TOURING_BOOKING_DOCUMENT_ROOT` set to the real private config and document root. This entry point must stay outside the public document root. A scheduler-health monitor and real test-mode end-to-end check remain launch prerequisites.
+- `operations.php` contains tested policy functions for commission due at the earlier of confirmed full balance or 12 weeks before arrival, funded from the owner's confirmed booking deposit. A missing agreed commission amount cannot become payable. Customer details become releasable only after balance confirmation. Identity, licence and insurance evidence and an office-hours appointment at least two working days after verification are required by the handover predicate; supply insurer/public holiday closures explicitly.
+- Those operations predicates are not yet connected to Owner's Garage. Owner payment-confirmation checkboxes, append-only audit records, actor/listing permissions, contact-detail withholding and diversion review/termination workflow remain separate integration work. Existing public £49/no-commission advertising terms cannot silently become a commission contract. The numerical commission and treatment of that existing plan need an owner decision before those changes can be completed.
+- The £250 booking deposit is separate from the still-unconfirmed refundable damage/security deposit. The 12-week forfeiture instruction is recorded for contract review; it has not been automatically applied to refunds or represented as approved legal wording. No automated balance collection, refunds or live notifications added.
+
+Validation: existing payment integrity and frontend suites plus fixed-hold, cancellation, two-session privacy/exclusivity and independent-process concurrency checks. Tests use private fixtures and make no external Stripe requests or send emails. Actual merchant and scheduler validation remain outstanding.
