@@ -27,3 +27,15 @@ jobs:
         run: node booking-backend/tests/frontend.cjs
       - name: Real HTTP handlers with private fixture configuration
         run: python3 booking-backend/tests/handlers_http.py
+      - name: Install browser QA dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Candidate calendar at phone and desktop widths
+        run: node booking-backend/tests/browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: booking-hold-review-20261021
+          path: booking-review-qa/
+          retention-days: 90
