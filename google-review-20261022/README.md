@@ -1,0 +1,1 @@
+Adds the approved Google review invitation to Lakeland Touring homepage and booking page, using the unmodified official Google G and the direct link copied from its Google Business Profile on 22 October 2026. Publication verifies original page hashes, creates rollback copies, uploads assets before HTML and checks public bytes. Robots and sitemap unchanged.

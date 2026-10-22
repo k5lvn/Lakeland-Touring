@@ -1,0 +1,33 @@
+name: Publish approved Google review invitations
+on:
+  push:
+    branches: [main]
+    paths: ['google-review-20261022/**', '.github/workflows/google-review-publish.yml']
+permissions:
+  contents: read
+concurrency:
+  group: google-review-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Check baseline, back up, publish and verify public bytes
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 google-review-20261022/deploy.py
+      - name: Preserve verification and rollback evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: google-review-publication-20261022
+          path: |
+            review-rollback/
+            REVIEWS-VERIFIED.json
+          retention-days: 90
