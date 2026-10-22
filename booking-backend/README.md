@@ -1,5 +1,11 @@
 # Booking backend — locked standby release
 
+## Offline launch check — 22 October
+
+Run `php booking-backend/preflight.php --config /private/config.php --document-root /public/root` using the actual host paths privately. It checks config/storage separation, runtime, explicit Stripe mode/account shape, calendar windows, duration prices, blocks, verification flags and the installed release lock. It does not open the database, contact Stripe, write files, remove locks or enable checkout. Output contains fixed check messages, not secrets or config paths. Exit 2 means one or more configuration checks are blocked; exit 0 means only those offline checks passed, never that the hire business or payments are ready. Real merchant/webhook/scheduler and operator evidence remain separate.
+
+Kelvin confirmed keeping the published seven-night prices on 22 October: low £595, standard £650, peak £795. Season dates, short breaks and actual booking blocks remain unset for production. See `launch-review-20261022.md` for the remaining decisions and staged test plan.
+
 The locked standby release installs replacement APIs without opening dates or payments. This isolated replacement provides availability, authoritative server quotes, SQLite reservations, hosted Stripe Checkout and signed/idempotent payment webhooks. Existing success.php/webhook.php are not overwritten; this package uses dedicated completion routes.
 
 The shipped `public/api/booking-disabled.php` release lock overrides all private enable flags. It must remain installed until the activation checks below are complete. Only test fixtures remove their own copied lock; tests never remove the source lock. The standby deployment preserves the existing booking page and JavaScript contact fallback.
@@ -49,3 +55,4 @@ This candidate is not deployed. Keep the existing production release lock in pla
 - The £250 booking deposit is separate from the still-unconfirmed refundable damage/security deposit. The 12-week forfeiture instruction is recorded for contract review; it has not been automatically applied to refunds or represented as approved legal wording. No automated balance collection, refunds or live notifications added.
 
 Validation: existing payment integrity and frontend suites plus fixed-hold, cancellation, two-session privacy/exclusivity and independent-process concurrency checks. Tests use private fixtures and make no external Stripe requests or send emails. Actual merchant and scheduler validation remain outstanding.
+

@@ -19,6 +19,8 @@ jobs:
         run: find booking-backend owner-garage -name '*.php' -print0 | xargs -0 -n 1 php -l
       - name: Booking and payment integrity without external calls
         run: php booking-backend/tests/booking.php
+      - name: Offline launch configuration and redaction checks
+        run: php booking-backend/tests/preflight.php
       - name: Date holds and operational policy
         run: php booking-backend/tests/holds.php
       - name: Concurrent independent-process date selection
@@ -41,3 +43,4 @@ jobs:
           name: booking-hold-review-20261021
           path: booking-review-qa/
           retention-days: 90
+
