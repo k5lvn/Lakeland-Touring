@@ -66,12 +66,74 @@ function db(array $cfg): PDO {
     $db->exec('PRAGMA busy_timeout=10000');
     $db->exec('CREATE TABLE IF NOT EXISTS bookings (id TEXT PRIMARY KEY, start TEXT NOT NULL, end TEXT NOT NULL, state TEXT NOT NULL, quote TEXT NOT NULL, customer TEXT NOT NULL, session_id TEXT UNIQUE, checkout_url TEXT, created INTEGER NOT NULL, terms_version TEXT NOT NULL)');
     $db->exec('CREATE TABLE IF NOT EXISTS events (id TEXT PRIMARY KEY, processed INTEGER NOT NULL)');
+    $db->exec('BEGIN IMMEDIATE');
+    try {
+        $columns=$db->query('PRAGMA table_info(bookings)')->fetchAll(PDO::FETCH_COLUMN,1);
+        if (!in_array('hold_until',$columns,true)) $db->exec('ALTER TABLE bookings ADD COLUMN hold_until INTEGER');
+        $db->exec('COMMIT');
+    } catch(Throwable $e) {$db->exec('ROLLBACK');throw $e;}
     return $db;
 }
 function available(PDO $db, string $start, string $end): void {
-    $q = $db->prepare("SELECT COUNT(*) FROM bookings WHERE state IN ('creating','pending','paid') AND start < ? AND end > ?");
+    $q = $db->prepare("SELECT COUNT(*) FROM bookings WHERE (state IN ('creating','pending','paid') OR (state='held' AND hold_until > strftime('%s','now'))) AND start < ? AND end > ?");
     $q->execute([$end,$start]);
     if ($q->fetchColumn()) throw new Failure('Those dates are no longer available. Please choose again.',409);
+}
+// A selection hold lasts exactly 900 seconds; polling never extends it.
+function hold(PDO $db, array $cfg, string $id, array $q, ?int $now=null): array {
+    $now ??= time();
+    $db->exec('BEGIN IMMEDIATE');
+    try {
+        $db->prepare("UPDATE bookings SET state='expired' WHERE state='held' AND hold_until<=?")->execute([$now]);
+        $find=$db->prepare('SELECT * FROM bookings WHERE id=?');$find->execute([$id]);$row=$find->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            if ($row['state']!=='held' || $row['quote']!==json_encode($q)) throw new Failure('Release your current dates before selecting another stay.',409);
+            $db->exec('COMMIT');return $row;
+        }
+        available($db,$q['start'],$q['end']);
+        $until=$now+900;
+        $db->prepare('INSERT INTO bookings (id,start,end,state,quote,customer,created,terms_version,hold_until) VALUES (?,?,?,?,?,?,?,?,?)')
+            ->execute([$id,$q['start'],$q['end'],'held',json_encode($q),'{}',$now,$cfg['terms_version'],$until]);
+        $db->exec('COMMIT');return ['hold_until'=>$until,'state'=>'held'];
+    } catch(Throwable $e) {$db->exec('ROLLBACK');throw $e;}
+}
+function claimHold(PDO $db, string $id, array $q, array $customer): array {
+    $db->exec('BEGIN IMMEDIATE');
+    try {
+        $find=$db->prepare('SELECT * FROM bookings WHERE id=?');$find->execute([$id]);$row=$find->fetch(PDO::FETCH_ASSOC);
+        if (!$row || $row['quote']!==json_encode($q) || (int)$row['hold_until']<=time() || !in_array($row['state'],['held','creating','pending'],true)) throw new Failure('Your hold has expired. Please choose your dates again.',409);
+        if ($row['state']==='held') {
+            $db->prepare("UPDATE bookings SET state='creating',customer=? WHERE id=?")->execute([json_encode($customer),$id]);
+            $row['customer']=json_encode($customer);$row['state']='creating';
+        } elseif ($row['customer']!==json_encode($customer)) throw new Failure('Checkout details have changed. Please contact us.',409);
+        $db->exec('COMMIT');return $row;
+    } catch(Throwable $e) {$db->exec('ROLLBACK');throw $e;}
+}
+// Release only after a Stripe session is demonstrably unable to take payment.
+// A creating row without its Stripe ID stays blocked for manual reconciliation.
+function releaseHold(PDO $db, array $cfg, string $id, ?callable $gateway=null): bool {
+    $find=$db->prepare('SELECT * FROM bookings WHERE id=?');$find->execute([$id]);$row=$find->fetch(PDO::FETCH_ASSOC);
+    if (!$row || in_array($row['state'],['expired','cancelled'],true)) return true;
+    if ($row['state']==='held') {
+        $db->prepare("UPDATE bookings SET state='cancelled' WHERE id=? AND state='held'")->execute([$id]);
+        $find->execute([$id]);$current=$find->fetch(PDO::FETCH_ASSOC);
+        return in_array($current['state'],['cancelled','expired'],true);
+    }
+    if ($row['state']==='paid' || !$row['session_id']) return false;
+    $gateway ??= fn($method,$path)=>stripe($cfg,$method,$path);
+    $path='checkout/sessions/'.rawurlencode($row['session_id']);
+    $s=$gateway('GET',$path);
+    if (($s['id']??null)!==$row['session_id'] || ($s['client_reference_id']??null)!==$id || ($s['livemode']??null)!==$cfg['live_mode']) throw new Failure('Checkout reconciliation required.',409);
+    if (($s['status']??'')==='open') $s=$gateway('POST',$path.'/expire');
+    if (($s['id']??null)!==$row['session_id'] || ($s['client_reference_id']??null)!==$id || ($s['livemode']??null)!==$cfg['live_mode']) throw new Failure('Checkout reconciliation required.',409);
+    if (($s['status']??'')!=='expired' || ($s['payment_status']??'')!=='unpaid') return false;
+    $db->prepare("UPDATE bookings SET state='expired' WHERE id=? AND state IN ('creating','pending') AND session_id=?")->execute([$id,$row['session_id']]);
+    $find->execute([$id]);return $find->fetch(PDO::FETCH_ASSOC)['state']==='expired';
+}
+function reconcileHolds(PDO $db, array $cfg, ?callable $gateway=null): void {
+    $db->exec("UPDATE bookings SET state='expired' WHERE state='held' AND hold_until<=strftime('%s','now')");
+    $rows=$db->query("SELECT id FROM bookings WHERE state IN ('creating','pending') AND hold_until<=strftime('%s','now') ORDER BY hold_until LIMIT 20")->fetchAll(PDO::FETCH_COLUMN);
+    foreach($rows as $id) releaseHold($db,$cfg,$id,$gateway);
 }
 function session(): void {
     if (session_status() === PHP_SESSION_NONE) {

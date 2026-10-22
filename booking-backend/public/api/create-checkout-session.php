@@ -10,11 +10,13 @@ require __DIR__.'/common.php';
     $db=\TouringBooking\db($cfg); $id=$_SESSION['booking_id'];
     if (($_SESSION['checkout_attempts']??0)>=10) throw new \TouringBooking\Failure('Please contact us to complete your booking.',429);
     $_SESSION['checkout_attempts']=($_SESSION['checkout_attempts']??0)+1;
-    $row=\TouringBooking\reserve($db,$cfg,$id,$q,$customer);
+    $row=\TouringBooking\claimHold($db,$id,$q,$customer);
     if ($row['checkout_url']) return ['url'=>$row['checkout_url']];
     // Fixed parameters and an idempotency key make uncertain retries safe.
     // Do not release this reservation on a timeout: Stripe may have created a session.
-    $expires=(int)$row['created']+2100;
+    // Stripe requires >=30 minutes; the server reconciliation job expires it
+    // at the earlier selection-hold deadline before reopening the dates.
+    $expires=(int)$row['created']+3600;
     if ($expires<time()+1801) throw new \TouringBooking\Failure('Please contact us to reconcile your checkout before retrying.',409);
     $s=\TouringBooking\stripe($cfg,'POST','checkout/sessions',[
         'mode'=>'payment','payment_method_types'=>['card'],'locale'=>'en-GB',

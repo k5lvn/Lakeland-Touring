@@ -23,7 +23,7 @@ try:
  index=read('index.html');booking=read('booking.html');robots=read('robots.txt');sitemap=read('sitemap.xml')
  assert index and booking and robots and sitemap
  assert not re.search(rb'^\s*Disallow:\s*/\s*$',robots,re.M|re.I)
- updates={name:data.encode() for name,data in build(index.decode(),booking.decode()).items()}
+ updates={name:data.encode() for name,data in build(index.decode(),booking.decode(),sitemap=sitemap.decode(),robots=robots.decode()).items()}
  assert not any(b'noindex' in d.lower() for n,d in updates.items() if n.endswith('.html'))
  # Keep the latest live source in the artifact for future maintenance.
  for name in updates:
