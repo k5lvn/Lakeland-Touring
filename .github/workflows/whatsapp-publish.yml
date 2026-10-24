@@ -1,0 +1,34 @@
+name: Publish Worx365 WhatsApp contact
+on:
+  push:
+    branches: [main]
+    paths: ['whatsapp-rollout-20261024/**', '.github/workflows/whatsapp-publish.yml']
+permissions:
+  contents: read
+concurrency:
+  group: whatsapp-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Back up current public pages, add WhatsApp and verify
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 whatsapp-rollout-20261024/deploy.py
+      - name: Preserve backups and verification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: whatsapp-rollout-20261024
+          path: |
+            whatsapp-rollback/
+            WHATSAPP-PLAN.json
+            WHATSAPP-VERIFIED.json
+          retention-days: 90
