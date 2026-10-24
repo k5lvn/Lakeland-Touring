@@ -1,0 +1,45 @@
+name: Publish verified brand social links
+on:
+  pull_request:
+    paths: ['socials-rollout-20261024/**', '.github/workflows/socials-publish.yml']
+  push:
+    branches: [main]
+    paths: ['socials-rollout-20261024/**', '.github/workflows/socials-publish.yml']
+permissions:
+  contents: read
+concurrency:
+  group: socials-publication
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check social links and preservation of current homepage
+        run: python3 socials-rollout-20261024/deploy.py --check
+  publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Back up public pages, add social footer links and verify
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 socials-rollout-20261024/deploy.py
+      - name: Preserve backups and verification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: socials-rollout-20261024
+          path: |
+            socials-rollback/
+            SOCIALS-PLAN.json
+            SOCIALS-VERIFIED.json
+          retention-days: 90

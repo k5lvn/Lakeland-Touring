@@ -1,0 +1,54 @@
+{
+  "Lakeland-Developments": {
+    "brand": "Lakeland Developments",
+    "root": "/",
+    "base": "https://www.lakelanddevelopments.uk/",
+    "accent": "#b88949",
+    "links": [
+      [
+        "Facebook",
+        "https://www.facebook.com/profile.php?id=61593959046963"
+      ],
+      [
+        "Instagram",
+        "https://www.instagram.com/lakeland_developments/"
+      ]
+    ]
+  },
+  "Digital-Kinetics": {
+    "brand": "Digital Kinetics",
+    "root": "/public",
+    "base": "https://www.digitalkinetics.uk/",
+    "accent": "#26baff",
+    "links": [
+      [
+        "Facebook",
+        "https://www.facebook.com/p/Digital-Kinetics-61593906672944/"
+      ]
+    ]
+  },
+  "Lakeland-Touring": {
+    "brand": "Lakeland Touring",
+    "root": "/public",
+    "base": "https://lakelandtouring.uk/",
+    "accent": "#d7a64b",
+    "links": [
+      [
+        "Facebook",
+        "https://www.facebook.com/61595660185063/"
+      ]
+    ]
+  },
+  "Worx365Group": {
+    "brand": "Worx365 Group",
+    "root": "/public",
+    "base": "https://worx365group.uk/",
+    "accent": "#b6ff00",
+    "links": [
+      [
+        "Facebook",
+        "https://www.facebook.com/profile.php?id=61595292940624"
+      ]
+    ]
+  }
+}
