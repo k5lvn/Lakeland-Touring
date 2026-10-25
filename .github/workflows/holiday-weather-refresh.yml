@@ -1,0 +1,29 @@
+name: Refresh Touring area forecasts
+on:
+  schedule:
+    - cron: '17 5,17 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: touring-weather-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Refresh fixed forecast areas without customer data
+        run: |
+          python3 - <<'PY'
+          import urllib.request,json,time
+          failures=[]
+          for area in ['braithwaite','dalston','penrith','windermere','ambleside','coniston','buttermere','eskdale','kirkby','gretna']:
+           try:
+            with urllib.request.urlopen('https://lakelandtouring.uk/holiday-weather.php?area='+area,timeout=35) as r:data=json.load(r)
+            assert data.get('hours') and not data.get('stale')
+            print(area,'forecast refreshed / cache current')
+           except Exception:failures.append(area)
+           time.sleep(2)
+          assert not failures,'Unavailable forecasts: '+','.join(failures)
+          PY
