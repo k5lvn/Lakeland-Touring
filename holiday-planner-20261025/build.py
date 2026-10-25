@@ -7,7 +7,7 @@ originals={}
 for name in ['index.html','explore-destinations.html','caravan-hire-faq.html','analytics-privacy.html','sitemap.xml']:
  with urllib.request.urlopen('https://lakelandtouring.uk/'+name,timeout=40) as r:originals[name]=r.read()
  (F/name).write_bytes(originals[name])
-s=BeautifulSoup(originals['caravan-hire-faq.html'],'html.parser')
+s=BeautifulSoup(originals['caravan-hire-faq.html'].decode().replace('@media(min-width:951px) and (max-width:1250px)','@media(min-width:951px) and (max-width:1700px)'),'html.parser')
 s.title.string='Your Holiday, Mapped Out | Lakeland Touring'
 s.select_one('link[rel=canonical]')['href']='https://lakelandtouring.uk/holiday-planner.html'
 s.select_one('meta[name=description]')['content']='Build your own caravan holiday itinerary, open your route in Google Maps, check Lake District weather and print your Travel Ready checklist.'
@@ -19,7 +19,7 @@ for a in s.select('nav .nav-active'):a.attrs.pop('class',None)
 a=s.new_tag('a',href='holiday-planner.html');a.string='Holiday planner';s.select_one('nav').append(a)
 (F/'holiday-planner.html').write_text(str(s))
 for name in ['index.html','explore-destinations.html','caravan-hire-faq.html']:
- p=BeautifulSoup(originals[name],'html.parser')
+ p=BeautifulSoup(originals[name].decode().replace('@media(min-width:951px) and (max-width:1250px)','@media(min-width:951px) and (max-width:1700px)'),'html.parser')
  nav=p.select_one('nav')
  if nav:
   a=p.new_tag('a',href='holiday-planner.html');a.string='Holiday planner';nav.append(a)

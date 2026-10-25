@@ -19,8 +19,8 @@ if(!$cache||$now>max((int)($cache['next_check']??0),(int)($cache['expires']??0))
  if(is_string($raw)&&$encoding==='gzip')$raw=@gzdecode($raw);elseif(is_string($raw)&&$encoding==='deflate')$raw=@gzuncompress($raw);
  if($status===304&&$cache){$cache['next_check']=$now+6*3600;$cache['expires']=$expires;$cache['fetched_at']=gmdate('c');}
  elseif($status===200&&is_string($raw)&&strlen($raw)<1000000){$payload=json_decode($raw,true);$hours=[];foreach(($payload['properties']['timeseries']??[]) as $item){$d=$item['data']['instant']['details']??[];if(!isset($item['time'],$d['air_temperature'],$d['wind_speed']))continue;$hours[]=['time'=>$item['time'],'temperature'=>$d['air_temperature'],'wind'=>$d['wind_speed'],'gust'=>$d['wind_speed_of_gust']??null,'symbol'=>$item['data']['next_1_hours']['summary']['symbol_code']??$item['data']['next_6_hours']['summary']['symbol_code']??''];}
- if($hours&&isset($payload['properties']['meta']['updated_at']))$cache=['area'=>$areas[$id][0],'fetched_at'=>gmdate('c'),'updated_at'=>$payload['properties']['meta']['updated_at'],'hours'=>$hours,'next_check'=>$now+6*3600,'expires'=>$expires,'last_modified'=>$modified];else $cache=null;
- }elseif($cache){$cache['next_check']=$now+1800;}
+ if($hours&&isset($payload['properties']['meta']['updated_at']))$cache=['area'=>$areas[$id][0],'fetched_at'=>gmdate('c'),'updated_at'=>$payload['properties']['meta']['updated_at'],'hours'=>$hours,'next_check'=>$now+6*3600,'expires'=>$expires,'last_modified'=>$modified];else $cache=['hours'=>[],'fetched_at'=>gmdate('c'),'expires'=>0,'next_check'=>$now+1800];
+ }else{if(!$cache)$cache=['hours'=>[],'fetched_at'=>gmdate('c'),'expires'=>0];$cache['next_check']=$now+1800;}
  if($cache){$temp=$file.'.tmp';if(file_put_contents($temp,json_encode($cache),LOCK_EX)!==false){@chmod($temp,0600);rename($temp,$file);}}
 }
 flock($lock,LOCK_UN);fclose($lock);
