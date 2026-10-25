@@ -1,0 +1,54 @@
+name: Touring content and consent upgrade
+on:
+  pull_request:
+    paths: ['touring-upgrade-20261025/**', '.github/workflows/touring-upgrade-20261025.yml']
+  push:
+    branches: [main]
+    paths: ['touring-upgrade-20261025/**', '.github/workflows/touring-upgrade-20261025.yml']
+permissions:
+  contents: read
+concurrency:
+  group: touring-publication-20261025
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install beautifulsoup4==4.14.2
+      - run: python3 touring-upgrade-20261025/check.py
+      - run: node --check touring-upgrade-20261025/files/analytics-consent.js
+      - run: npm install --no-save --package-lock=false playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: node touring-upgrade-20261025/check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: touring-upgrade-preview-qa
+          path: touring-upgrade-qa/
+          retention-days: 90
+  publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Guard, back up, publish and verify exact public bytes
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 touring-upgrade-20261025/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: touring-upgrade-release-evidence
+          path: |
+            touring-upgrade-rollback/
+            TOURING-UPGRADE-VERIFIED.json
+            touring-upgrade-20261025/manifest.json
+          retention-days: 90
