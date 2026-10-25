@@ -1,0 +1,269 @@
+:root{--navy:#06182a;--navy2:#0a2239;--gold:#d7a64b;--gold2:#f1ca75;--cream:#f6f1e8;--ink:#102033;--muted:#66717d;--line:rgba(15,33,51,.12);--shadow:0 24px 60px rgba(3,17,29,.18)}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--cream);color:var(--ink);line-height:1.5}a{text-decoration:none;color:inherit}.topbar{position:sticky;top:0;z-index:30;height:78px;padding:0 clamp(20px,5vw,76px);display:flex;align-items:center;justify-content:space-between;background:rgba(5,23,40,.96);backdrop-filter:blur(18px);color:white;border-bottom:1px solid rgba(215,166,75,.18)}.brand{display:flex;align-items:center;gap:12px;letter-spacing:.18em}.brand span{display:flex;flex-direction:column}.brand strong{font-family:Georgia,serif;font-size:20px;letter-spacing:.12em}.brand small{font-size:9px;color:var(--gold2);letter-spacing:.35em}.logo{width:58px;height:44px;fill:none;stroke:var(--gold2);stroke-width:2.4}.topbar nav{display:flex;gap:30px;font-size:14px}.topbar nav a:hover{color:var(--gold2)}.button{display:inline-flex;justify-content:center;align-items:center;padding:14px 20px;border:0;border-radius:9px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111b26;font-weight:800;cursor:pointer;box-shadow:0 10px 26px rgba(215,166,75,.2)}.button.small{padding:10px 14px;font-size:13px}.button.ghost{background:rgba(6,24,42,.32);color:white;border:1px solid rgba(255,255,255,.35);box-shadow:none}.button.ghost-light{background:transparent;color:white;border:1px solid rgba(241,202,117,.48);box-shadow:none}.button.full{width:100%}.button:disabled{opacity:.4;cursor:not-allowed}.hero{min-height:690px;position:relative;display:grid;grid-template-columns:1.15fr .85fr;align-items:center;padding:84px clamp(20px,6vw,90px);background:url('Assets/lake-hero.jpg') center/cover no-repeat;color:white;overflow:hidden}.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,16,29,.86) 0%,rgba(3,16,29,.64) 47%,rgba(3,16,29,.22) 100%)}.hero-shade{position:absolute;inset:0;background:radial-gradient(circle at 75% 50%,transparent 0 15%,rgba(0,0,0,.12) 58%,rgba(0,0,0,.28));z-index:1}.hero-copy,.hero-book-card{position:relative;z-index:2}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:800;color:var(--gold2);margin-bottom:14px}.hero h1,.section h2{font-family:Georgia,"Times New Roman",serif}.hero h1{font-size:clamp(54px,6.8vw,92px);line-height:.96;font-weight:500;letter-spacing:-.035em;margin:0 0 24px}.hero h1 span{color:var(--gold2);font-style:italic}.hero-copy>p{max-width:720px;font-size:19px;color:#edf1f3}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.trust-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:34px;font-size:13px;color:#f1f2ef}.hero-book-card{justify-self:end;align-self:end;margin-bottom:20px;width:min(300px,100%);padding:26px;border:1px solid rgba(241,202,117,.45);border-radius:18px;background:rgba(5,23,40,.88);box-shadow:var(--shadow);display:grid;gap:2px}.hero-book-card strong{font-family:Georgia,serif;font-size:44px;color:var(--gold2)}.hero-book-card span{font-size:12px;color:#cfd8de}.hero-book-card a{margin-top:15px;color:white;font-weight:700}.section{padding:88px clamp(20px,6vw,90px)}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:36px;margin-bottom:30px}.section h2{font-size:clamp(42px,5vw,68px);font-weight:500;line-height:1;margin:0}.lead,.section-heading p{color:var(--muted);max-width:650px}.gallery{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:210px 210px;gap:10px}.gallery img{width:100%;height:100%;object-fit:cover;border-radius:14px;box-shadow:var(--shadow)}.gallery-main{grid-row:1/3}.spec-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}.spec-grid div{padding:18px;border:1px solid var(--line);border-radius:12px;background:white}.spec-grid strong{font-family:Georgia,serif;font-size:24px;color:var(--navy)}.spec-grid span{display:block;font-size:12px;color:var(--muted)}.booking-section{background:linear-gradient(180deg,#f1eadf,#f7f3eb)}.legend{display:flex;gap:15px;font-size:12px;color:var(--muted)}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}.dot.available{background:#dce6df;border:1px solid #688273}.dot.selected{background:var(--gold)}.dot.unavailable{background:#d8d8d8}.booking-shell{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.55fr);gap:18px}.calendar-card,.summary-card{background:white;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.calendar-card{padding:26px}.calendar-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.calendar-head button{width:42px;height:42px;border:1px solid var(--line);border-radius:9px;background:var(--navy);color:white;font-size:19px;cursor:pointer}.calendar-head div{font-family:Georgia,serif;font-size:24px}.weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.weekdays span{text-align:center;font-size:11px;color:#8a939b;padding:7px}.day{aspect-ratio:1.15;border:1px solid transparent;border-radius:10px;background:#f8f6f2;color:#263445;cursor:pointer;transition:.15s}.day:hover:not(:disabled){border-color:var(--gold);transform:translateY(-1px)}.day.muted{opacity:.16}.day.past{opacity:.22}.day.booked{background:#ecebea;color:#aaa;text-decoration:line-through}.day.selected,.day.in-range{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#17202a;font-weight:900}.day.in-range{opacity:.72}.summary-card{padding:26px;align-self:start;position:sticky;top:96px;background:var(--navy);color:white}.pill{display:inline-block;border:1px solid rgba(241,202,117,.45);color:var(--gold2);border-radius:999px;padding:7px 10px;font-size:11px}.summary-card h3{font-family:Georgia,serif;font-size:30px;font-weight:500;margin:14px 0 22px}.date-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px}.date-summary div,.price-lines>div{padding:13px;border:1px solid rgba(255,255,255,.12);border-radius:10px}.date-summary span,.price-lines span{font-size:11px;color:#aebbc5}.date-summary strong{display:block;margin-top:4px}.price-lines{display:grid;gap:8px;margin:16px 0}.price-lines>div{display:flex;justify-content:space-between;gap:18px}.price-lines .total{background:rgba(215,166,75,.09);border-color:rgba(241,202,117,.35)}.price-lines .total strong{font-size:25px;color:var(--gold2)}.micro,.secure{font-size:11px;color:#9caab5}.secure{text-align:center;margin-top:13px}.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:34px}.steps>div{min-height:210px;padding:25px;border:1px solid var(--line);border-radius:14px;background:white}.steps span{font-size:11px;color:#a47725}.steps h3{font-family:Georgia,serif;font-size:22px;margin:46px 0 8px}.steps p{font-size:13px;color:var(--muted)}.owner-panel{display:flex;justify-content:space-between;align-items:center;gap:40px;background:linear-gradient(135deg,#071a2d,#0b2944);color:white}.owner-panel p{max-width:720px;color:#c2ced7}footer{padding:38px clamp(20px,6vw,90px);background:#041524;color:#b7c1ca;display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;font-size:12px}footer .group{color:var(--gold2)}.modal{position:fixed;inset:0;z-index:60;display:none;place-items:center;background:rgba(3,12,20,.76);backdrop-filter:blur(10px);padding:20px}.modal.open{display:grid}.modal-card{position:relative;width:min(760px,100%);max-height:92vh;overflow:auto;padding:34px;border-radius:18px;background:white;box-shadow:0 35px 90px rgba(0,0,0,.4)}.modal-close{position:absolute;right:16px;top:12px;border:0;background:transparent;font-size:30px;cursor:pointer}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-grid label,.check{font-size:12px;color:var(--muted)}input,select{width:100%;margin-top:7px;padding:13px;border-radius:9px;border:1px solid #d6d9dd;background:#fff;color:var(--ink);outline:none}.check{display:flex;gap:10px;align-items:flex-start;margin:18px 0}.check input{width:auto;margin-top:3px}.form-message{font-size:12px;color:#a34b37}.modal h2{font-family:Georgia,serif;font-size:42px;margin:0 0 18px}
+@media(max-width:950px){.topbar nav{display:none}.hero{grid-template-columns:1fr;padding-top:70px;min-height:650px}.hero-book-card{justify-self:start;margin-top:30px}.booking-shell{grid-template-columns:1fr}.summary-card{position:static}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:300px 160px 160px}.gallery-main{grid-column:1/3;grid-row:auto}.spec-grid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr 1fr}.owner-panel{flex-direction:column;align-items:flex-start}footer{grid-template-columns:1fr}.section-heading{align-items:flex-start;flex-direction:column}.legend{flex-wrap:wrap}}
+@media(max-width:560px){.topbar{height:68px}.topbar .button.small{display:none}.brand strong{font-size:16px}.logo{width:48px}.hero{min-height:610px;padding:55px 18px}.hero h1{font-size:53px}.section{padding:66px 18px}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:220px 115px 115px}.spec-grid,.steps,.form-grid{grid-template-columns:1fr}.steps>div{min-height:150px}.steps h3{margin-top:24px}.calendar-card{padding:13px}.day{font-size:12px}.date-summary{grid-template-columns:1fr}.summary-card{padding:18px}}
+
+/* Travel policy */
+.travel-policy{background:linear-gradient(180deg,#fbf7ef,#f6efe3);border-top:1px solid rgba(190,139,53,.18);border-bottom:1px solid rgba(190,139,53,.18)}
+.policy-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:28px}.policy-card{background:#fff;border:1px solid rgba(4,27,46,.1);border-radius:18px;padding:24px;box-shadow:0 12px 30px rgba(7,26,43,.06)}.policy-card span{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#071c30;color:#d6a24a;font-weight:800;margin-bottom:14px}.policy-card h3{margin:0 0 8px}.policy-card p{margin:0;color:#5d6670;line-height:1.55}@media(max-width:900px){.policy-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.policy-grid{grid-template-columns:1fr}}
+
+
+/* Unlimited mileage launch feature */
+.mileage-badge{margin:12px 0 2px;padding:9px 12px;border:1px solid rgba(255,255,255,.34);border-radius:999px;font-size:.78rem;font-weight:800;letter-spacing:.02em;background:rgba(255,255,255,.11);backdrop-filter:blur(8px)}
+.featured-policy{position:relative;overflow:hidden}
+.featured-policy:after{content:"INCLUDED";position:absolute;top:18px;right:-30px;transform:rotate(35deg);padding:5px 34px;font-size:.65rem;font-weight:900;letter-spacing:.16em;background:#d7b56d;color:#10231b}
+/* 2026 Lakeland Touring locked additions */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}.price-card{border:1px solid #d9dfdc;border-radius:16px;padding:24px;background:#fff}.price-card.low{background:#eef8ef}.price-card.standard{background:#fff7e6}.price-card.peak{background:#fff0f0}.price-card h3{margin:0 0 6px}.price-card strong{font-size:2.1rem}.price-card.peak strong{color:#b6232c}.price-card.standard strong{color:#b77700}.price-card.low strong{color:#176d2a}.short-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.short-card{padding:18px;border-radius:14px;background:#f0f8f1;border:1px solid #dce9dd;text-align:center}.short-card strong{display:block;font-size:1.45rem}.notice{padding:14px 16px;border-radius:12px;background:#eef7ef;border-left:4px solid #39a34a;margin-top:16px}.nav-active{color:#d9a52f!important}.page-hero{padding:72px 7vw 46px;background:linear-gradient(135deg,#071722,#0d2a31);color:#fff}.page-hero h1{font-size:clamp(2.4rem,5vw,4.7rem);margin:.35rem 0}.page-hero p{max-width:720px;color:#d8e4e5}.split{display:grid;grid-template-columns:1.6fr .8fr;gap:24px}.calendar-shell{display:grid;grid-template-columns:1.5fr .8fr;gap:22px}.diary-table{width:100%;border-collapse:collapse}.diary-table th,.diary-table td{padding:12px;border-bottom:1px solid #e4e9e7;text-align:left}.status{display:inline-block;padding:5px 9px;border-radius:999px;font-size:.78rem}.status.confirmed{background:#e7f5ea;color:#176d2a}.status.pending{background:#fff3d5;color:#8b6100}.status.blocked{background:#fde6e8;color:#9f1e27}.admin-wrap{max-width:1200px;margin:40px auto;padding:0 22px}.admin-card{background:#fff;border:1px solid #dce4e2;border-radius:18px;padding:22px;margin-bottom:20px}.login-card{max-width:460px;margin:90px auto;background:#fff;padding:28px;border-radius:18px;border:1px solid #dce4e2}.form-stack{display:grid;gap:12px}.form-stack input{padding:13px;border:1px solid #ccd6d2;border-radius:10px}.muted-copy{color:#687a7d}.breakdown-pending{background:#fff7e6;border-left:4px solid #d9a52f;padding:16px;border-radius:12px}.tiny{font-size:.82rem;color:#6e7d80}
+@media(max-width:900px){.price-grid,.short-grid,.split,.calendar-shell{grid-template-columns:1fr}}
+
+/* Lakeland Touring — champagne and charcoal editorial redesign; staged, not deployed */
+:root{--navy:#171919;--navy2:#242523;--gold:#bca17c;--gold2:#e3d1b6;--cream:#f6f2ea;--ink:#24221f;--muted:#706b64;--line:rgba(49,42,33,.15);--shadow:0 26px 60px rgba(27,23,17,.12)}
+body{background:var(--cream);color:var(--ink)}
+.topbar{background:rgba(22,23,22,.95);border-bottom:1px solid rgba(227,209,182,.22)}
+.brand strong{font-weight:500;letter-spacing:.14em}
+.button{border-radius:2px;background:#d9c3a5;color:#1a1917;box-shadow:none;letter-spacing:.035em;transition:background .25s ease,transform .25s ease}
+.button:hover{background:#f1e4d0;transform:translateY(-2px)}
+.button.ghost{background:rgba(0,0,0,.18);border-color:rgba(246,242,234,.55)}
+.hero{min-height:min(820px,95svh);background-position:center}
+.hero:after{background:linear-gradient(90deg,rgba(15,17,17,.88) 0%,rgba(19,19,18,.66) 52%,rgba(14,14,13,.25) 100%)}
+.hero h1{font-size:clamp(52px,6.5vw,100px);line-height:1.02;letter-spacing:-.045em}
+.hero h1 span{color:#e3d1b6}
+.hero-book-card{background:rgba(24,25,24,.77);border-color:rgba(227,209,182,.35);border-radius:3px;backdrop-filter:blur(18px)}
+.hero-book-card strong{color:#ead7b9}
+.eyebrow{color:#ad8f69;letter-spacing:.25em}
+.hero .eyebrow,.hero-book-card .eyebrow{color:#e3d1b6}
+.section{padding-top:clamp(76px,9vw,130px);padding-bottom:clamp(76px,9vw,130px)}
+.section h2{letter-spacing:-.04em;line-height:1.06}
+.caravan-showcase{background:#f6f2ea}
+.gallery{gap:12px}
+.gallery img{border-radius:2px;box-shadow:none;transition:filter .35s ease,transform .45s ease}
+.gallery img:hover{filter:brightness(1.07)}
+.spec-grid div{border-radius:2px;background:#eee8de;border-color:#e3dbd0}
+.spec-grid strong{color:#262422}
+.price-card,.short-card,.policy-card,.steps>div,.calendar-card,.summary-card{border-radius:3px}
+.price-card.low,.price-card.standard,.price-card.peak,.short-card{background:#f2ece3;border-color:#e0d5c5}
+.price-card.low strong,.price-card.standard strong,.price-card.peak strong{color:#7b5d39}
+.travel-policy,.booking-section{background:#eee7dc}
+.owner-panel{background:linear-gradient(120deg,#1b1c1b,#31302d)}
+footer{background:#171919;color:#d0c8bd}
+footer .group,.nav-active{color:#e3d1b6!important}
+@media(max-width:950px){.hero{min-height:680px}}
+@media(max-width:560px){.hero{min-height:720px}.hero h1{font-size:clamp(48px,12vw,66px)}.hero-book-card{width:100%}.gallery{gap:6px}.topbar{padding-inline:16px}}
+
+/* Worx365 footer, Touring masthead and Gigi assistant guide */
+.hero-signature{font-family:Georgia,serif;font-size:clamp(20px,2.2vw,31px);letter-spacing:.2em;margin:0 0 20px;color:#fff}
+.hero-signature span{color:#e3d1b6}
+.topbar .brand strong{font-size:21px}.topbar .brand small{font-size:11px}
+.worx-footer{display:block;padding:0;background:#171919;color:#eee6db;font-size:14px}
+.footer-inner{max-width:1440px;margin:auto;padding:74px clamp(20px,6vw,90px) 64px;display:grid;grid-template-columns:1.4fr .7fr 1fr;gap:clamp(30px,6vw,90px)}
+.footer-name{font-family:Georgia,serif;letter-spacing:.12em;font-size:clamp(24px,2.5vw,35px);color:#f8f2e8}
+.footer-name span{color:#d5b88e}
+.footer-brand p{max-width:320px;line-height:1.75;color:#b9b0a7}
+.footer-links,.footer-contact{display:flex;flex-direction:column;gap:12px;min-width:0}
+.worx-footer h3{font-family:inherit;text-transform:uppercase;letter-spacing:.2em;color:#cdb38f;font-size:11px;font-weight:700;margin:7px 0 14px}
+.worx-footer a:hover{color:#e4c9a3}
+.footer-contact a{overflow-wrap:anywhere}
+.footer-contact span{color:#b9b0a7}
+.footer-bottom{padding:22px clamp(20px,6vw,90px);max-width:1440px;margin:auto;border-top:1px solid #4b453e;display:flex;gap:15px;justify-content:space-between;flex-wrap:wrap;color:#aaa39c;font-size:12px}
+.footer-bottom a{color:#e0c7a4}
+.gg-widget{position:fixed;right:20px;bottom:20px;z-index:45;font-family:Inter,system-ui,sans-serif}
+.gg-launcher{display:flex;align-items:center;gap:10px;border:1px solid #ded4c5;background:#202323;color:#f6eee4;border-radius:40px;padding:9px 18px 9px 9px;box-shadow:0 12px 34px #0005;cursor:pointer;font-weight:700}
+.gg-orb{width:35px;height:35px;border-radius:50%;display:grid;place-items:center;background:#c6a8dc;color:#242032;font-size:21px;box-shadow:0 0 18px #c6a8dc66}
+.gg-panel{position:absolute;right:0;bottom:69px;width:min(355px,calc(100vw - 28px));background:#f7f2eb;border:1px solid #cfc1af;box-shadow:0 20px 70px #0005;border-radius:15px;overflow:hidden;color:#272523}
+.gg-panel[hidden]{display:none}
+.gg-head{background:#242323;color:white;padding:17px 20px;display:flex;justify-content:space-between;align-items:center}
+.gg-head strong{font-family:Georgia,serif;font-size:22px}.gg-head strong span{color:#c6a8dc}
+.gg-head small{display:block;color:#e0d5c7;font-size:11px}
+.gg-head button{border:0;background:transparent;color:#fff;font-size:26px;width:32px;height:32px;cursor:pointer}
+.gg-content{padding:20px}.gg-bubble{background:#fff;border:1px solid #e8ded0;border-radius:12px;padding:16px;line-height:1.5;margin:0}
+.gg-status{font-size:11px;color:#766755;margin:14px 0}
+.gg-quicklinks{display:grid;gap:8px}
+.gg-quicklinks a{display:block;border:1px solid #d7c7b1;padding:11px 12px;border-radius:6px;font-size:13px;color:#3b342c;background:#fdfaf5}
+.gg-quicklinks a:hover{background:#ede1d0}
+@media(max-width:760px){.footer-inner{grid-template-columns:1fr 1fr;padding-top:45px;padding-bottom:45px}.footer-brand{grid-column:1/-1}.gg-widget{right:12px;bottom:12px}}
+@media(max-width:450px){.footer-inner{grid-template-columns:1fr}.footer-brand{grid-column:auto}.gg-panel{bottom:64px}.hero-signature{font-size:19px}}
+
+/* Touring mobile editorial rescue 2026-10-15 */
+:root{--gold:#bda88c;--gold2:#e6d8c6;--navy:#181a19;--cream:#f8f5f0}
+.topbar{height:82px;background:#1c1d1c}
+.topbar .brand{gap:10px}.topbar .brand strong{color:#f8f3eb;font-family:Georgia,serif;letter-spacing:.12em}
+.topbar .brand small{color:#d3bea0}
+.hero{background-image:linear-gradient(90deg,rgba(15,17,16,.69),rgba(15,17,16,.08)),url('Assets/caravan-main.jpg');background-position:center center;background-size:cover;min-height:690px}
+.hero:after{background:linear-gradient(90deg,rgba(18,20,19,.76) 0%,rgba(18,20,19,.37) 75%,rgba(18,20,19,.12) 100%)}
+.hero .eyebrow{font-size:11px;color:#dfcdb5}
+.hero h1{font-size:clamp(44px,5.8vw,83px);line-height:1.07;max-width:950px}
+.hero h1 span{color:#ecddc5}
+.hero-copy>p{font-size:clamp(16px,1.3vw,19px);line-height:1.7;max-width:670px;font-weight:400;color:#f3ede6}
+.hero-copy>p strong{font-weight:650}
+.hero-signature{font-size:13px;letter-spacing:.25em;color:#f1e9dd}
+.button{background:#d8c3a8;color:#24211c;font-weight:650;font-size:14px;letter-spacing:.03em}
+.hero-book-card{background:rgba(24,25,24,.82)}
+.spec-grid div{padding:23px}
+.gallery{grid-template-columns:1.5fr 1fr 1fr;grid-template-rows:240px 240px}
+.gallery .gallery-main{grid-row:span 2}
+.gallery img{display:block;object-position:center;aspect-ratio:auto}
+.gg-widget{z-index:9999}
+@media(max-width:950px){.hero{grid-template-columns:1fr;background-position:58% center}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:250px 180px 180px}.gallery .gallery-main{grid-column:span 2;grid-row:span 1}}
+@media(max-width:560px){.hero{min-height:710px;padding:62px 21px 55px;background-position:59% center}.hero h1{font-size:clamp(42px,10vw,52px);line-height:1.08;letter-spacing:-.04em}.hero-copy>p{font-size:16px;line-height:1.65}.hero-signature{font-size:12px;letter-spacing:.16em;margin-bottom:14px}.hero-actions{gap:10px}.hero-actions .button{padding:13px 16px}.trust-row{gap:10px 14px;font-size:11px}.hero-book-card{margin-top:24px}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:230px 140px 140px}.gallery img{width:100%;height:100%}.gg-widget{bottom:24px;right:14px}.gg-launcher{padding:8px 14px 8px 8px}.gg-orb{width:40px;height:40px}}
+
+/* Lighter luxury Touring refresh — warmer Studio Quattro-inspired palette */
+:root{--navy:#302e2b;--navy2:#514b44;--gold:#b5a083;--gold2:#e5d7c3;--cream:#faf7f1;--ink:#34312d;--muted:#786f65;--line:rgba(91,76,58,.13);--shadow:0 16px 40px rgba(70,50,28,.08)}
+body{background:#faf7f1;color:#34312d}
+.topbar{background:rgba(250,247,241,.96);color:#332d27;border-bottom:1px solid #e7ded2;box-shadow:0 3px 22px #5c4d3b12}
+.topbar .brand strong{color:#302a24}.topbar .brand small{color:#987b56}.topbar .logo{stroke:#b49a76}
+.topbar nav a:hover{color:#90704d}
+.hero{background-image:linear-gradient(90deg,rgba(31,29,26,.64),rgba(31,29,26,.08)),url('Assets/caravan-main.jpg');}
+.hero:after{background:linear-gradient(90deg,rgba(28,27,25,.56),rgba(28,27,25,.20) 66%,transparent)}
+.hero-shade{background:transparent}
+.hero h1 span{color:#f2e3cc}.hero-book-card{background:rgba(250,247,241,.95);color:#312c26;border:1px solid #d6c7b4;box-shadow:0 10px 40px #17151120}
+.hero-book-card .eyebrow,.hero-book-card strong,.hero-book-card a{color:#806849}.hero-book-card span{color:#5c5246}.hero-book-card .mileage-badge{background:#f1e9db;border-color:#dbcebb;color:#55483b}
+.button{background:#ddcbb1;color:#302a24}.button:hover{background:#eadbc7}
+.caravan-showcase{background:#faf7f1}
+.section:nth-of-type(even){background:#f0eae0}
+.spec-grid div,.steps>div,.policy-card,.price-card.low,.price-card.standard,.price-card.peak,.short-card{background:#fffdfa;border:1px solid #e8ded0}
+.price-card.low strong,.price-card.standard strong,.price-card.peak strong{color:#9d7c54}
+.owner-panel{background:#d9cab7;color:#302d29}.owner-panel p{color:#544d45}.owner-panel .eyebrow{color:#846747}
+.worx-footer{background:#292825}
+.gg-widget{position:fixed;right:18px;bottom:max(18px,env(safe-area-inset-bottom));z-index:2147483000}
+.gg-launcher{background:#fffaf2;color:#37302a;border:1px solid #dbcfbd;box-shadow:0 8px 28px #3332;padding:6px 16px 6px 6px;border-radius:999px}
+.gg-mascot{width:54px;height:54px;object-fit:contain;display:block;border-radius:50%;background:#e2effd;box-shadow:0 0 0 2px #bcd6ff}
+.gg-panel{bottom:76px;max-height:min(68dvh,540px);overflow:auto}
+.gg-head{background:#edf5ff;color:#263d60}.gg-head small{color:#4e6480}.gg-head button{color:#30435b}
+@media(max-width:560px){
+ .hero{background-position:59% center}
+ .hero h1{font-size:clamp(40px,10.1vw,50px)}
+ .hero-book-card{width:min(100%,340px)}
+ .gg-widget{right:12px;bottom:max(14px,env(safe-area-inset-bottom))}
+ .gg-launcher{padding:5px 12px 5px 5px;font-size:13px}
+ .gg-mascot{width:48px;height:48px}
+ .gg-panel{right:0;bottom:66px;max-height:65dvh}
+}
+
+/* Fresh contemporary Touring visual system | 2026-10-15 */
+:root{--navy:#26353b;--navy2:#31474d;--gold:#169b92;--gold2:#77d6ca;--cream:#f8fbfa;--ink:#23343b;--muted:#607279;--line:#e0eae8;--shadow:0 18px 45px #173a3a14}
+html,body{background:#fff;color:#23343b}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+.topbar{background:#ffffffed;color:#23343b;border-bottom:1px solid #e3eeec;box-shadow:0 3px 22px #1137370b}
+.topbar .brand strong{font-family:Inter,system-ui,sans-serif;font-size:19px;letter-spacing:.11em;font-weight:800;color:#253c42}
+.topbar .brand small{color:#159b91;letter-spacing:.36em}.topbar .logo{stroke:#159b91}
+.topbar nav a:hover,.nav-active{color:#159b91!important}
+.button,.button.small{background:#14998f;color:#fff;border-radius:9px;box-shadow:none;font-weight:700}
+.button:hover{background:#087d76;color:#fff}
+.button.ghost{color:#fff;border:1px solid #ffffffb3;background:#ffffff1a}
+.hero{min-height:640px;background-image:url('Assets/caravan-main.jpg');background-position:center;background-size:cover}
+.hero:after{background:linear-gradient(90deg,#112e32c9,#153c4090 52%,#10363827)}
+.hero-shade{background:none}
+.hero h1{font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:clamp(39px,5.3vw,74px);font-weight:780;letter-spacing:-.065em;line-height:1.04;max-width:850px}
+.hero h1 span{font-style:normal;color:#b3fff0}
+.hero-signature{font-family:Inter,system-ui,sans-serif;font-size:12px;color:white;font-weight:700}
+.hero-signature span{color:#8bf0df}
+.hero .eyebrow{color:#b8fff2}
+.hero-copy>p{color:#f3ffff;line-height:1.65}
+.hero-book-card{background:#ffffffef;color:#20363a;border:1px solid #fff;border-radius:15px;box-shadow:0 16px 54px #071e2440}
+.hero-book-card strong,.hero-book-card a,.hero-book-card .eyebrow{color:#077f76}
+.hero-book-card span{color:#455e62}.hero-book-card .mileage-badge{background:#e8f8f5;color:#264b4c;border:1px solid #cceae5}
+.section{background:#fff;padding-top:clamp(64px,8vw,112px);padding-bottom:clamp(64px,8vw,112px)}
+.section:nth-of-type(even),.caravan-showcase,.travel-policy,.booking-section{background:#f5faf9}
+.section h2{font-family:Inter,system-ui,sans-serif;letter-spacing:-.055em;font-size:clamp(34px,4.4vw,60px);font-weight:770;color:#243b42}
+.eyebrow{color:#07877d;letter-spacing:.18em}
+.gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,200px);gap:12px}
+.gallery .gallery-main{grid-column:span 2;grid-row:span 2}
+.gallery img,.gallery img.gallery-main{display:block;width:100%;height:100%;min-width:0;object-fit:cover;object-position:center;border-radius:12px;box-shadow:none;grid-column:auto;grid-row:auto}
+.gallery img.gallery-main{grid-column:span 2;grid-row:span 2}
+.spec-grid div,.steps>div,.policy-card,.price-card.low,.price-card.standard,.price-card.peak,.short-card{background:#fff;border:1px solid #dceae8;border-radius:12px;box-shadow:none}
+.spec-grid strong,.price-card.low strong,.price-card.standard strong,.price-card.peak strong{color:#07877d}
+.policy-card span{background:#e1f5f1;color:#087e76}.featured-policy:after{background:#14998f;color:white}
+.notice{background:#eaf8f4;border-color:#159b91}
+.owner-panel{background:#e9f6f4;color:#233d40}.owner-panel p{color:#506568}.owner-panel .eyebrow{color:#07877d}
+.page-hero{background:linear-gradient(130deg,#215b62,#153b47)}
+.worx-footer{background:#203238;color:#edf8f8}.footer-name span{color:#70e3d6}.worx-footer h3,.footer-bottom a{color:#87dfd4}
+.gg-launcher{background:#fff;color:#1c4857;border:1px solid #cdece9;box-shadow:0 12px 38px #1737393b}
+.gg-panel{border:1px solid #cde9e7;background:white}.gg-content{background:#f5fafb}
+.gg-head{background:#e8f4ff}
+@media(max-width:950px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:290px 170px 170px}.gallery img.gallery-main{grid-column:1/-1;grid-row:span 1}}
+@media(max-width:560px){.hero{min-height:680px;padding:50px 20px;background-position:57% center}.hero h1{font-size:clamp(38px,10vw,49px)}.hero-copy>p{font-size:15px}.gallery{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:240px 140px 140px;gap:8px}.gallery img.gallery-main{grid-column:1/-1;grid-row:span 1}.gallery img{border-radius:9px}.section{padding:60px 18px}.section h2{font-size:clamp(32px,8vw,43px)}.gg-launcher{border-radius:999px}}
+
+/* Approved cinematic graphite + electric cyan design */
+:root{--navy:#141b20;--navy2:#1d252a;--gold:#00dfdd;--gold2:#00e4df;--cream:#161d21;--ink:#eef4f5;--muted:#b8c2c5;--line:#ffffff22}
+body{background:#161d21;color:#eef4f5;font-family:Inter,system-ui,-apple-system,sans-serif}
+.topbar{position:relative;height:78px;padding:0 clamp(20px,5vw,85px);background:#12191eea;color:#fff;border-bottom:1px solid #ffffff24;box-shadow:none}
+.topbar .brand strong{color:#fff;font:500 21px/1.15 Inter,system-ui,sans-serif;letter-spacing:.19em}
+.topbar .brand small{color:#dde2e5;font-size:11px;letter-spacing:.39em}
+.topbar .logo{stroke:#00e0dd;width:58px}
+.topbar nav{gap:clamp(12px,2.3vw,32px)}
+.topbar nav a{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#edf2f3}
+.topbar nav a:hover,.topbar nav .nav-active{color:#00e4df!important}
+.button,.button.small{background:transparent;border:1px solid #00e7e2;color:#00f0e8;border-radius:2px;box-shadow:0 0 18px #00e4df24;font-size:12px;letter-spacing:.11em;text-transform:uppercase;font-weight:700;transition:.2s}
+.button:hover{background:#00c7c3;color:#091518}
+.button.ghost{background:#121b20a8;color:#fff;border:1px solid #ffffff85;box-shadow:none}
+.menu-toggle{display:none;border:1px solid #00e5de;background:transparent;color:#00e5de;padding:8px 12px;font-size:20px}
+.hero{min-height:650px;padding:90px clamp(25px,6vw,100px);display:flex;align-items:center;justify-content:space-between;gap:30px;background:linear-gradient(90deg,#071115d9,#07111554 65%,#08111520),url('Assets/caravan-main.jpg') center 52%/cover no-repeat;position:relative}
+.hero:after,.hero-shade{display:none}
+.hero-copy{max-width:650px;z-index:2}
+.hero .eyebrow{color:#e5e8e9;font-size:11px;letter-spacing:.2em}
+.hero h1{font-family:Inter,system-ui,sans-serif;font-weight:300;font-size:clamp(58px,6.4vw,100px);line-height:1.04;letter-spacing:-.057em;color:#fff;margin:16px 0 24px}
+.hero h1 em{color:#fff;font-style:normal}
+.hero-copy>p{color:#f2f2f2;max-width:520px;font-size:16px;line-height:1.7;font-weight:400}
+.hero-actions{margin-top:24px;display:flex;gap:12px}
+.hero-details{z-index:2;display:grid;align-self:center;min-width:170px;gap:25px;border-left:1px solid #ffffff74;padding-left:28px}
+.hero-details div{display:grid;gap:5px}.hero-details strong{font-size:27px;font-weight:300;color:#fff}.hero-details span{font-size:11px;color:#d2d9d9;letter-spacing:.15em;text-transform:uppercase}
+.feature-strip{background:#12191e;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:29px 4vw;border-top:1px solid #ffffff25;border-bottom:1px solid #ffffff25;gap:16px}
+.feature-strip>div{border-right:1px solid #ffffff27;padding:12px 20px 12px 0;display:grid;grid-template-columns:50px 1fr;grid-template-rows:auto auto;column-gap:13px;align-items:center}
+.feature-strip>div:last-child{border:0}
+.feature-strip strong{font-size:12px;letter-spacing:.12em;font-weight:600}.feature-strip small{font-size:11px;color:#bfc8ca;margin-top:6px}
+.line-icon{grid-row:1/3;font-size:36px;color:#c7d2d4;font-weight:200}
+.editorial,.steps-section{padding:74px clamp(20px,5vw,85px);background:#1b2328;color:#eef3f4}
+.section-heading{display:flex;align-items:end;justify-content:space-between;gap:32px;margin:0 0 30px}
+.section-heading h2,.destination h2,.final-cta h2{font:300 clamp(35px,4.2vw,65px)/1.08 Inter,system-ui,sans-serif;color:#fff;letter-spacing:.055em;margin:12px 0}
+.section-heading h2 em,.destination h2 em,.final-cta h2 em{font-weight:300;color:#00e2da;font-style:normal}
+.section-heading p{max-width:370px;color:#b8c2c5;font-size:14px;line-height:1.7}
+.eyebrow{color:#00dfd8;letter-spacing:.21em;font-size:10px}
+.gallery{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:225px 225px;gap:10px}
+.gallery figure,.gallery figure.gallery-lead{min-width:0;min-height:0;position:relative;margin:0;overflow:hidden;border:1px solid #ffffff24}
+.gallery figure.gallery-lead{grid-row:1/3;grid-column:1/2}
+.gallery img,.gallery .gallery-lead img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:0;box-shadow:none;grid-column:auto;grid-row:auto;transition:transform .3s}
+.gallery figure:hover img{transform:scale(1.035)}
+.gallery figcaption{position:absolute;bottom:0;left:0;right:0;padding:24px 18px 13px;background:linear-gradient(transparent,#091113bd);font-size:11px;letter-spacing:.18em;color:white}
+.photo-disclaimer{font-size:11px;color:#abb6b7;margin:12px 0 0}
+.destination{padding:90px clamp(25px,6vw,100px);min-height:360px;background:linear-gradient(90deg,#0b1419de,#0b141985),url('Assets/lake-hero.jpg') center/cover;display:flex;align-items:center}
+.destination>div{max-width:800px}
+.destination p{max-width:570px;line-height:1.7;color:#e1e9e9}
+.pricing{background:#141b20}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.price-grid .price-card{background:#202b30;border:1px solid #39474b;border-radius:0;box-shadow:none;padding:26px;display:flex;flex-direction:column;gap:12px}
+.price-grid .price-card>span{font-size:11px;letter-spacing:.17em;color:#b6c8ca}
+.price-grid .price-card strong{font-size:44px;font-weight:300;color:#fff}
+.price-grid .price-card small{color:#bfcbce}
+.price-foot{margin-top:24px;font-size:13px;color:#b9c7c8;line-height:1.8}.price-foot a{color:#00e2dc}
+.steps-section{background:#1a2227}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#ffffff23;margin-top:30px}
+.steps>div{padding:25px;background:#1a2227;min-height:160px;border:0;border-radius:0}
+.steps b{color:#00dedb;font-size:12px;font-weight:500}.steps h3{font-size:18px;margin:20px 0 7px;font-family:Inter,system-ui,sans-serif;font-weight:500}.steps p{font-size:12px;color:#b9c4c6}
+.final-cta{min-height:340px;display:flex;align-items:center;padding:60px clamp(24px,6vw,100px);background:linear-gradient(90deg,#091319a8,#06101632),url('Assets/lake-hero.jpg') center 65%/cover}
+.final-cta .button{margin-top:14px}
+.worx-footer{display:block;background:#11181d;color:#dde4e5}
+.footer-bottom{border-color:#ffffff27}.footer-name span{color:#00e0da}.worx-footer h3,.footer-bottom a{color:#00d9d4}
+.gg-widget{position:fixed;right:18px;bottom:max(20px,env(safe-area-inset-bottom));z-index:99999}
+.gg-launcher{background:#111b21;color:#fff;border:1px solid #00dbdf;box-shadow:0 0 25px #00bdbd5c}
+.gg-panel{background:#eaf5f8;border:1px solid #00cad1}.gg-head{background:#163039}
+@media(max-width:1100px){.topbar nav{gap:12px}.topbar nav a{font-size:10px}.topbar .nav-book{display:none}}
+@media(max-width:850px){.topbar{height:70px}.menu-toggle{display:block;margin-left:auto}.topbar nav{position:absolute;top:70px;left:0;right:0;background:#11191e;display:none;flex-direction:column;padding:24px;gap:20px;z-index:100}.topbar nav.show{display:flex}.hero{min-height:640px}.hero-details{display:none}.feature-strip{grid-template-columns:repeat(2,1fr)}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:290px 170px 170px}.gallery figure.gallery-lead{grid-column:1/3;grid-row:1/2}.section-heading{display:block}}
+@media(max-width:560px){.hero{min-height:640px;padding:65px 20px;background-position:55% center}.hero h1{font-size:clamp(48px,12vw,68px)}.hero-copy>p{font-size:15px}.hero-actions{flex-wrap:wrap}.feature-strip{padding:15px;gap:4px}.feature-strip>div{padding:15px 6px;display:flex;flex-direction:column;align-items:flex-start;gap:7px}.feature-strip strong{font-size:10px}.feature-strip small{font-size:10px}.line-icon{font-size:26px}.editorial,.steps-section{padding:58px 16px}.gallery{grid-template-rows:240px 135px 135px;gap:6px}.gallery figcaption{font-size:9px;padding:16px 9px 9px}.price-grid{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.steps>div{min-height:160px;padding:14px}.steps h3{font-size:15px}.destination{padding:68px 20px}.final-cta{padding:55px 20px}.footer-inner{grid-template-columns:1fr}.gg-widget{right:10px}}
+
+/* WORX365 GROUP SHARED FOOTER — centered and consistent across the group */
+.worx-footer{display:block;background:#0f161a;color:#cbd3d5;border-top:1px solid #2c373b;padding:0}
+.worx-footer .footer-inner{width:min(1200px,100%);margin:auto;padding:58px 28px 40px;display:grid;grid-template-columns:1.2fr .75fr 1.2fr;gap:44px;align-items:start;text-align:left}
+.worx-footer .footer-name{font-family:Inter,system-ui,sans-serif;font-size:25px;font-weight:600;letter-spacing:.15em;color:#fff}
+.worx-footer .footer-name span{color:#00dedc}
+.worx-footer .footer-brand p{font-size:13px;color:#abb7bb;line-height:1.8}
+.worx-footer h3{color:#00dcd9;font-size:11px;letter-spacing:.2em}
+.worx-footer .footer-links a,.worx-footer .footer-contact a{color:#d2dbdc;font-size:13px}
+.worx-footer .footer-bottom{max-width:1200px;padding:20px 28px;margin:auto;display:flex;justify-content:center;text-align:center;gap:9px 26px;align-items:center;flex-wrap:wrap;color:#aab8b9;border-top:1px solid #ffffff21}
+.worx-footer .footer-bottom a{color:#00dcd9}
+.gallery figure,.gallery figure.gallery-lead{aspect-ratio:auto;margin:0;min-width:0;min-height:0;overflow:hidden}
+.gallery figure img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+@media(max-width:720px){.worx-footer .footer-inner{display:flex;flex-direction:column;align-items:center;gap:27px;text-align:center;padding:48px 22px 30px}.worx-footer .footer-links,.worx-footer .footer-contact{align-items:center}.worx-footer .footer-brand p{margin:15px auto 0}.worx-footer .footer-bottom{flex-direction:column;gap:9px;text-align:center;padding:24px 16px}.gallery{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:220px 138px 138px;gap:7px}.gallery figure.gallery-lead{grid-column:1/-1;grid-row:1/2}.gallery figure img{object-fit:cover}}
+
+/* Genuine Worx365 Group footer artwork */
+.worx-footer .footer-bottom .worx-group-logo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:145px;color:#b9c5c7;text-decoration:none}
+.worx-footer .worx-group-logo span{font-size:10px;letter-spacing:.08em;color:#a5b3b8}
+.worx-footer .worx-group-logo img{display:block;max-width:190px;width:100%;height:auto;max-height:65px;object-fit:contain}

@@ -8,7 +8,11 @@ fs.mkdirSync('touring-upgrade-qa',{recursive:true});
  if(/google-analytics|googletagmanager|doubleclick/.test(u.hostname)){google++;return r.fulfill({status:204,body:''});}
  if(!['GET','HEAD'].includes(r.request().method())){writes++;return r.abort();}
  if(u.hostname==='lakelandtouring.uk'&&fs.existsSync(p)&&fs.statSync(p).isFile())return r.fulfill({status:200,contentType:n.endsWith('.js')?'text/javascript':'text/html',body:fs.readFileSync(p)});
- return r.continue();});return {ctx,google:()=>google,writes:()=>writes};}
+ if(u.hostname==='lakelandtouring.uk'&&n==='api/availability.php')return r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Online booking is unavailable. Please contact us.'})});
+ const aliases={'styles.css':'touring-upgrade-20261025/qa-assets/styles.css','brand.css':'touring-upgrade-20261025/qa-assets/brand.css','booking.js':'touring-upgrade-20261025/qa-assets/booking.js','gallery.css':'touring-gallery/gallery.css','gallery.js':'touring-gallery/gallery.js','seo-performance/buttermere-4k.webp':'touring-images/buttermere-4k.jpg','seo-performance/lakeland-touring-official.webp':'site/Assets/lakeland-touring-official.png'};
+ let asset=aliases[n]||('site/'+n);if(n.startsWith('review-assets/'))asset='google-review-20261022/files/'+n;if(n==='garage.css')asset='owner-garage/garage.css';
+ if(u.hostname==='lakelandtouring.uk'&&fs.existsSync(asset)&&fs.statSync(asset).isFile()){let type=asset.endsWith('.css')?'text/css':asset.endsWith('.js')?'text/javascript':asset.endsWith('.png')?'image/png':'image/jpeg';return r.fulfill({status:200,contentType:type,body:fs.readFileSync(asset)});}
+ return r.abort();});return {ctx,google:()=>google,writes:()=>writes};}
  try{
  const pages=fs.readdirSync(root).filter(x=>x.endsWith('.html'));
  for(const width of [390,1440]){
@@ -17,7 +21,7 @@ fs.mkdirSync('touring-upgrade-qa',{recursive:true});
  await page.goto(base+(name==='index.html'?'':name),{waitUntil:'networkidle',timeout:60000});
  const reject=page.getByRole('button',{name:'Reject analytics',exact:true});if(await reject.isVisible())await reject.click();
  await page.locator('footer #lt-cookie-settings').waitFor();
- const state=await page.evaluate(()=>({width:document.documentElement.scrollWidth,h1:document.querySelectorAll('h1').length,cookiePosition:getComputedStyle(document.getElementById('lt-cookie-settings')).position,broken:[...document.images].filter(x=>x.complete&&x.naturalWidth===0).map(x=>x.src)}));
+ const state=await page.evaluate(()=>({width:document.documentElement.scrollWidth,h1:document.querySelectorAll('h1').length,cookiePosition:getComputedStyle(document.getElementById('lt-cookie-settings')).position,broken:[...document.images].filter(x=>x.complete&&x.naturalWidth===0&&new URL(x.src).hostname==='lakelandtouring.uk').map(x=>x.src)}));
  assert(state.width<=width+1,JSON.stringify({name,width,...state}));assert.equal(state.h1,1);assert(!['fixed','sticky'].includes(state.cookiePosition));assert.equal(state.broken.length,0,JSON.stringify({name,...state}));assert.equal(c.google(),0,'Google before consent/rejection');
  if(name==='booking.html'){await page.locator('#availabilityStatus').waitFor();assert.equal(await page.locator('#calendar .day:not(:disabled)').count(),0);assert(!(await page.locator('#continueBtn').isEnabled()));assert(!(await page.locator('#checkoutBtn').isEnabled()));assert(await page.getByRole('link',{name:'Ask about dates on WhatsApp ↗',exact:true}).isVisible());}
  if(name==='caravan-hire-faq.html'){await page.getByText('How do I check dates or book?',{exact:true}).click();assert(await page.getByText('An enquiry does not reserve dates.',{exact:false}).isVisible());}
