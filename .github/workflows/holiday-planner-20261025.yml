@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: lakeland-touring-deployment
+  group: touring-holiday-check-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   check:
@@ -21,8 +21,11 @@ jobs:
       - run: node --check holiday-planner-20261025/files/holiday-planner.js
       - run: php -l holiday-planner-20261025/files/holiday-weather.php
       - run: npm install --no-save --package-lock=false playwright@1.56.1
-      - run: npx playwright install --with-deps chromium
-      - run: node holiday-planner-20261025/check.cjs
+      - name: Check planner using runner-provided Chrome
+        run: |
+          export CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)"
+          test -n "$CHROME_BIN"
+          node holiday-planner-20261025/check.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -30,6 +33,9 @@ jobs:
           path: holiday-planner-qa/
           retention-days: 90
   publish:
+    concurrency:
+      group: lakeland-touring-deployment
+      cancel-in-progress: false
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: check
     runs-on: ubuntu-latest
