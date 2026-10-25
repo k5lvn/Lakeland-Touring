@@ -1,0 +1,61 @@
+name: Touring holiday planner
+on:
+  pull_request:
+    paths: ['holiday-planner-20261025/**', '.github/workflows/holiday-planner-20261025.yml']
+  push:
+    branches: [main]
+    paths: ['holiday-planner-20261025/**', '.github/workflows/holiday-planner-20261025.yml']
+permissions:
+  contents: read
+concurrency:
+  group: touring-holiday-check-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install beautifulsoup4==4.14.2
+      - run: python3 holiday-planner-20261025/check.py
+      - run: node --check holiday-planner-20261025/files/holiday-planner.js
+      - run: php -l holiday-planner-20261025/files/holiday-weather.php
+      - run: npm install --no-save --package-lock=false playwright@1.56.1
+      - name: Check planner using runner-provided Chrome
+        run: |
+          export CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)"
+          test -n "$CHROME_BIN"
+          node holiday-planner-20261025/check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: holiday-planner-qa
+          path: holiday-planner-qa/
+          retention-days: 90
+  publish:
+    concurrency:
+      group: lakeland-touring-deployment
+      cancel-in-progress: false
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Guarded release and live forecast verification
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 holiday-planner-20261025/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: holiday-planner-release-evidence
+          path: |
+            holiday-planner-rollback/
+            HOLIDAY-PLANNER-VERIFIED.json
+            holiday-planner-20261025/manifest.json
+          retention-days: 90

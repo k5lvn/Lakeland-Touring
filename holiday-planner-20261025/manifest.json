@@ -1,0 +1,43 @@
+{
+  "site": "lakelandtouring.uk",
+  "base_url": "https://lakelandtouring.uk/",
+  "remote_root": "/public",
+  "files": {
+    "holiday-planner.css": {
+      "original_sha256": null,
+      "updated_sha256": "90c626828d7fd88d84381ad0a9972f229b1fe420b14def1ccde51d434e2c9f97"
+    },
+    "holiday-planner.html": {
+      "original_sha256": null,
+      "updated_sha256": "9172cb334511ec1cfcfab65b39376b1345b4f57044773cfede23e7eb39ffcfc4"
+    },
+    "holiday-planner.js": {
+      "original_sha256": null,
+      "updated_sha256": "3f3a28530cc192ee201e50eccbce90c165039aaf6789c6abceabf34e16672445"
+    },
+    "caravan-hire-faq.html": {
+      "original_sha256": "7367252d9642a5479f500c4420f3a0a7780c0462d759860cb320772ce8c8e5db",
+      "updated_sha256": "b6d8f5dd64a087e9fa25580552335ef996746c8946092ec3e853ed7a901674b6"
+    },
+    "holiday-weather.php": {
+      "original_sha256": null,
+      "updated_sha256": "77f68a1335aaf03c91bdc9f52e9f243aed53f06ab16ad433c848b14f990123f3"
+    },
+    "sitemap.xml": {
+      "original_sha256": "0013c34f164b9c708b63ca00fbff7f4b7998b5e7b1f9c3d213e8def5ee3547e6",
+      "updated_sha256": "ef8c1a3056054365777cf56f0cc5dfeb18f84e21c26307b4a193bb9a3a857d12"
+    },
+    "index.html": {
+      "original_sha256": "7c4c88fe597a14bf948e3e62db5adeccc8593cf6cc7da1b244d70a91d5b7e671",
+      "updated_sha256": "8f7a0171499c1666cbd98d1a4dd11864cf310962b5af352bc63dd5bcd56f5dfd"
+    },
+    "explore-destinations.html": {
+      "original_sha256": "d6cc8b0dcd3b982488731de837038eb4fd433998837d470bb6d9e7bcb07fa62d",
+      "updated_sha256": "e1c6971f19da7a4d18806e6e36a50c4a4e1f4dacb171a3de9f4a9035c497b34a"
+    },
+    "analytics-privacy.html": {
+      "original_sha256": "fbe0764a6ee557732e36166544d6597c4af0cca499083e1896094e218954adca",
+      "updated_sha256": "11fa246e7b0b63dd94dc263f8102405b3ed7877a98b290992d5352c81b7510b3"
+    }
+  }
+}
