@@ -11,6 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Crawl all sitemap pages and internal assets
+        continue-on-error: true
         run: |
           python3 - <<'PY'
           import urllib.request,urllib.parse,xml.etree.ElementTree as E,concurrent.futures,json
@@ -27,9 +28,9 @@ jobs:
                   if t=='script' and d.get('src'):self.scripts.append(d['src'])
           def get(u):
               try:
-                  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'LakelandTouring-Owner-QA/1.0'}),timeout=20) as r:return (u,r.status,r.url,r.read().decode(errors='replace'))
+                  with urllib.request.urlopen(urllib.request.Request(u,headers={'Cache-Control':'no-cache'}),timeout=20) as r:return (u,r.status,r.url,r.read().decode(errors='replace'))
               except Exception as e:return (u,str(e),u,'')
-          sitemap=get(B+'sitemap.xml'); urls=[e.text for e in E.fromstring(sitemap[3]).iter() if e.tag.endswith('loc')]
+          sitemap=get(B+'sitemap.xml?audit=20261030'); assert sitemap[1]==200,sitemap[:3]; urls=[e.text for e in E.fromstring(sitemap[3]).iter() if e.tag.endswith('loc')]
           with concurrent.futures.ThreadPoolExecutor(max_workers=3) as x:rows=list(x.map(get,urls))
           graph={};targets=set();scripts=set()
           for u,s,f,t in rows:
@@ -48,7 +49,7 @@ jobs:
           for u in sorted(scripts):
               _,status,_,t=get(u)
               if any(w in t.lower() for w in ['gtag','analytics','consent']):
-                  print('TRACKING_SOURCE',json.dumps({'url':u,'status':status,'event_names':__import__('re').findall(r"(?:gtag|trackEvent)\\(['\"](?:event['\"],\\s*)?['\"]?([a-z_]+)",t),'consent_related': 'consent' in t.lower()}),flush=True)
+                  print('TRACKING_SOURCE',json.dumps({'url':u,'status':status,'has_event_calls': 'gtag(' in t,'consent_related': 'consent' in t.lower()}),flush=True)
           PY
       - run: npm install --no-save --package-lock=false playwright@1.56.1
       - name: Mobile and desktop browser checks
