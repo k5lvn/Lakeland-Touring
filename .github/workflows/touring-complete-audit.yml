@@ -65,9 +65,10 @@ jobs:
               page.on('pageerror',e=>errors.push(e.message));
               page.on('request',r=>{if(/google-analytics.com|googletagmanager.com|analytics.google.com/.test(r.url()))requests.push(r.url().split('?')[0]);});
               for(const path of ['/','/booking.html','/explore-destinations.html']){
-                const r=await page.goto('https://lakelandtouring.uk'+path,{waitUntil:'networkidle',timeout:45000});
+                let r;try{r=await page.goto('https://lakelandtouring.uk'+path,{waitUntil:'domcontentloaded',timeout:30000});await page.waitForTimeout(2000);}catch(e){console.log('NAVIGATION_LIMIT',JSON.stringify({width,path,message:e.message}));continue;}
                 const result=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,h1:[...document.querySelectorAll('h1')].map(x=>x.textContent.trim()),forms:[...document.forms].map(f=>({id:f.id,required:f.querySelectorAll('[required]').length})),calendarButtons:document.querySelectorAll('#calendar button').length,enabledCalendarButtons:[...document.querySelectorAll('#calendar button')].filter(x=>!x.disabled).length,bodyExcerpt:document.body.innerText.slice(0,1300),cookieControls:[...document.querySelectorAll('button,a')].filter(x=>/cookie|reject|accept/i.test(x.textContent)).map(x=>({text:x.textContent.trim().slice(0,80),visible:!!x.getClientRects().length}))}));
                 console.log('BROWSER_RESULT',JSON.stringify({width,path,status:r.status(),...result,errors:[...errors],analyticsRequestsBeforeConsent:[...requests]}));
+                if(path==='/'){const reject=page.getByRole('button',{name:'Reject analytics',exact:true});if(await reject.count()){await reject.click();console.log('CONSENT_REJECT',JSON.stringify({width,remainingVisible:await reject.isVisible(),analyticsRequests:requests.length}));}}
                 if(path==='/'&&width===390){
                   const toggle=page.locator('.menu-toggle');if(await toggle.count()){await toggle.first().click();console.log('MENU_RESULT',JSON.stringify(await toggle.first().getAttribute('aria-expanded')));}
                 }
