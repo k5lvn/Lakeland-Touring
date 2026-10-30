@@ -23,7 +23,6 @@ def transform(name,data):
         soup=BeautifulSoup(text,'html.parser')
         grid=soup.select_one('.guide-grid'); assert grid
         if not grid.select('a[href="'+GUIDE+'"]'):
-            original=str(grid)
             # Locate the existing grid without reserializing the surrounding page.
             start=text.index('<div class="guide-grid">'); end=text.index('</div>',start)
             text=text[:end]+CARD+text[end:]
@@ -59,7 +58,7 @@ def prepare():
     assert len(set(links))==11
     for n in links:
         assert n in original,n
-        verify(n,original[n])
+        verify(n,release[n])
     plan={n:{'before':hashlib.sha256(original[n]).hexdigest(),'after':hashlib.sha256(b).hexdigest()} for n,b in release.items() if b!=original[n]}
     assert HUB in plan and 'index.html' in plan
     (OUT/'plan.json').write_text(json.dumps(plan,indent=2))
