@@ -1,0 +1,41 @@
+name: Touring live reconciliation
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/touring-live-reconciliation.yml'
+      - 'site/booking.js'
+      - 'site/index.html'
+permissions:
+  contents: read
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare live public files with proposed source
+        run: |
+          python3 - <<'PY'
+          import urllib.request,hashlib,re,json,time
+          from pathlib import Path
+          from html.parser import HTMLParser
+          class Images(HTMLParser):
+              def __init__(self): super().__init__(); self.missing=[]
+              def handle_starttag(self,tag,attrs):
+                  d=dict(attrs)
+                  if tag=='img' and 'alt' not in d: self.missing.append(d.get('src','')[:160] if not d.get('src','').startswith('data:') else '[embedded image]')
+          for name in ['index.html','booking.html','booking.js']:
+              req=urllib.request.Request('https://lakelandtouring.uk/'+name+'?reconcile='+str(time.time_ns()),headers={'Cache-Control':'no-cache'})
+              with urllib.request.urlopen(req,timeout=30) as r:
+                  data=r.read(); status=r.status
+              text=data.decode(); local=Path('site',name).read_bytes()
+              summary={'file':name,'status':status,'live_sha256':hashlib.sha256(data).hexdigest(),'proposed_sha256':hashlib.sha256(local).hexdigest(),'identical':data==local}
+              if name.endswith('.html'):
+                  p=Images();p.feed(text);summary['missing_alt']=p.missing
+                  summary['description']=re.findall(r'<meta[^>]*name=["\x27]description["\x27][^>]*>',text,re.I)
+                  summary['destination_navigation_present']='Explore Destinations' in text
+              else:
+                  summary['availability_guard_present']='availabilityReady' in text
+                  summary['availability_function']=re.findall(r'async function loadAvailability.*?(?=async function refreshQuote)',text,re.S)
+              print(json.dumps(summary),flush=True)
+          PY
