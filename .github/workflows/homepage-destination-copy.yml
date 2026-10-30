@@ -1,0 +1,43 @@
+name: Update homepage destination wording
+on:
+  pull_request:
+    paths: ['homepage-copy-20261030/**', '.github/workflows/homepage-destination-copy.yml']
+  push:
+    branches: [main]
+    paths: ['homepage-copy-20261030/**', '.github/workflows/homepage-destination-copy.yml']
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install beautifulsoup4==4.14.2
+      - run: python3 homepage-copy-20261030/release.py
+  publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    concurrency:
+      group: lakeland-touring-deployment
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install beautifulsoup4==4.14.2 paramiko==3.5.1
+      - name: Back up current homepage, patch one phrase, verify live
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 homepage-copy-20261030/release.py --publish
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: homepage-copy-rollback
+          path: |
+            navigation-rollback/
+            navigation-qa/
+          retention-days: 90
