@@ -1,0 +1,78 @@
+name: Touring complete live audit
+on:
+  pull_request:
+    paths: ['.github/workflows/touring-complete-audit.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Crawl all sitemap pages and internal assets
+        run: |
+          python3 - <<'PY'
+          import urllib.request,urllib.parse,xml.etree.ElementTree as E,concurrent.futures,json
+          from html.parser import HTMLParser
+          B='https://lakelandtouring.uk/'
+          class P(HTMLParser):
+              def __init__(self):super().__init__();self.links=[];self.assets=[];self.scripts=[]
+              def handle_starttag(self,t,a):
+                  d=dict(a)
+                  if t=='a' and d.get('href'):self.links.append(d['href'])
+                  if t in ['img','script','link']:
+                      h=d.get('src') if t!='link' else d.get('href') if d.get('rel')=='stylesheet' else None
+                      if h and not h.startswith('data:'):self.assets.append(h)
+                  if t=='script' and d.get('src'):self.scripts.append(d['src'])
+          def get(u):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'LakelandTouring-Owner-QA/1.0'}),timeout=20) as r:return (u,r.status,r.url,r.read().decode(errors='replace'))
+              except Exception as e:return (u,str(e),u,'')
+          sitemap=get(B+'sitemap.xml'); urls=[e.text for e in E.fromstring(sitemap[3]).iter() if e.tag.endswith('loc')]
+          with concurrent.futures.ThreadPoolExecutor(max_workers=3) as x:rows=list(x.map(get,urls))
+          graph={};targets=set();scripts=set()
+          for u,s,f,t in rows:
+              p=P();p.feed(t);graph[u]=set()
+              for h in p.links+p.assets:
+                  v=urllib.parse.urljoin(u,h);z=urllib.parse.urlsplit(v)
+                  if z.netloc=='lakelandtouring.uk' and z.scheme in ['http','https']:
+                      v=urllib.parse.urlunsplit(z._replace(fragment=''))
+                      if not any(k in z.path.lower() for k in ['logout','delete','checkout','webhook','success.php','admin','api/','config.php']):targets.add(v)
+              for h in p.links:graph[u].add(urllib.parse.urljoin(u,h).split('#')[0])
+              for h in p.scripts:
+                  v=urllib.parse.urljoin(u,h)
+                  if urllib.parse.urlsplit(v).netloc=='lakelandtouring.uk':scripts.add(v)
+          with concurrent.futures.ThreadPoolExecutor(max_workers=3) as x:extra=list(x.map(get,sorted(targets-set(urls))))
+          print('CRAWL_RESULT',json.dumps({'sitemap_pages':len(rows),'extra_targets':len(extra),'failures':[(u,s) for u,s,_,_ in rows+extra if s!=200],'redirects':[(u,f) for u,s,f,_ in rows+extra if s==200 and u!=f],'orphan_sitemap_pages':[u for u in urls if u!=B and not any(u in v for k,v in graph.items() if k!=u)]}),flush=True)
+          for u in sorted(scripts):
+              _,status,_,t=get(u)
+              if any(w in t.lower() for w in ['gtag','analytics','consent']):
+                  print('TRACKING_SOURCE',json.dumps({'url':u,'status':status,'event_names':__import__('re').findall(r"(?:gtag|trackEvent)\\(['\"](?:event['\"],\\s*)?['\"]?([a-z_]+)",t),'consent_related': 'consent' in t.lower()}),flush=True)
+          PY
+      - run: npm install --no-save --package-lock=false playwright@1.56.1
+      - name: Mobile and desktop browser checks
+        run: |
+          export CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)"
+          node <<'JS'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({executablePath:process.env.CHROME_BIN,headless:true,args:['--no-sandbox']});
+            for(const width of [390,1440]){
+              const context=await browser.newContext({viewport:{width,height:900}});
+              const page=await context.newPage();const errors=[],requests=[];
+              page.on('pageerror',e=>errors.push(e.message));
+              page.on('request',r=>{if(/google-analytics.com|googletagmanager.com|analytics.google.com/.test(r.url()))requests.push(r.url().split('?')[0]);});
+              for(const path of ['/','/booking.html','/explore-destinations.html']){
+                const r=await page.goto('https://lakelandtouring.uk'+path,{waitUntil:'networkidle',timeout:45000});
+                const result=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,h1:[...document.querySelectorAll('h1')].map(x=>x.textContent.trim()),forms:[...document.forms].map(f=>({id:f.id,required:f.querySelectorAll('[required]').length})),calendarButtons:document.querySelectorAll('#calendar button').length,enabledCalendarButtons:[...document.querySelectorAll('#calendar button')].filter(x=>!x.disabled).length,bodyExcerpt:document.body.innerText.slice(0,1300),cookieControls:[...document.querySelectorAll('button,a')].filter(x=>/cookie|reject|accept/i.test(x.textContent)).map(x=>({text:x.textContent.trim().slice(0,80),visible:!!x.getClientRects().length}))}));
+                console.log('BROWSER_RESULT',JSON.stringify({width,path,status:r.status(),...result,errors:[...errors],analyticsRequestsBeforeConsent:[...requests]}));
+                if(path==='/'&&width===390){
+                  const toggle=page.locator('.menu-toggle');if(await toggle.count()){await toggle.first().click();console.log('MENU_RESULT',JSON.stringify(await toggle.first().getAttribute('aria-expanded')));}
+                }
+              }
+              await context.close();
+            }
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
