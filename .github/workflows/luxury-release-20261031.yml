@@ -1,0 +1,46 @@
+name: Lakeland Touring 2.0 luxury release
+on:
+  push:
+    branches: [main]
+    paths: ['luxury-release-20261031/**', '.github/workflows/luxury-release-20261031.yml']
+permissions:
+  contents: read
+concurrency:
+  group: lakeland-touring-deployment
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install beautifulsoup4==4.14.2 paramiko==3.5.1
+      - name: Snapshot current pages and prepare guarded candidates
+        run: python3 luxury-release-20261031/release.py
+      - name: Persist exact pre-deployment rollback backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: touring-2.0-pre-deployment-backup
+          path: luxury-backup/
+          retention-days: 90
+      - run: npm install --no-save --package-lock=false playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - name: Test candidate mobile and desktop before deployment
+        run: node luxury-release-20261031/check.cjs
+      - name: Back up, atomically publish, verify and roll back on failure
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 luxury-release-20261031/release.py --publish
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: touring-2.0-release-evidence
+          path: |
+            luxury-qa/
+            luxury-backup/
+            navigation-rollback/
+            navigation-qa/
+          retention-days: 90
