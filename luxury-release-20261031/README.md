@@ -9,3 +9,5 @@ The release reads the current live sitemap and customer pages, snapshots exact o
 No customer records, API routes, credentials, database contents, payment configuration, owner agreements or booking state are modified. Existing destination research remains dated and delivery is subject to campsite approval, access, feasibility and availability.
 
 To evolve: edit home.html and luxury.css; update release.py for specific page content. The public PHP booking backend remains disabled as previously configured. Publication requires the existing repository SFTP secrets; these never enter the source tree or artifacts.
+
+Visual refinement: original silver/teal logo restored; all static sitemap pages share the dark charcoal/teal theme. New optimised illustrative Lake District dusk artwork replaces daytime homepage scenery. Shared brand.css carries the palette into retained owner/privacy surfaces. Image upload, guarded replacements and rollback are included in the release manifest. Browser checks cover dark backgrounds, logo/image loading, responsive guides, enquiries, navigation and gallery.

@@ -1,5 +1,6 @@
 """Current-live, URL-preserving luxury release with exact rollback and no backend writes."""
-import concurrent.futures, hashlib, importlib.util, json, re, sys
+import base64, concurrent.futures, hashlib, importlib.util, json, os, re, socket, sys
+from urllib.error import HTTPError
 from pathlib import Path
 from urllib.parse import urlsplit
 import xml.etree.ElementTree as ET
@@ -11,6 +12,8 @@ BASE=prior.BASE
 OUT=Path('luxury-qa');OUT.mkdir(exist_ok=True)
 ORIGINAL=Path('luxury-backup');ORIGINAL.mkdir(exist_ok=True)
 CSS=(ROOT/'luxury.css').read_text()
+ASSET='luxury-lake-dusk-20261031.webp'
+THEME_ONLY=('owner','garage-privacy','analytics-privacy')
 NOTE='<aside class="lt-service-note"><strong>Delivered caravan stays, personally arranged.</strong> You book and pay for your campsite separately. We deliver, set up and collect the caravan. All stays and longer-distance deliveries are individually quoted, subject to availability, access and campsite approval. <a href="/#contact">Request your bespoke quotation →</a></aside>'
 CONTACT='<section class="lt-section lt-enquiry-main"><p class="lt-kicker">YOUR DESTINATION. OUR PLEASURE.</p><h1>Let’s plan your luxury caravan escape.</h1><p>Our Elddis Avanté 866 accommodates up to six guests. Tell us your preferred dates, guest numbers and campsite or destination. We’ll check availability and delivery feasibility and provide a bespoke quotation for hire, delivery, setup and collection.</p><p>You book and pay for your campsite pitch separately, after confirming suitability and delivery arrangements with us. Your quotation will confirm inclusions, payment terms and any deposit. An enquiry does not reserve dates or confirm a booking.</p><div class="lt-actions"><a class="lt-button" href="mailto:LakelandTouring@Worx365Group.uk?subject=Delivered%20caravan%20stay%20quotation">Email Your Plans</a><a class="lt-button lt-outline" href="tel:+441228307953">Call 01228 307953</a><a class="lt-button lt-outline" href="/#contact">Quotation Details</a></div></section>'
 FAQ='''<section class="lt-section"><p class="lt-kicker">GOOD TO KNOW</p><h1>Luxury caravan hire FAQs</h1><h2>Do we tow or collect the caravan?</h2><p>We handle delivery, setup and collection. You arrive at the agreed campsite and enjoy your stay.</p><h2>Who books the campsite?</h2><p>You book and pay the campsite directly. First confirm with us and the campsite that the pitch fits the caravan and that delivery, access and collection can be arranged.</p><h2>How much does a stay cost?</h2><p>All stays are individually quoted around dates, duration, guests and destination. We confirm hire, delivery, setup, collection, inclusions, payment terms and any deposit before booking. Campsite fees are separate.</p><h2>What is included?</h2><p>The delivered and prepared caravan, beds made for your stay, bedding, towels, toiletries and a welcome hamper. Your quotation confirms the full inclusions and any personal requests.</p><h2>How many guests can stay?</h2><p>Our Elddis Avanté 866 is a six-berth caravan, suitable for up to six guests. We can explain the sleeping layout before you book.</p><h2>Can you deliver further afield?</h2><p>Tell us your destination. Longer-distance delivery is considered individually, subject to logistics, suitable access and availability, with a bespoke quotation.</p><h2>How do we book?</h2><p>Send your dates, guests and destination. We confirm availability, practical arrangements and your quote personally. Online instant booking is not available.</p><a class="lt-button" href="/#contact">Request Your Bespoke Quote</a></section>'''
@@ -32,6 +35,9 @@ def transform(name,data):
     for old in list(s.select('#lakeland-touring-luxury-20261031,.lt-service-note')):old.decompose()
     for old in list(s.select('script:not([src])')):
         if "document.querySelector('.lt-menu').addEventListener" in (old.string or ''):old.decompose()
+    if name.startswith(THEME_ONLY):
+        style=s.new_tag('style',id='lakeland-touring-luxury-20261031');style.string=CSS;s.head.append(style)
+        return str(s).encode()
     if name=='index.html':
         gallery=s.select_one('#caravan');assert gallery and gallery.select('.touring-gallery img')
         gallery['class']=['lt-section','lt-gallery']
@@ -99,6 +105,14 @@ def transform(name,data):
         if node.parent.name in ['script','style']:continue
         # Remove obsolete customer-towing sales promises in destination guide copy.
         if re.search(r'\bunlimited mileage\b',str(node),re.I):node.replace_with(re.sub(r'\bunlimited mileage\b','delivery agreed in your quotation',str(node),flags=re.I))
+    if name=='index.html':
+        for tag in s.select('meta[property="og:image"],meta[name="twitter:image"]'):tag['content']=BASE+ASSET
+        for tag in s.select('meta[property="og:image:alt"]'):tag['content']='Illustrative Lake District lake scene at dusk'
+        for tag in s.select('link[rel="preload"][as="image"]'):tag['href']=ASSET
+        for text in list(s.find_all(string=True)):
+            if 'Lake District photography:' in str(text):
+                parent=text.parent
+                parent.clear();parent.string='Lake District dusk scene: illustrative artwork.'
     style=s.new_tag('style',id='lakeland-touring-luxury-20261031');style.string=CSS;s.head.append(style)
     return str(s).encode()
 
@@ -106,7 +120,8 @@ def validate(name,before,after):
     a=BeautifulSoup(before,'html.parser');b=BeautifulSoup(after,'html.parser')
     assert b.select_one('link[rel="canonical"]')['href']==a.select_one('link[rel="canonical"]')['href'],name
     assert not b.select('meta[name="robots"][content*="noindex"]'),name
-    assert len(b.select('h1'))==1,(name,'h1')
+    assert len(b.select('h1'))==len(a.select('h1')) or len(b.select('h1'))==1,(name,'h1')
+    if name.startswith(THEME_ONLY):return True
     assert not re.search(r'self[\s‐‑–-]*tow',b.get_text(' ',strip=True),re.I),name
     assert b.select_one('#lakeland-touring-luxury-20261031'),name
     for script in a.select('script[src]'):
@@ -124,7 +139,7 @@ def prepare():
     for el in ET.fromstring(sitemap).iter():
         if el.tag.endswith('}loc') and el.text.startswith(BASE):
             n=el.text[len(BASE):] or 'index.html'
-            if n.endswith('.html') and not n.startswith(('owner','garage-privacy','analytics-privacy')):names.add(n)
+            if n.endswith('.html') :names.add(n)
     names.update(['index.html','booking.html','caravan-hire-faq.html'])
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
         originals=dict(zip(sorted(names),pool.map(prior.fetch,sorted(names))))
@@ -134,21 +149,71 @@ def prepare():
         repeated=BeautifulSoup(transform(n,out),'html.parser')
         assert len(repeated.select('#lakeland-touring-luxury-20261031'))==1,n
         assert len(repeated.select('.lt-service-note'))<=1,n
-        assert sum("document.querySelector('.lt-menu').addEventListener" in (x.string or '') for x in repeated.select('script'))==1,n
+        if not n.startswith(THEME_ONLY):assert sum("document.querySelector('.lt-menu').addEventListener" in (x.string or '') for x in repeated.select('script'))==1,n
         (ORIGINAL/n).write_bytes(b);(OUT/n).write_bytes(out);changes[n]=out
     (ORIGINAL/'robots.txt').write_bytes(robots);(ORIGINAL/'sitemap.xml').write_bytes(sitemap)
-    manifest={n:{'before':hashlib.sha256(originals[n]).hexdigest(),'after':hashlib.sha256(b).hexdigest()} for n,b in changes.items()}
+    originals['brand.css']=prior.fetch('brand.css')
+    base_css=re.sub(r'/\* LT-DARK-SHARED-BEGIN \*/.*?/\* LT-DARK-SHARED-END \*/','',originals['brand.css'].decode(),flags=re.S)
+    changes['brand.css']=(base_css+'\n/* LT-DARK-SHARED-BEGIN */\n'+CSS+'\n/* LT-DARK-SHARED-END */\n').encode()
+    (ORIGINAL/'brand.css').write_bytes(originals['brand.css']);(OUT/'brand.css').write_bytes(changes['brand.css'])
+    try:originals[ASSET]=prior.fetch(ASSET)
+    except HTTPError as e:
+        if e.code!=404:raise
+        originals[ASSET]=None
+    if originals[ASSET] is not None:(ORIGINAL/ASSET).write_bytes(originals[ASSET])
+    changes[ASSET]=(ROOT/ASSET).read_bytes();assert changes[ASSET][:4]==b'RIFF' and changes[ASSET][8:12]==b'WEBP'
+    (OUT/ASSET).write_bytes(changes[ASSET])
+    manifest={n:{'before':hashlib.sha256(originals[n]).hexdigest() if originals[n] is not None else None,'after':hashlib.sha256(b).hexdigest()} for n,b in changes.items()}
     (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2))
     print('PASS: prepared',len(changes),'pages; URLs, canonicals, gallery, analytics, robots and sitemap preserved',flush=True)
 
 def deploy():
+    import paramiko
     manifest=json.loads((OUT/'manifest.json').read_text())
-    original={n:(ORIGINAL/n).read_bytes() for n in manifest};release={n:(OUT/n).read_bytes() for n in manifest}
+    original={n:(ORIGINAL/n).read_bytes() if entry['before'] is not None else None for n,entry in manifest.items()}
+    release={n:(OUT/n).read_bytes() for n in manifest}
     for n in manifest:
-        assert hashlib.sha256(original[n]).hexdigest()==manifest[n]['before']
+        assert original[n] is None or hashlib.sha256(original[n]).hexdigest()==manifest[n]['before']
         assert hashlib.sha256(release[n]).hexdigest()==manifest[n]['after']
-        validate(n,original[n],release[n])
-    prior.deploy(original,release,(ORIGINAL/'robots.txt').read_bytes(),(ORIGINAL/'sitemap.xml').read_bytes())
+        if n.endswith('.html'):validate(n,original[n],release[n])
+    parts=os.environ['SFTP_HOST_PUBLIC_KEY'].strip().split();i=next(i for i,p in enumerate(parts) if p.startswith(('ssh-','ecdsa-')))
+    key=paramiko.PKey.from_type_string(parts[i],base64.b64decode(parts[i+1],validate=True))
+    t=paramiko.Transport(socket.create_connection((os.environ['SFTP_HOST'].strip(),22),timeout=25));t.start_client(timeout=25)
+    assert t.get_remote_server_key().asbytes()==key.asbytes(),'SSH identity mismatch'
+    t.auth_password(os.environ['SFTP_USER'].strip(),os.environ['SFTP_PASSWORD']);s=paramiko.SFTPClient.from_transport(t);s.get_channel().settimeout(45)
+    def read(n):
+        try:
+            with s.open('/public/'+n,'rb') as f:return f.read()
+        except FileNotFoundError:return None
+    def put(n,b):
+        tmp='/public/'+n+'.luxury-stage'
+        with s.open(tmp,'wb') as f:
+            f.set_pipelined(True);f.write(b)
+        s.chmod(tmp,0o644);s.posix_rename(tmp,'/public/'+n)
+    changed=[]
+    robots=(ORIGINAL/'robots.txt').read_bytes();sitemap=(ORIGINAL/'sitemap.xml').read_bytes()
+    try:
+        assert read('robots.txt')==robots and read('sitemap.xml')==sitemap
+        for n in release:assert read(n)==original[n],'Concurrent change: '+n
+        # New asset and shared theme first; every original is saved before any write.
+        for n in [ASSET,'brand.css']+[n for n in release if n not in [ASSET,'brand.css']]:
+            assert read(n)==original[n],'Concurrent change: '+n
+            changed.append(n);put(n,release[n]);assert read(n)==release[n]
+        for n,b in release.items():
+            assert prior.fetch(n)==b,'Live mismatch: '+n
+            print('LIVE VERIFIED:',BASE+n,flush=True)
+        assert read('robots.txt')==robots and read('sitemap.xml')==sitemap
+        (OUT/'verified.json').write_text(json.dumps({'status':'verified','files':list(release),'theme':'dark-teal','logo':'original-restored','hero':ASSET},indent=2))
+    except BaseException:
+        errors=[]
+        for n in reversed(changed):
+            try:
+                if original[n] is None:s.remove('/public/'+n)
+                else:put(n,original[n])
+                assert read(n)==original[n]
+            except Exception:errors.append(n)
+        print('Rollback failures:',errors,flush=True);raise
+    finally:s.close();t.close()
 if __name__=='__main__':
     if '--publish' in sys.argv:deploy()
     else:prepare()
