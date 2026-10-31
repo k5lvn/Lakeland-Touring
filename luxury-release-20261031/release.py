@@ -29,6 +29,9 @@ def replace_words(t):
 def transform(name,data):
     s=BeautifulSoup(data,'html.parser')
     assert s.head and s.body,name
+    for old in list(s.select('#lakeland-touring-luxury-20261031,.lt-service-note')):old.decompose()
+    for old in list(s.select('script:not([src])')):
+        if "document.querySelector('.lt-menu').addEventListener" in (old.string or ''):old.decompose()
     if name=='index.html':
         gallery=s.select_one('#caravan');assert gallery and gallery.select('.touring-gallery img')
         gallery['class']=['lt-section','lt-gallery']
@@ -128,6 +131,10 @@ def prepare():
     changes={}
     for n,b in originals.items():
         out=transform(n,b);validate(n,b,out)
+        repeated=BeautifulSoup(transform(n,out),'html.parser')
+        assert len(repeated.select('#lakeland-touring-luxury-20261031'))==1,n
+        assert len(repeated.select('.lt-service-note'))<=1,n
+        assert sum("document.querySelector('.lt-menu').addEventListener" in (x.string or '') for x in repeated.select('script'))==1,n
         (ORIGINAL/n).write_bytes(b);(OUT/n).write_bytes(out);changes[n]=out
     (ORIGINAL/'robots.txt').write_bytes(robots);(ORIGINAL/'sitemap.xml').write_bytes(sitemap)
     manifest={n:{'before':hashlib.sha256(originals[n]).hexdigest(),'after':hashlib.sha256(b).hexdigest()} for n,b in changes.items()}
