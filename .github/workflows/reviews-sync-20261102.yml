@@ -1,0 +1,32 @@
+name: Publish Touring Google reviews
+on:
+  push:
+    branches: [main]
+    paths: ['reviews-sync-20261102/**', '.github/workflows/reviews-sync-20261102.yml']
+permissions:
+  contents: read
+concurrency:
+  group: lakeland-touring-deployment
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install paramiko==3.5.1 beautifulsoup4==4.14.3
+      - name: Back up, publish and verify
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 reviews-sync-20261102/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: touring-reviews-rollback
+          path: |
+            review-rollback/
+            REVIEWS-VERIFIED.json
+          retention-days: 30
