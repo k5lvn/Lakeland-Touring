@@ -1,21 +1,21 @@
 {
   "location_id": "locations/7797320272030899713",
-  "checked_at": "2026-11-10T13:15:16.637Z",
+  "checked_at": "2026-11-11T08:48:51.271Z",
   "total_count": 2,
   "average_rating": 5,
   "reviews": [
     {
       "id": "AbFvOqkhZ--1m0K7IF8cmqbZEix1wtSrhcHA0JedUs3VQ6kjZE-ptsBHb1NiUpu3fxtdF_4HPe-nWQ",
       "author": "Samantha Watson",
-      "text": "Hired this beautiful caravan for my family holiday. Lakeland Touring could not have been any nicer or helpful. The caravan itself was lovely clean and tidy. Everything we needed and more. And we will definitely be using them again for our next adventure.\nCouldn’t be any happier.",
       "stars": 5,
+      "text": "Hired this beautiful caravan for my family holiday. Lakeland Touring could not have been any nicer or helpful. The caravan itself was lovely clean and tidy. Everything we needed and more. And we will definitely be using them again for our next adventure.\nCouldn’t be any happier.",
       "created_at": "2026-10-20T20:40:08.520841Z"
     },
     {
       "id": "AbFvOqlZIppTjGRnBzvLjY48B-_tI8wYL0EjAmbuOgiuxllY24usnmuzGhvhQ-rqNbKyrEfulBaTig",
       "author": "Cam Ross",
-      "text": "Rented a caravan from Lakeland touring , awesome caravan and brilliant service would use again\n\n10/10",
       "stars": 5,
+      "text": "Rented a caravan from Lakeland touring , awesome caravan and brilliant service would use again\n\n10/10",
       "created_at": "2026-10-22T16:09:49.397266Z"
     }
   ]
