@@ -1,6 +1,15 @@
 const {chromium}=require('playwright');
 const fs=require('fs');
 (async()=>{
+ const sitemap=fs.readFileSync('luxury-qa/sitemap.xml','utf8');
+ for(const retired of ['garage.php?view=browse','owners-garage.html','owner-terms.html','garage-privacy.html'])if(sitemap.includes(retired))throw Error('Obsolete URL remains in sitemap: '+retired);
+ for(const kept of ['scottish-borders-caravan-guide.html','/reviews/'])if(!sitemap.includes(kept))throw Error('Required indexable URL missing from sitemap: '+kept);
+ const homeHtml=fs.readFileSync('luxury-qa/index.html','utf8');
+ const title=(homeHtml.match(/<title>(.*?)<\/title>/i)||[])[1]||'';
+ if(title.length>60||!title.includes('Cumbria')||!title.includes('Delivered'))throw Error('Homepage SEO title is missing or too long: '+title);
+ if(!homeHtml.includes('href="/reviews/"'))throw Error('Homepage Reviews link is missing');
+ if((homeHtml.match(/<div[^>]*\bdata-dk-review-banner=/g)||[]).length!==1)throw Error('Google Reviews banner was not preserved');
+ for(const retired of ['garage.php?view=browse','owners-garage.html','owner-terms.html','garage-privacy.html'])if(homeHtml.includes(retired))throw Error('Obsolete homepage reference remains: '+retired);
  const browser=await chromium.launch({headless:true});
  try {
  for(const width of [390,1440]){
@@ -11,7 +20,7 @@ const fs=require('fs');
    if(/google-analytics|googletagmanager|facebook\.net/.test(u.hostname))return route.abort();
    return route.continue();
   });
-  for(const name of ['','booking.html','caravan-hire-faq.html','explore-destinations.html','lake-district-caravan-guide.html','analytics-privacy.html']){
+  for(const name of ['','booking.html','caravan-hire-faq.html','explore-destinations.html','lake-district-caravan-guide.html','scottish-borders-caravan-guide.html','analytics-privacy.html']){
    await page.goto('https://lakelandtouring.uk/'+name,{waitUntil:'domcontentloaded'});
    await page.locator('h1').waitFor();
    const bg=await page.locator('body').evaluate(x=>getComputedStyle(x).backgroundColor);if(bg!=='rgb(16, 31, 33)')throw Error('Theme mismatch '+name+' '+bg);
