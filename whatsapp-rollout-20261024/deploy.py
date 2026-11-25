@@ -1,6 +1,8 @@
 import base64, hashlib, html, json, os, re, socket, stat, time, urllib.parse, urllib.request
 from pathlib import Path, PurePosixPath
 import paramiko
+import http.client
+import urllib.error
 CONFIG = {
  'Digital-Kinetics': ('Digital Kinetics','/public','https://www.digitalkinetics.uk/'),
  'Lakeland-Developments': ('Lakeland Developments','/','https://www.lakelanddevelopments.uk/'),
@@ -119,6 +121,18 @@ def with_session(operation):
     raise
    if t is not None:t.close()
    time.sleep(attempt+1)
+def fetch_public(url, phase):
+ for attempt in range(3):
+  try:
+   req=urllib.request.Request(url+'?wa-'+phase+'='+str(time.time_ns()),headers={'Cache-Control':'no-cache','Accept-Encoding':'identity'})
+   with urllib.request.urlopen(req,timeout=45) as response:
+    return response.read()
+  except urllib.error.HTTPError as exc:
+   if exc.code < 500 or attempt==2:raise
+  except (http.client.IncompleteRead,http.client.RemoteDisconnected,urllib.error.URLError,ConnectionError,TimeoutError):
+   if attempt==2:raise
+  time.sleep(attempt+1)
+
 def rp(n): return str(PurePosixPath(root)/n)
 def read(n):
  def get():
@@ -283,9 +297,9 @@ try:
   # Verify each target is publicly served and matches before editing.
   url=base+urllib.parse.quote(name)
   try:
-   with urllib.request.urlopen(url+'?wa-baseline='+str(time.time_ns()),timeout=40) as r: public=r.read()
-  except Exception:
-   if name=='index.html':raise
+   public=fetch_public(url,'baseline')
+  except urllib.error.HTTPError as exc:
+   if name=='index.html' or exc.code not in (401,403,404,410):raise
    continue
   if public!=data:
    if name=='index.html':raise RuntimeError('Homepage public source differs')
@@ -310,7 +324,7 @@ try:
   assert read(name)==data,'SFTP verification failed'
  for name,data in release.items():
   url=base+urllib.parse.quote(name)
-  with urllib.request.urlopen(url+'?wa-verify='+str(time.time_ns()),timeout=45) as r:actual=r.read()
+  actual=fetch_public(url,'verify')
   assert actual==data,'Public verification failed: '+name
   results.append({'url':url,'sha256':hashlib.sha256(actual).hexdigest()})
   print('LIVE VERIFIED:',url,flush=True)
