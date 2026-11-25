@@ -278,7 +278,23 @@ def tidy_review(match):
   '<div>'+heading+description+'<div class="lt-review-links"><a class="lt-review-text" href="'+read+'">Read our Google reviews</a>'
   '<a class="lt-review-text" href="'+dest+'" target="_blank" rel="noopener noreferrer">Leave a Google review</a></div></div></section>')
 
+# Retired owner pages can still occur in footers inherited from older releases.
+GARAGE_ANCHOR = re.compile(
+ r"""<a\b[^>]*?\shref\s*=\s*(["'])(?P<href>[^"']*)\1[^>]*>.*?</a\s*>""",
+ re.I | re.S,
+)
+GARAGE_PAGES = {'garage.php', 'owners-garage.html', 'owner-terms.html', 'garage-privacy.html', 'marketplace.php'}
+
+def remove_garage_link(match):
+ href = urllib.parse.urlsplit(html.unescape(match['href']).strip())
+ if (href.scheme in ('', 'http', 'https') and
+     href.hostname in (None, 'lakelandtouring.uk', 'www.lakelandtouring.uk') and
+     href.path.rstrip('/').rsplit('/', 1)[-1].casefold() in GARAGE_PAGES):
+  return ''
+ return match.group()
+
 def tidy_footer(page):
+ page=GARAGE_ANCHOR.sub(remove_garage_link,page)
  page=REVIEW_BLOCK.sub(tidy_review,page)
  if SOCIAL_BLOCK.search(page):
   page=SOCIAL_BLOCK.sub(lambda _:FOOTER_SOCIAL,page,count=1)
