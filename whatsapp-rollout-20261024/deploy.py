@@ -144,6 +144,23 @@ def walk(folder='',depth=0):
 
 from html.parser import HTMLParser
 
+ACTION_OUTLINES = '''<style id="lt-action-outlines">
+html body :is(.lt-button, .w365-review .w365-review-action a, #w365-review .w365-review-button, .page-reviews .btn, .lt-cta, a.btn-primary, a.btn-secondary) {
+  background: transparent !important;
+  border: 1.5px solid #65c7bb !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}
+html body :is(.lt-button,.w365-review-action a,.page-reviews .btn,.lt-cta,a.btn-primary,a.btn-secondary):hover {
+  text-decoration: underline;
+  text-underline-offset: .22em;
+}
+html body :is(.lt-button,.w365-review-action a,.page-reviews .btn,.lt-cta,a.btn-primary,a.btn-secondary):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+</style>'''
+
 # Preserve page markup and URLs; edit only user-facing control labels.
 ARROW = re.compile(r'[ \t\u00a0]*(?:[↗→←↖➜➝➞➔]|&(?:nearr|nearrow|rarr|rightarrow|larr|leftarrow);|&#(?:x(?:219[0279]|279[cd4e])|859[24]|8599|1014[24]);)[\ufe0e\ufe0f]?', re.I)
 LABEL_ATTR = re.compile(r'''(\b(?:aria-label|title)\s*=\s*)(["'])(.*?)\2''', re.I|re.S)
@@ -209,6 +226,8 @@ try:
   text=re.sub(r'\n?<!-- worx365-whatsapp-start -->.*?<!-- worx365-whatsapp-end -->\s*','',text,flags=re.S)
   text=re.sub(r'</body\s*>',lambda m:block+'\n'+m.group(0),text,count=1,flags=re.I)
   assert text.count('id="worx365-whatsapp"')==1
+  text=re.sub(r'<style id="lt-action-outlines">.*?</style>','',text,flags=re.S)
+  text=re.sub(r'</head\s*>',lambda m:ACTION_OUTLINES+m[0],text,count=1,flags=re.I)
   text, count = remove_button_arrows(text)
   if count:print('Touring control labels updated:',name,count,flush=True)
   originals[name]=data;release[name]=text.encode('utf-8')
