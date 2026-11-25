@@ -13,18 +13,18 @@ href = 'https://wa.me/447383660882?text=' + urllib.parse.quote('Hi '+brand+', I 
 block = '''
 <!-- worx365-whatsapp-start -->
 <style id="worx365-whatsapp-style">
-#worx365-whatsapp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 136px);right:24px;z-index:900;display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;min-height:52px;padding:0;border:0;border-radius:0;background:transparent;color:#25D366;text-decoration:none;box-shadow:none;transition:transform .18s ease,filter .18s ease}
-#worx365-whatsapp:hover{background:transparent;transform:translateY(-2px) scale(1.04);filter:drop-shadow(0 5px 12px rgba(26,210,113,.42))}
-#worx365-whatsapp::before{content:"";position:absolute;inset:2px;z-index:0;pointer-events:none;background:rgba(37,211,102,.14);-webkit-backdrop-filter:blur(3px) saturate(150%);backdrop-filter:blur(3px) saturate(150%);-webkit-clip-path:path("M24 3.25a20.75 20.75 0 0 0-17.6 31.75L3.4 44.6l10.1-2.66A20.75 20.75 0 1 0 24 3.25z");clip-path:path("M24 3.25a20.75 20.75 0 0 0-17.6 31.75L3.4 44.6l10.1-2.66A20.75 20.75 0 1 0 24 3.25z")}#worx365-whatsapp:focus-visible{outline:3px solid rgba(255,255,255,.9);outline-offset:4px}
+#worx365-whatsapp{position:fixed;right:18px;bottom:max(18px,env(safe-area-inset-bottom,0px));z-index:900;display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;min-height:52px;padding:0;border:0;border-radius:0;background:transparent;color:#25D366;text-decoration:none;box-shadow:none;transition:transform .18s ease,filter .18s ease}
+#worx365-whatsapp:hover{background:transparent;transform:translateY(-2px);filter:drop-shadow(0 4px 8px rgba(26,210,113,.22))}
+#worx365-whatsapp::before{content:"";position:absolute;left:50%;top:50%;width:48px;height:48px;transform:translate(-50%,-50%);z-index:0;pointer-events:none;background:rgba(37,211,102,.11);-webkit-backdrop-filter:blur(10px) saturate(165%);backdrop-filter:blur(10px) saturate(165%);-webkit-clip-path:path("M24 3.25a20.75 20.75 0 0 0-17.6 31.75L3.4 44.6l10.1-2.66A20.75 20.75 0 1 0 24 3.25z");clip-path:path("M24 3.25a20.75 20.75 0 0 0-17.6 31.75L3.4 44.6l10.1-2.66A20.75 20.75 0 1 0 24 3.25z")}#worx365-whatsapp:focus-visible{outline:3px solid rgba(255,255,255,.9);outline-offset:4px}
 body #worx365-whatsapp{background:transparent!important;color:#25D366!important;border-color:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 body #worx365-whatsapp:hover{background:transparent!important;color:#25D366!important;border-color:transparent!important}
-#worx365-whatsapp svg{position:relative;z-index:1;display:block;width:48px;height:48px;flex-shrink:0;filter:drop-shadow(0 3px 8px rgba(3,26,20,.42));transition:filter .18s ease}
+#worx365-whatsapp svg{position:relative;z-index:1;display:block;width:48px;height:48px;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(3,26,20,.24));transition:filter .18s ease}
 #worx365-whatsapp:hover svg{filter:drop-shadow(0 5px 10px rgba(26,210,113,.38))}
-#worx365-whatsapp svg .wa-bubble{fill:url(#waGlass)!important;stroke:rgba(37,211,102,.96);stroke-width:.85}
+#worx365-whatsapp svg .wa-bubble{fill:transparent!important;stroke:none}
 #worx365-whatsapp svg .wa-phone{fill:#f8fffb!important}
-#worx365-whatsapp svg .wa-reflection{fill:none;stroke:rgba(255,255,255,.72);stroke-width:1.1;stroke-linecap:round;filter:drop-shadow(0 0 1px rgba(255,255,255,.48))}
+#worx365-whatsapp svg .wa-reflection{display:none}
 #worx365-whatsapp span{display:none}
-@media(max-width:760px){#worx365-whatsapp{top:calc(env(safe-area-inset-top,0px) + 124px);right:6%;width:48px;height:48px;min-height:48px}}
+@media(max-width:760px){#worx365-whatsapp{right:14px;bottom:max(14px,env(safe-area-inset-bottom,0px));width:48px;height:48px;min-height:48px}}
 @media print{#worx365-whatsapp{display:none}}
 </style>
 <a id="worx365-whatsapp" href="HREF" target="_blank" rel="noopener noreferrer" aria-label="Message BRAND on WhatsApp">
