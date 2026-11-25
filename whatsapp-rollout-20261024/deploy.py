@@ -94,25 +94,101 @@ backup=Path('whatsapp-rollback');backup.mkdir(exist_ok=True)
 parts=os.environ['SFTP_HOST_PUBLIC_KEY'].strip().split()
 i=next(i for i,p in enumerate(parts) if p.startswith(('ssh-','ecdsa-')))
 key=paramiko.PKey.from_type_string(parts[i],base64.b64decode(parts[i+1],validate=True))
-t=paramiko.Transport(socket.create_connection((os.environ['SFTP_HOST'].strip(),22),timeout=25))
-t.start_client(timeout=25)
-assert t.get_remote_server_key().asbytes()==key.asbytes(),'SSH host identity mismatch'
-t.auth_password(os.environ['SFTP_USER'].strip(),os.environ['SFTP_PASSWORD'])
-s=paramiko.SFTPClient.from_transport(t);s.get_channel().settimeout(45)
+s = t = None
+opened = 0
+def connect():
+ global s, t, opened
+ if t is not None:
+  t.close()
+ t = paramiko.Transport(socket.create_connection((os.environ['SFTP_HOST'].strip(),22),timeout=25))
+ t.start_client(timeout=25)
+ assert t.get_remote_server_key().asbytes()==key.asbytes(),'SSH host identity mismatch'
+ t.auth_password(os.environ['SFTP_USER'].strip(),os.environ['SFTP_PASSWORD'])
+ t.set_keepalive(12)
+ s=paramiko.SFTPClient.from_transport(t)
+ s.get_channel().settimeout(45)
+ opened=time.monotonic()
+def with_session(operation):
+ for attempt in range(3):
+  try:
+   if t is None or not t.is_active() or time.monotonic()-opened>45:
+    connect()
+   return operation()
+  except (EOFError, ConnectionError, socket.timeout, paramiko.SSHException) as exc:
+   if attempt==2 or isinstance(exc,paramiko.AuthenticationException):
+    raise
+   if t is not None:t.close()
+   time.sleep(attempt+1)
 def rp(n): return str(PurePosixPath(root)/n)
 def read(n):
- with s.open(rp(n),'rb') as f:return f.read()
-def put(n,data):
- tmp=rp(n)+'.whatsapp-stage'
- with s.open(tmp,'wb') as f:f.write(data)
- s.chmod(tmp,0o644);s.posix_rename(tmp,rp(n))
+ def get():
+  with s.open(rp(n),'rb') as f:return f.read()
+ return with_session(get)
+def put(n,data,expected):
+ def replace():
+  with s.open(rp(n),'rb') as f: current=f.read()
+  if current==data:return
+  assert current==expected,'Concurrent live edit: '+n
+  tmp=rp(n)+'.whatsapp-stage'
+  with s.open(tmp,'wb') as f:f.write(data)
+  s.chmod(tmp,0o644)
+  s.posix_rename(tmp,rp(n))
+ return with_session(replace)
 def walk(folder='',depth=0):
  assert depth<=5,'Unexpected page depth'
- for a in s.listdir_attr(rp(folder)):
+ for a in with_session(lambda:s.listdir_attr(rp(folder))):
   if a.filename.startswith('.') or re.search(r'admin|backup|vendor|node_modules|private|upload|passport|certificate',a.filename,re.I):continue
   name=str(PurePosixPath(folder)/a.filename)
   if stat.S_ISDIR(a.st_mode):yield from walk(name,depth+1)
   elif stat.S_ISREG(a.st_mode) and name.endswith('.html') and a.st_size<2000000:yield name
+
+from html.parser import HTMLParser
+
+# Preserve page markup and URLs; edit only user-facing control labels.
+ARROW = re.compile(r'[ \t\u00a0]*(?:[↗→←↖➜➝➞➔]|&(?:nearr|nearrow|rarr|rightarrow|larr|leftarrow);|&#(?:x(?:219[0279]|279[cd4e])|859[24]|8599|1014[24]);)[\ufe0e\ufe0f]?', re.I)
+LABEL_ATTR = re.compile(r'''(\b(?:aria-label|title)\s*=\s*)(["'])(.*?)\2''', re.I|re.S)
+
+class ButtonLabels(HTMLParser):
+ def __init__(self, page):
+  super().__init__(convert_charrefs=False)
+  self.page = page
+  self.lines = [0] + [match.end() for match in re.finditer('\n', page)]
+  self.controls = []
+  self.changes = []
+ def source_offset(self):
+  row, column = self.getpos()
+  return self.lines[row-1] + column
+ def handle_starttag(self, tag, attrs):
+  if tag not in ('a','button'):return
+  start = self.source_offset()
+  self.controls.append((tag,start,self.get_starttag_text(),dict(attrs)))
+ def handle_endtag(self, tag):
+  if not self.controls or self.controls[-1][0] != tag:return
+  _,start,opening,attrs = self.controls.pop()
+  stop = self.source_offset()
+  inner = self.page[start+len(opening):stop]
+  if not ARROW.search(inner+opening):return
+  def strip_attr(match):
+   return match[1]+match[2]+ARROW.sub('',match[3]).strip()+match[2]
+  new_opening = LABEL_ATTR.sub(strip_attr,opening)
+  # Split markup from text so SVG paths and non-label attributes stay intact.
+  pieces = re.split(r'(<!--.*?-->|<[^>]+>)',inner,flags=re.S)
+  cleaned = ''.join(bit if i%2 else ARROW.sub('',bit) for i,bit in enumerate(pieces))
+  if ARROW.search(inner) and not html.unescape(re.sub(r'<[^>]*>','',cleaned)).strip() and '<svg' not in cleaned and '<img' not in cleaned:
+   label = ARROW.sub('',attrs.get('aria-label','') or attrs.get('title','')).strip()
+   if not label:label = 'Previous' if '←' in html.unescape(inner) else 'Continue'
+   cleaned = html.escape(label)
+  updated = new_opening+cleaned
+  if updated!=opening+inner:self.changes.append((start,stop,updated))
+
+def remove_button_arrows(page):
+ parser=ButtonLabels(page)
+ parser.feed(page)
+ parser.close()
+ for start,stop,value in reversed(parser.changes):
+  page=page[:start]+value+page[stop:]
+ return page,len(parser.changes)
+
 originals={};release={};changed=[];results=[]
 try:
  for name in walk():
@@ -130,9 +206,11 @@ try:
   if public!=data:
    if name=='index.html':raise RuntimeError('Homepage public source differs')
    continue
-  text=re.sub(r'<!-- worx365-whatsapp-start -->.*?<!-- worx365-whatsapp-end -->\s*','',text,flags=re.S)
+  text=re.sub(r'\n?<!-- worx365-whatsapp-start -->.*?<!-- worx365-whatsapp-end -->\s*','',text,flags=re.S)
   text=re.sub(r'</body\s*>',lambda m:block+'\n'+m.group(0),text,count=1,flags=re.I)
   assert text.count('id="worx365-whatsapp"')==1
+  text, count = remove_button_arrows(text)
+  if count:print('Touring control labels updated:',name,count,flush=True)
   originals[name]=data;release[name]=text.encode('utf-8')
  assert 'index.html' in release,'No verified homepage'
  for name,data in originals.items():
@@ -140,7 +218,8 @@ try:
  Path('WHATSAPP-PLAN.json').write_text(json.dumps({'brand':brand,'number':'07383 660882','files':list(release)},indent=2))
  for name,data in release.items():
   assert read(name)==originals[name],'Concurrent live edit: '+name
-  changed.append(name);put(name,data)
+  if data==originals[name]:continue
+  changed.append(name);put(name,data,originals[name])
   assert read(name)==data,'SFTP verification failed'
  for name,data in release.items():
   url=base+urllib.parse.quote(name)
@@ -153,9 +232,9 @@ except BaseException:
  errors=[]
  for name in reversed(changed):
   try:
-   put(name,originals[name]);assert read(name)==originals[name]
+   put(name,originals[name],release[name]);assert read(name)==originals[name]
   except Exception:errors.append(name)
  if errors:print('ROLLBACK NEEDS ATTENTION:',errors,flush=True)
  raise
 finally:
- s.close();t.close()
+ if t is not None:t.close()
