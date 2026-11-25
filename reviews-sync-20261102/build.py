@@ -60,8 +60,9 @@ def build(home,data):
  updated=str(s).encode()
  for asset in s.select('[data-dk-review-banner]'):asset.decompose()
  s.body['class']=['page-reviews']
- for a in s.select('nav a'):
-  a.attrs.pop('aria-current',None);a['class']=[]
+ # Only reset page navigation. Footer contact links keep their glass icon classes.
+ for a in s.select('header nav a'):
+  a.attrs.pop('aria-current',None)
   if a.get('href')=='/reviews/':a['aria-current']='page'
  s.title.string='Google Reviews | Lakeland Touring, Carlisle'
  s.find('link',rel='canonical')['href']=BASE+'reviews/'
