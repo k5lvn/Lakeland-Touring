@@ -17,12 +17,12 @@ block = '''
 #worx365-whatsapp:hover{background:transparent;transform:scale(1.04)}#worx365-whatsapp:focus-visible{outline:3px solid #111;outline-offset:4px}
 body #worx365-whatsapp{background:transparent!important;color:#25D366!important;border-color:transparent!important;box-shadow:none!important}
 body #worx365-whatsapp:hover{background:transparent!important;color:#25D366!important;border-color:transparent!important}
-#worx365-whatsapp svg{width:44px;height:44px;flex-shrink:0}#worx365-whatsapp span{display:none}
+#worx365-whatsapp svg{display:block;width:44px;height:44px;flex-shrink:0}#worx365-whatsapp svg .wa-bubble{fill:#25D366!important}#worx365-whatsapp svg .wa-phone{fill:#fff!important}#worx365-whatsapp span{display:none}
 @media(max-width:760px){#worx365-whatsapp{top:calc(env(safe-area-inset-top,0px) + 124px);right:6%;width:44px;height:44px;min-height:44px}}
 @media print{#worx365-whatsapp{display:none}}
 </style>
 <a id="worx365-whatsapp" href="HREF" target="_blank" rel="noopener noreferrer" aria-label="Message BRAND on WhatsApp">
-<svg viewBox="0 0 448 512" aria-hidden="true"><path fill="#25D366" d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+<svg viewBox="0 0 48 48" role="img" aria-hidden="true"><path class="wa-bubble" d="M24 3.25a20.75 20.75 0 0 0-17.6 31.75L3.4 44.6l10.1-2.66A20.75 20.75 0 1 0 24 3.25z"/><path class="wa-phone" transform="translate(12 12)" d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1C10.61 21.01 2.99 13.39 2.99 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.25 1.02L6.62 10.79z"/></svg>
 <span>WhatsApp us</span></a>
 <!-- worx365-whatsapp-end -->
 '''.replace('HREF',html.escape(href,quote=True)).replace('BRAND',html.escape(brand,quote=True))
