@@ -164,7 +164,7 @@ def validate(name,before,after):
         assert not (path=='garage.php' and 'view=browse' in parts.query.split('&')),(name,'retired marketplace link',anchor['href'])
     if name.startswith(THEME_ONLY):return True
     self_tow=re.findall(r'self[\s‐‑–-]*tow',b.get_text(' ',strip=True),re.I)
-    if name in ('index.html','booking.html','caravan-hire-faq.html'):
+    if name in ('index.html','booking.html','caravan-hire-faq.html','holiday-planner.html'):
         assert b.select_one('[data-self-tow-secondary="true"]'),(name,'self-tow option copy')
         assert len(b.select('[data-hire-option]'))==2,(name,'exactly two hire options')
         content=b.get_text(' ',strip=True)
