@@ -1,0 +1,30 @@
+name: Improve search and enquiry journeys
+on:
+  pull_request:
+    paths: ['search-enquiries-20261125/**', '.github/workflows/search-enquiries-20261125.yml']
+  push:
+    branches: [main]
+    paths: ['search-enquiries-20261125/**', '.github/workflows/search-enquiries-20261125.yml']
+permissions:
+  contents: read
+concurrency:
+  group: design-standard-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - if: github.event_name == 'pull_request'
+        run: python3 search-enquiries-20261125/publish.py
+      - if: github.event_name == 'push'
+        run: python3 -m pip -q install paramiko==3.5.1
+      - if: github.event_name == 'push'
+        name: Back up, update and verify the public site
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+        run: python3 search-enquiries-20261125/publish.py --publish

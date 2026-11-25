@@ -1,0 +1,137 @@
+{
+  "index.html": [
+    {
+      "old": "<title>Luxury Caravan Hire Cumbria | Delivered | Lakeland Touring</title>",
+      "new": "<title>Touring Caravan Hire in Carlisle | Self-Tow or Delivered</title>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Six-berth luxury caravan hire from Carlisle, Cumbria. Delivered, set up and collected at your Lake District campsite; ask about further UK delivery.\" name=\"description\"/>",
+      "new": "<meta content=\"Hire a six-berth Elddis Avanté 866 from Lakeland Touring. Collect your touring caravan in Carlisle to tow yourself, or ask for delivery to an approved campsite.\" name=\"description\"/>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Lakeland Touring — Boutique Luxury on Tour\" property=\"og:title\"/>",
+      "new": "<meta content=\"Touring Caravan Hire in Carlisle | Self-Tow or Delivered\" property=\"og:title\"/>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Luxury caravan stays, delivered, beautifully prepared and collected. Bespoke quotations. You book your campsite separately.\" property=\"og:description\"/>",
+      "new": "<meta content=\"Hire a six-berth Elddis Avanté 866 from Lakeland Touring. Collect your touring caravan in Carlisle to tow yourself, or ask for delivery to an approved campsite.\" property=\"og:description\"/>",
+      "count": 1
+    },
+    {
+      "old": "<h1>Lakeland Touring.<br/><em>Boutique Luxury<br/>on Tour.</em></h1>",
+      "new": "<h1>Touring caravan hire<br/><em>from Carlisle</em></h1>",
+      "count": 1
+    },
+    {
+      "old": "<p class=\"lt-lead\">Fully delivered. Beautifully prepared.<br/>Effortlessly enjoyed.</p><p>Luxury caravan hire in Carlisle and Cumbria. We deliver and set up our six-berth Elddis Avanté 866 at your chosen Lake District campsite, and consider UK destinations further afield by arrangement. Your family can simply arrive and enjoy a prepared stay, without towing.</p>",
+      "new": "<p class=\"lt-lead\">Tow it yourself or have it delivered.</p><p>Our Elddis Avanté 866 is a six-berth towable touring caravan. Collect it in Carlisle for a self-tow holiday, or we can deliver it, set it up and collect it from your approved campsite. Tell us your dates and destination for a quote.</p>",
+      "count": 1
+    },
+    {
+      "old": "Six-berth luxury caravan stays delivered and set up from Carlisle, Cumbria. Bespoke quotations; campsite fees are separate.",
+      "new": "Self-tow touring caravan rental from Carlisle or delivery to an approved campsite. Six-berth Elddis Avanté 866, with hire quoted for your dates. Campsite fees are separate.",
+      "count": 1
+    },
+    {
+      "old": "<a class=\"lt-button lt-outline\" href=\"#how\">The Experience</a>",
+      "new": "<a class=\"lt-button lt-outline\" href=\"#how\">The Experience</a><a class=\"lt-button lt-outline\" href=\"/downloads/lakeland-touring-brochure.pdf\" download>Download the caravan brochure (PDF)</a>",
+      "count": 1
+    }
+  ],
+  "booking.html": [
+    {
+      "old": "<title>Bespoke Delivered Caravan Quotations | Lakeland Touring</title>",
+      "new": "<title>Caravan Hire Quotes in Carlisle | Lakeland Touring</title>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Delivered caravan stays from Carlisle. We deliver, set up and collect; you book your campsite separately. Contact Lakeland Touring for a bespoke quotation.\" name=\"description\"/>",
+      "new": "<meta content=\"Get a quote for self-tow caravan hire from Carlisle or delivery to your campsite. Compare hire options, see delivery charges and download the caravan brochure.\" name=\"description\"/>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Bespoke Delivered Caravan Quotations | Lakeland Touring\" property=\"og:title\"/>",
+      "new": "<meta content=\"Caravan Hire Quotes in Carlisle | Lakeland Touring\" property=\"og:title\"/>",
+      "count": 1
+    },
+    {
+      "old": "<h1>Choose your caravan hire option.</h1>",
+      "new": "<h1>Get a touring caravan hire quote</h1>",
+      "count": 1
+    },
+    {
+      "old": "<a class=\"lt-button lt-outline\" href=\"/#contact\">Quotation Details</a>",
+      "new": "<a class=\"lt-button lt-outline\" href=\"/#contact\">Quotation Details</a><a class=\"lt-button lt-outline\" href=\"/downloads/lakeland-touring-brochure.pdf\" download>Download the caravan brochure (PDF)</a>",
+      "count": 1
+    }
+  ],
+  "holiday-planner.html": [
+    {
+      "old": "<title>Luxury Caravan Stay Planning | Lakeland Touring</title>",
+      "new": "<title>Plan a Touring Caravan Holiday | Lakeland Touring</title>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Delivered caravan stays from Carlisle. We deliver, set up and collect; you book your campsite separately. Contact Lakeland Touring for a bespoke quotation.\" name=\"description\"/>",
+      "new": "<meta content=\"Plan your dates, campsite and collection or delivery from Carlisle. Use the six-berth caravan checklist before asking Lakeland Touring for availability.\" name=\"description\"/>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Luxury Caravan Stay Planning | Lakeland Touring\" property=\"og:title\"/>",
+      "new": "<meta content=\"Plan a Touring Caravan Holiday | Lakeland Touring\" property=\"og:title\"/>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Delivered caravan stays from Carlisle. We deliver, set up and collect; you book your campsite separately. Contact Lakeland Touring for a bespoke quotation.\" property=\"og:description\"/>",
+      "new": "<meta content=\"Plan your dates, campsite and collection or delivery from Carlisle. Use the six-berth caravan checklist before asking Lakeland Touring for availability.\" property=\"og:description\"/>",
+      "count": 1
+    },
+    {
+      "old": "<h1>Choose your caravan hire option.</h1>",
+      "new": "<h1>Plan your touring caravan holiday</h1>",
+      "count": 1
+    },
+    {
+      "old": "Our Elddis Avanté 866 accommodates up to six guests. We offer two hire options: self-tow from Carlisle, or delivery with setup and collection at your approved campsite. Tell us your dates, guest numbers and destination, and we’ll confirm availability and provide a clear quotation.</p>",
+      "new": "Start with your travel dates, the number of guests and the campsite you have in mind. For self-tow, have your tow vehicle details ready. For delivery, check that the campsite accepts a touring caravan delivered by the hire company. Then <a href=\"/booking.html\">ask us for availability and a quotation</a>.</p>",
+      "count": 1
+    }
+  ],
+  "caravan-hire-faq.html": [
+    {
+      "old": "<title>Delivered Caravan Hire FAQs | Lakeland Touring</title>",
+      "new": "<title>Self-Tow and Delivered Caravan Hire FAQs | Lakeland Touring</title>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Delivered caravan stays from Carlisle. We deliver, set up and collect; you book your campsite separately. Contact Lakeland Touring for a bespoke quotation.\" name=\"description\"/>",
+      "new": "<meta content=\"Find answers about towing requirements, Carlisle collection, campsite bookings and the four delivery journeys included in a Lakeland Touring caravan hire quote.\" name=\"description\"/>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Delivered Caravan Hire FAQs | Lakeland Touring\" property=\"og:title\"/>",
+      "new": "<meta content=\"Self-Tow and Delivered Caravan Hire FAQs | Lakeland Touring\" property=\"og:title\"/>",
+      "count": 1
+    },
+    {
+      "old": "<meta content=\"Delivered caravan stays from Carlisle. We deliver, set up and collect; you book your campsite separately. Contact Lakeland Touring for a bespoke quotation.\" property=\"og:description\"/>",
+      "new": "<meta content=\"Find answers about towing requirements, Carlisle collection, campsite bookings and the four delivery journeys included in a Lakeland Touring caravan hire quote.\" property=\"og:description\"/>",
+      "count": 1
+    }
+  ],
+  "analytics-consent.js": [
+    {
+      "old": " document.addEventListener('click',event=>{const link=event.target.closest?.('a[href]');if(!link)return;const href=link.getAttribute('href')||'';if(/^tel:/i.test(href))track('contact_phone_click');else if(/^mailto:/i.test(href))track('contact_email_click');});",
+      "new": " document.addEventListener('click', event => {\n  const link = event.target.closest?.('a[href]');\n  if (!link) return;\n  const url = new URL(link.href, location.href);\n  let method;\n  if (url.protocol === 'tel:') {\n   track('contact_phone_click');\n   method = 'telephone';\n  } else if (url.protocol === 'mailto:') {\n   track('contact_email_click');\n   method = 'email';\n  } else if (url.protocol === 'https:' && url.hostname === 'wa.me' && url.pathname === '/447383660882') {\n   track('contact_whatsapp_click');\n   method = 'whatsapp';\n  }\n  const quotePage = location.pathname === '/booking.html';\n  const quoteSection = link.closest('main #contact, main .lt-enquiry-main');\n  if (method && (quotePage || quoteSection) && read() === true && loaded && !window['ga-disable-'+id]) {\n   gtag('event','quote_enquiry_start',{contact_method:method});\n  }\n });",
+      "count": 1
+    },
+    {
+      "old": "contact_phone_click:{contact_method:'telephone'},",
+      "new": "contact_phone_click:{contact_method:'telephone'},contact_whatsapp_click:{contact_method:'whatsapp'},",
+      "count": 1
+    }
+  ]
+}
