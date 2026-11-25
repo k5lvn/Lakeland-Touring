@@ -206,6 +206,73 @@ def remove_button_arrows(page):
   page=page[:start]+value+page[stop:]
  return page,len(parser.changes)
 
+
+# Use the same artwork and glass styling in both contact placements.
+def footer_contacts():
+ css = block.split('<style id="worx365-whatsapp-style">',1)[1].split('</style>',1)[0]
+ wa_css = css.split('#w365-contact-rail{',1)[0].replace('#worx365-whatsapp','#lt-footer-whatsapp').replace('waGlass','waFooterGlass')
+ fb_css = css[css.index('#w365-contact-rail .glass-social{'):css.index('@media print{#w365-contact-rail')].replace('#w365-contact-rail','#lt-footer-social')
+ anchors = block.split('<div id="w365-contact-rail"',1)[1].split('>\n',1)[1].split('</div>',1)[0]
+ anchors = anchors.replace('id="worx365-whatsapp"','id="lt-footer-whatsapp"').replace('waGlass','waFooterGlass')
+ return ('<!-- worx365-socials-start -->\n<style>'+wa_css+fb_css+
+  '\n#lt-footer-social{display:flex;align-items:center;justify-content:center;gap:6px;padding:18px 0;margin:12px auto 0}'
+  '\n#lt-footer-social a{flex:none} #lt-footer-whatsapp{position:relative!important;inset:auto!important}'
+  '\n@media print{#lt-footer-social{display:none}}</style>\n'
+  '<nav id="lt-footer-social" aria-label="Lakeland Touring social links">'+anchors+'</nav>\n<!-- worx365-socials-end -->')
+
+FOOTER_SOCIAL = footer_contacts()
+SOCIAL_BLOCK = re.compile(r'<!-- worx365-socials-start -->.*?<!-- worx365-socials-end -->', re.S)
+REVIEW_BLOCK = re.compile(r'<section\b(?=[^>]*\bclass=["\']w365-review["\'])[^>]*>.*?</section>',re.I|re.S)
+REVIEW_STYLE = '''<style id="lt-review-layout">
+html body #lt-google-review{display:grid!important;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:clamp(15px,3vw,32px);max-width:840px;margin:32px auto;padding:clamp(20px,4vw,38px);border:1px solid #375d5a;border-radius:14px;background:#14292b;color:#edf5ef;text-align:left;box-sizing:border-box}
+#lt-google-review h2{margin:0 0 7px;font-size:clamp(1.35rem,3vw,2rem);line-height:1.15}
+#lt-google-review p{max-width:56ch;margin:0;line-height:1.55}
+#lt-google-review .lt-review-links{display:flex;flex-wrap:wrap;align-items:center;gap:0 22px;margin-top:6px}
+html body #lt-google-review a.lt-review-text{display:inline-flex!important;align-items:center;min-height:44px;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;color:#a2e1d8!important;text-decoration:underline;text-underline-offset:.22em;font:inherit;font-weight:600}
+html body #lt-google-review a.lt-review-g{display:grid!important;place-items:center;box-sizing:border-box;width:58px;height:58px;min-width:58px;padding:12px!important;background:#fff!important;border:0!important;border-radius:50%!important;box-shadow:none!important}
+#lt-google-review .lt-review-g img{display:block;width:34px;height:34px;object-fit:contain;background:transparent;border:0;padding:0}
+#lt-google-review a:focus-visible{outline:2px solid #baf9ec;outline-offset:4px}
+@media(max-width:620px){html body #lt-google-review{margin:24px 16px;padding:18px;align-items:start;gap:14px}#lt-google-review .lt-review-links{gap:0 16px}}
+@media(max-width:380px){html body #lt-google-review{grid-template-columns:1fr}}
+</style>'''
+
+class ReviewTargets(HTMLParser):
+ def __init__(self):
+  super().__init__()
+  self.read_url = self.write_url = self.logo = None
+ def handle_starttag(self,tag,attrs):
+  a=dict(attrs)
+  href=a.get('href','')
+  if tag=='a' and href.rstrip('/')=='/reviews':self.read_url=href
+  if tag=='a' and href.startswith('https://g.page/'):self.write_url=href
+  if tag=='img' and 'google-g-official' in a.get('src',''):self.logo=a['src']
+
+def tidy_review(match):
+ card = match.group()
+ target=ReviewTargets()
+ target.feed(card)
+ assert target.write_url and target.logo,'Unrecognised Google review target'
+ dest=html.escape(target.write_url,quote=True)
+ read=html.escape(target.read_url or '/reviews/',quote=True)
+ logo=html.escape(target.logo,quote=True)
+ heading=re.search(r'<h2\b[^>]*>.*?</h2>',card,re.S).group()
+ description=re.search(r'<p\b[^>]*>.*?</p>',card,re.S).group()
+ return ('<section id="lt-google-review" class="w365-review" aria-labelledby="w365-review-title">'
+  '<a class="lt-review-g" href="'+dest+'" target="_blank" rel="noopener noreferrer" aria-label="Write a Lakeland Touring review on Google"><img loading="lazy" alt="" src="'+logo+'" width="34" height="34"></a>'
+  '<div>'+heading+description+'<div class="lt-review-links"><a class="lt-review-text" href="'+read+'">Read our Google reviews</a>'
+  '<a class="lt-review-text" href="'+dest+'" target="_blank" rel="noopener noreferrer">Leave a Google review</a></div></div></section>')
+
+def tidy_footer(page):
+ page=REVIEW_BLOCK.sub(tidy_review,page)
+ if SOCIAL_BLOCK.search(page):
+  page=SOCIAL_BLOCK.sub(lambda _:FOOTER_SOCIAL,page,count=1)
+ elif '</footer>' in page.lower():
+  page=re.sub(r'</footer>',lambda m:FOOTER_SOCIAL+m[0],page,count=1,flags=re.I)
+ page=re.sub(r'<style id="lt-review-layout">.*?</style>','',page,flags=re.S)
+ if 'id="lt-google-review"' in page:
+  page=re.sub(r'</head\s*>',lambda m:REVIEW_STYLE+m[0],page,count=1,flags=re.I)
+ return page
+
 originals={};release={};changed=[];results=[]
 try:
  for name in walk():
@@ -228,6 +295,7 @@ try:
   assert text.count('id="worx365-whatsapp"')==1
   text=re.sub(r'<style id="lt-action-outlines">.*?</style>','',text,flags=re.S)
   text=re.sub(r'</head\s*>',lambda m:ACTION_OUTLINES+m[0],text,count=1,flags=re.I)
+  text = tidy_footer(text)
   text, count = remove_button_arrows(text)
   if count:print('Touring control labels updated:',name,count,flush=True)
   originals[name]=data;release[name]=text.encode('utf-8')
