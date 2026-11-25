@@ -244,7 +244,9 @@ html body #lt-google-review{display:grid!important;grid-template-columns:auto mi
 #lt-google-review .lt-review-links{display:flex;flex-wrap:wrap;align-items:center;gap:0 22px;margin-top:6px}
 html body #lt-google-review a.lt-review-text{display:inline-flex!important;align-items:center;min-height:44px;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;color:#a2e1d8!important;text-decoration:underline;text-underline-offset:.22em;font:inherit;font-weight:600}
 html body #lt-google-review a.lt-review-g{display:grid!important;place-items:center;box-sizing:border-box;width:58px;height:58px;min-width:58px;padding:12px!important;background:#fff!important;border:0!important;border-radius:50%!important;box-shadow:none!important}
-#lt-google-review .lt-review-g img{display:block;width:34px;height:34px;object-fit:contain;background:transparent;border:0;padding:0}
+#lt-google-review .lt-review-g{overflow:hidden}
+/* The supplied Google PNG has wide internal margins around the coloured mark. */
+#lt-google-review .lt-review-g img{display:block;transform:scale(2.7);transform-origin:center;width:34px;height:34px;object-fit:contain;background:transparent;border:0;padding:0}
 #lt-google-review a:focus-visible{outline:2px solid #baf9ec;outline-offset:4px}
 @media(max-width:620px){html body #lt-google-review{margin:24px 16px;padding:18px;align-items:start;gap:14px}#lt-google-review .lt-review-links{gap:0 16px}}
 @media(max-width:380px){html body #lt-google-review{grid-template-columns:1fr}}
