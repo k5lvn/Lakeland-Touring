@@ -203,7 +203,8 @@ def prepare():
         loc=next((el for el in parent.iter() if el.tag.endswith('}loc')),None)
         if loc is not None and loc.text in retired_locs:
             original_root.remove(parent);removed.append(loc.text)
-    assert set(removed)==retired_locs,('expected all four obsolete sitemap entries',removed)
+    removed_set=set(removed)
+    assert removed_set<=retired_locs,('unexpected retired sitemap entry',removed)
     sitemap_after=ET.tostring(original_root,encoding='utf-8',xml_declaration=True)
     kept_locs={el.text for el in original_root.iter() if el.tag.endswith('}loc')}
     assert BASE+'scottish-borders-caravan-guide.html' in kept_locs,'Scottish Borders guide must remain in sitemap'
@@ -227,6 +228,14 @@ def prepare():
         (ORIGINAL/n).write_bytes(b);(OUT/n).write_bytes(out);changes[n]=out
     (ORIGINAL/'robots.txt').write_bytes(robots);(ORIGINAL/'sitemap.xml').write_bytes(sitemap)
     for name,url in OBSOLETE_URLS.items():
+        if url not in removed_set:
+            check=url+('&' if '?' in url else '?')+'retired-check='+str(time.time_ns())
+            try:
+                with urllib.request.urlopen(urllib.request.Request(check,headers={'Cache-Control':'no-cache'}),timeout=40) as response:
+                    raise AssertionError('Obsolete route is not listed but remains public: '+name+' HTTP '+str(response.status))
+            except HTTPError as error:
+                assert error.code in (404,410),(name,'unexpected retired-route response',error.code)
+            continue
         body=fetch_url(url)
         deleted[name]={'url':url,'response_sha256':hashlib.sha256(body).hexdigest(),'is_static_html':name in OBSOLETE_HTML}
         if name in OBSOLETE_HTML:(ORIGINAL/name).write_bytes(body)
@@ -247,7 +256,7 @@ def prepare():
     (OUT/'sitemap.xml').write_bytes(sitemap_after)
     manifest={'files':{n:{'before':hashlib.sha256(originals[n]).hexdigest() if originals[n] is not None else None,'after':hashlib.sha256(b).hexdigest()} for n,b in changes.items()},'deletes':deleted}
     (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2))
-    print('PASS: prepared',len(changes),'files; retired four obsolete routes, kept Reviews and Scottish Borders, preserved canonicals/gallery/analytics/robots',flush=True)
+    print('PASS: prepared',len(changes),'files; verified retired routes, kept Reviews and Scottish Borders, preserved canonicals/gallery/analytics/robots',flush=True)
 
 def deploy():
     import paramiko
