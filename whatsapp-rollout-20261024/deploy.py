@@ -13,9 +13,11 @@ href = 'https://wa.me/447383660882?text=' + urllib.parse.quote('Hi '+brand+', I 
 block = '''
 <!-- worx365-whatsapp-start -->
 <style id="worx365-whatsapp-style">
-#worx365-whatsapp{position:fixed;left:16px;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:900;display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 16px;border:2px solid #d7a64b;border-radius:28px;background:#d7a64b;color:#06182a;font:600 14px/1.2 system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 18px #0005}
-#worx365-whatsapp:hover{background:#f1ca75}#worx365-whatsapp:focus-visible{outline:3px solid #111;outline-offset:4px}
-#worx365-whatsapp svg{width:24px;height:24px;flex-shrink:0}@media print{#worx365-whatsapp{display:none}}
+#worx365-whatsapp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 136px);right:24px;z-index:900;display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;min-height:54px;padding:0;border:0;border-radius:50%;background:#25D366;color:#fff;text-decoration:none;box-shadow:0 4px 18px #0005;transition:background .18s ease,transform .18s ease}
+#worx365-whatsapp:hover{background:#1da851;transform:scale(1.04)}#worx365-whatsapp:focus-visible{outline:3px solid #111;outline-offset:4px}
+#worx365-whatsapp svg{width:28px;height:28px;flex-shrink:0}#worx365-whatsapp span{display:none}
+@media(max-width:760px){#worx365-whatsapp{top:calc(env(safe-area-inset-top,0px) + 92px);right:6%;width:52px;height:52px;min-height:52px}}
+@media print{#worx365-whatsapp{display:none}}
 </style>
 <a id="worx365-whatsapp" href="HREF" target="_blank" rel="noopener noreferrer" aria-label="Message BRAND on WhatsApp">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 11.5a9 9 0 0 1-13.3 7.9L3 21l1.6-4.7A9 9 0 1 1 21 11.5Z"/><path d="M8 7c-2 3 3 8 6 8l2-2-3-1-1 1-2-2 1-1-1-3Z"/></svg>
