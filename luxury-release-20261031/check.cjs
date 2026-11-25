@@ -8,6 +8,8 @@ const fs=require('fs');
  const title=(homeHtml.match(/<title>(.*?)<\/title>/i)||[])[1]||'';
  if(title.length>60||!title.includes('Cumbria')||!title.includes('Delivered'))throw Error('Homepage SEO title is missing or too long: '+title);
  if(!homeHtml.includes('href="/reviews/"'))throw Error('Homepage Reviews link is missing');
+ if((homeHtml.match(/data-hire-option=/g)||[]).length!==2)throw Error('Homepage must show exactly two hire options');
+ for(const detail of ['£1.50 per mile','£600','£10 per day','£69 per week'])if(!homeHtml.includes(detail))throw Error('Missing approved hire detail: '+detail);
  if((homeHtml.match(/<div[^>]*\bdata-dk-review-banner=/g)||[]).length!==1)throw Error('Google Reviews banner was not preserved');
  for(const retired of ['garage.php?view=browse','owners-garage.html','owner-terms.html','garage-privacy.html'])if(homeHtml.includes(retired))throw Error('Obsolete homepage reference remains: '+retired);
  const browser=await chromium.launch({headless:true});
@@ -26,6 +28,7 @@ const fs=require('fs');
    const bg=await page.locator('body').evaluate(x=>getComputedStyle(x).backgroundColor);if(bg!=='rgb(16, 31, 33)')throw Error('Theme mismatch '+name+' '+bg);
    if(name==='explore-destinations.html'){const bg=await page.locator('.guide').evaluate(x=>getComputedStyle(x).backgroundColor);if(bg!=='rgb(16, 31, 33)')throw Error('Guide theme mismatch');await page.screenshot({path:'luxury-qa/destinations-'+width+'.png',fullPage:true});}
    if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2))throw Error('Overflow '+width+' '+name);
+   if(name==='booking.html'||name==='caravan-hire-faq.html'){const content=(await page.locator('body').innerText()).replace(/\s+/g,' ');for(const detail of ['£1.50 per mile','£600','£10 per day','£69 per week'])if(!content.includes(detail))throw Error('Missing hire details on '+name+': '+detail);if((await page.locator('[data-hire-option]').count())!==2)throw Error('Expected two hire options on '+name);}
    if(name===''){
     if(width===390){await page.locator('.lt-menu').click();await page.locator('#lt-navigation').getByText('Our Experience',{exact:true}).click();if(await page.locator('.lt-menu').getAttribute('aria-expanded')!=='false')throw Error('Menu did not close');}
     await page.waitForFunction(()=>{const x=document.querySelector('.lt-main-logo');return x&&x.complete&&x.naturalWidth>0});

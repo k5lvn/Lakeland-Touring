@@ -11,3 +11,10 @@ No customer records, API routes beyond the retired public Garage endpoint, crede
 To evolve: edit home.html and luxury.css; update release.py for specific page content. The public PHP booking backend remains disabled as previously configured. Publication requires the existing repository SFTP secrets; these never enter the source tree or artifacts.
 
 Visual refinement: original silver/teal logo restored; all static sitemap pages share the dark charcoal/teal theme. New optimised illustrative Lake District dusk artwork replaces daytime homepage scenery. Shared brand.css carries the palette into retained owner/privacy surfaces. Image upload, guarded replacements and rollback are included in the release manifest. Browser checks cover dark backgrounds, logo/image loading, responsive guides, enquiries, navigation and gallery.
+
+## 25 November 2026 hire options and extras
+
+- The public offer presents exactly two hire options: self-tow from Carlisle, or delivery with setup and collection at an approved campsite.
+- Delivery is £1.50 per mile across the four journeys (delivery out and return, then collection out and return). A 100-mile one-way delivery is 400 chargeable miles, or £600. Setup, dismantling and collection are included; there is no separate setup fee.
+- The optional DJI portable power station is £10 per day or £69 per week.
+- Homepage, quotation page and FAQs use the same rates. No third hire option is added.
