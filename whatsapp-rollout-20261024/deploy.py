@@ -13,12 +13,12 @@ href = 'https://wa.me/447383660882?text=' + urllib.parse.quote('Hi '+brand+', I 
 block = '''
 <!-- worx365-whatsapp-start -->
 <style id="worx365-whatsapp-style">
-#worx365-whatsapp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 136px);right:24px;z-index:900;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:0;background:transparent;color:#25D366;text-decoration:none;box-shadow:none;transition:transform .18s ease}
-#worx365-whatsapp:hover{background:transparent;transform:scale(1.04)}#worx365-whatsapp:focus-visible{outline:3px solid #111;outline-offset:4px}
-body #worx365-whatsapp{background:transparent!important;color:#25D366!important;border-color:transparent!important;box-shadow:none!important}
-body #worx365-whatsapp:hover{background:transparent!important;color:#25D366!important;border-color:transparent!important}
-#worx365-whatsapp svg{display:block;width:44px;height:44px;flex-shrink:0}#worx365-whatsapp svg .wa-bubble{fill:#25D366!important}#worx365-whatsapp svg .wa-phone{fill:#fff!important}#worx365-whatsapp span{display:none}
-@media(max-width:760px){#worx365-whatsapp{top:calc(env(safe-area-inset-top,0px) + 124px);right:6%;width:44px;height:44px;min-height:44px}}
+#worx365-whatsapp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 136px);right:24px;z-index:900;display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;min-height:60px;padding:0;border:1px solid rgba(255,255,255,.34);border-radius:50%;background:rgba(255,255,255,.12);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);color:#25D366;text-decoration:none;box-shadow:inset 0 1px 1px rgba(255,255,255,.38),inset 0 -1px 1px rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.28);transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}
+#worx365-whatsapp:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.52);transform:translateY(-2px) scale(1.03);box-shadow:inset 0 1px 1px rgba(255,255,255,.48),0 12px 28px rgba(0,0,0,.32)}#worx365-whatsapp:focus-visible{outline:3px solid #111;outline-offset:4px}
+body #worx365-whatsapp{background:rgba(255,255,255,.12)!important;color:#25D366!important;border-color:rgba(255,255,255,.34)!important;box-shadow:inset 0 1px 1px rgba(255,255,255,.38),inset 0 -1px 1px rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.28)!important;-webkit-backdrop-filter:blur(16px) saturate(160%)!important;backdrop-filter:blur(16px) saturate(160%)!important}
+body #worx365-whatsapp:hover{background:rgba(255,255,255,.2)!important;color:#25D366!important;border-color:rgba(255,255,255,.52)!important}
+#worx365-whatsapp svg{display:block;width:38px;height:38px;flex-shrink:0}#worx365-whatsapp svg .wa-bubble{fill:#25D366!important}#worx365-whatsapp svg .wa-phone{fill:#fff!important}#worx365-whatsapp span{display:none}
+@media(max-width:760px){#worx365-whatsapp{top:calc(env(safe-area-inset-top,0px) + 124px);right:6%;width:56px;height:56px;min-height:56px}}
 @media print{#worx365-whatsapp{display:none}}
 </style>
 <a id="worx365-whatsapp" href="HREF" target="_blank" rel="noopener noreferrer" aria-label="Message BRAND on WhatsApp">
