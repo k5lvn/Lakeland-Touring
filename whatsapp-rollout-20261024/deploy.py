@@ -13,16 +13,16 @@ href = 'https://wa.me/447383660882?text=' + urllib.parse.quote('Hi '+brand+', I 
 block = '''
 <!-- worx365-whatsapp-start -->
 <style id="worx365-whatsapp-style">
-#worx365-whatsapp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 136px);right:24px;z-index:900;display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;min-height:54px;padding:0;border:0;border-radius:50%;background:#25D366;color:#fff;text-decoration:none;box-shadow:0 4px 18px #0005;transition:background .18s ease,transform .18s ease}
-#worx365-whatsapp:hover{background:#1da851;transform:scale(1.04)}#worx365-whatsapp:focus-visible{outline:3px solid #111;outline-offset:4px}
-body #worx365-whatsapp{background:#25D366!important;color:#fff!important;border-color:#25D366!important}
-body #worx365-whatsapp:hover{background:#1da851!important;color:#fff!important;border-color:#1da851!important}
-#worx365-whatsapp svg{width:28px;height:28px;flex-shrink:0}#worx365-whatsapp span{display:none}
-@media(max-width:760px){#worx365-whatsapp{top:calc(env(safe-area-inset-top,0px) + 92px);right:6%;width:52px;height:52px;min-height:52px}}
+#worx365-whatsapp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 136px);right:24px;z-index:900;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:0;background:transparent;color:#25D366;text-decoration:none;box-shadow:none;transition:transform .18s ease}
+#worx365-whatsapp:hover{background:transparent;transform:scale(1.04)}#worx365-whatsapp:focus-visible{outline:3px solid #111;outline-offset:4px}
+body #worx365-whatsapp{background:transparent!important;color:#25D366!important;border-color:transparent!important;box-shadow:none!important}
+body #worx365-whatsapp:hover{background:transparent!important;color:#25D366!important;border-color:transparent!important}
+#worx365-whatsapp svg{width:44px;height:44px;flex-shrink:0}#worx365-whatsapp span{display:none}
+@media(max-width:760px){#worx365-whatsapp{top:calc(env(safe-area-inset-top,0px) + 124px);right:6%;width:44px;height:44px;min-height:44px}}
 @media print{#worx365-whatsapp{display:none}}
 </style>
 <a id="worx365-whatsapp" href="HREF" target="_blank" rel="noopener noreferrer" aria-label="Message BRAND on WhatsApp">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 11.5a9 9 0 0 1-13.3 7.9L3 21l1.6-4.7A9 9 0 1 1 21 11.5Z"/><path d="M8 7c-2 3 3 8 6 8l2-2-3-1-1 1-2-2 1-1-1-3Z"/></svg>
+<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#25D366" d="M12 1.5a10.3 10.3 0 0 0-8.9 15.5L2 22l5.2-1.4A10.5 10.5 0 1 0 12 1.5Zm0 18.9a8.4 8.4 0 0 1-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.3 8.3 0 1 1 12 20.4Z"/><path fill="#fff" d="M8.2 6.8c-.3-.6-.6-.6-.9-.6h-.7c-.2 0-.6.1-.9.5-.3.3-1.2 1.2-1.2 2.8s1.2 3.2 1.4 3.4c.2.2 2.4 3.8 5.9 5.2 2.9 1.2 3.5 1 4.1.9.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.7-.4l-2.1-1c-.3-.1-.5-.2-.7.2-.2.3-.8 1-1-1-.2-.2-.4-.2-.7-.1-.3.2-1.1.7-1.3.9-.2.2-.4.2-.7.1-.3-.1-1.4-.5-2.6-1.6-1-.9-1.6-2-1.8-2.3-.2-.3 0-.5.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.6l-1-2.3Z"/></svg>
 <span>WhatsApp us</span></a>
 <!-- worx365-whatsapp-end -->
 '''.replace('HREF',html.escape(href,quote=True)).replace('BRAND',html.escape(brand,quote=True))
