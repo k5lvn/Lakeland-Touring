@@ -21,7 +21,7 @@ body #worx365-whatsapp:hover{background:transparent!important;color:#25D366!impo
 #worx365-whatsapp:hover svg{filter:drop-shadow(0 5px 10px rgba(26,210,113,.38))}
 #worx365-whatsapp svg .wa-bubble{fill:url(#waGlass)!important;stroke:rgba(37,211,102,.96);stroke-width:.85}
 #worx365-whatsapp svg .wa-phone{fill:#f8fffb!important}
-#worx365-whatsapp svg .wa-reflection{fill:none;stroke:rgba(37,211,102,.96);stroke-width:1;stroke-linecap:round}
+#worx365-whatsapp svg .wa-reflection{fill:none;stroke:rgba(255,255,255,.64);stroke-width:.9;stroke-linecap:round;filter:drop-shadow(0 0 1px rgba(255,255,255,.42))}
 #worx365-whatsapp span{display:none}
 @media(max-width:760px){#worx365-whatsapp{top:calc(env(safe-area-inset-top,0px) + 124px);right:6%;width:48px;height:48px;min-height:48px}}
 @media print{#worx365-whatsapp{display:none}}
