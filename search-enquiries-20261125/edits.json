@@ -133,5 +133,12 @@
       "new": "contact_phone_click:{contact_method:'telephone'},contact_whatsapp_click:{contact_method:'whatsapp'},",
       "count": 1
     }
+  ],
+  "sitemap.xml": [
+    {
+      "old": "<url><loc>https://lakelandtouring.uk/reviews/</loc></url>",
+      "new": "<url><loc>https://lakelandtouring.uk/reviews/</loc></url><url><loc>https://lakelandtouring.uk/hire-calendar/</loc></url>",
+      "count": 1
+    }
   ]
 }
