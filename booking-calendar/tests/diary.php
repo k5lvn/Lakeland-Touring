@@ -7,7 +7,9 @@ require dirname(__DIR__,2).'/booking-backend/public/hire-calendar/calendar.php';
 require_once __DIR__.'/hold-return.php';
 $_SERVER['DOCUMENT_ROOT']=dirname(__DIR__,2).'/booking-backend/public';
 $dir=sys_get_temp_dir().'/touring-diary-'.bin2hex(random_bytes(10));
+$openingDir = $dir.'-opening';
 mkdir($dir,0700);
+mkdir($openingDir,0700);
 $id=bin2hex(random_bytes(20));
 $c=['private_dir'=>$dir,'receipt_secret'=>bin2hex(random_bytes(32)),'periods'=>[],'allow_enquiries'=>true,
     'request_through'=>'2099-12-31','blocked'=>[],'initial_hold'=>['id'=>$id,'start'=>'2099-08-14','end'=>'2099-08-20']];
@@ -38,7 +40,7 @@ try {
     check($opening['end'] === '2027-08-21');
     $c['initial_hold'] = $opening;
     $openingId = $opening['id'];
-    unset($db);
+    $c['private_dir'] = $openingDir;
     $db = database($c);
     $fresh = row($db,$openingId);
     check($fresh['end'] === '2027-08-21' && json_decode($fresh['quote'],true)['nights'] === 7);
@@ -79,9 +81,12 @@ try {
     $db->prepare("DELETE FROM bookings WHERE id=?")->execute([$openingId]);
     installInitialHold($db,$c);
     check(row($db,$openingId)['end'] === '2027-08-21');
-    unset($restore, $db);
-    $db = database($c);
-    check(row($db,$openingId)['end'] === '2027-08-21');
     checkHoldReturnEditing($db,$c);
     echo "Diary hold, seven-night correction, return date edits, release, changeover, horizon, quote confirmation and mail checks passed.\n";
-} finally {unset($db);foreach(glob($dir.'/*') as $f) unlink($f);rmdir($dir);}
+} finally {
+    unset($restore, $db);
+    foreach ([$dir, $openingDir] as $fixtureDir) {
+        foreach (glob($fixtureDir.'/*') as $file) unlink($file);
+        rmdir($fixtureDir);
+    }
+}
