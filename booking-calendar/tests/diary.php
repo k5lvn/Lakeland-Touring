@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-use function HireCalendar\{database,requestStay,decide,row,price};
+use function HireCalendar\{database,installInitialHold,requestStay,decide,row,price};
 use function TouringBooking\available;
 use TouringBooking\Failure;
 require dirname(__DIR__,2).'/booking-backend/public/hire-calendar/calendar.php';
@@ -38,7 +38,8 @@ try {
     check($opening['end'] === '2027-08-21');
     $c['initial_hold'] = $opening;
     $openingId = $opening['id'];
-    database($c);
+    unset($db);
+    $db = database($c);
     $fresh = row($db,$openingId);
     check($fresh['end'] === '2027-08-21' && json_decode($fresh['quote'],true)['nights'] === 7);
 
@@ -48,22 +49,22 @@ try {
     $restore = $db->prepare("UPDATE bookings SET end='2027-08-20',terms_version='operator-hold-v1',quote=?,state=? WHERE id=?");
     foreach (['released','approved'] as $state) {
         $restore->execute([json_encode($oldQuote),$state,$openingId]);
-        database($c);
+        installInitialHold($db,$c);
         $untouched = row($db,$openingId);
         check($untouched['end'] === '2027-08-20' && $untouched['state'] === $state);
     }
     $restore->execute([json_encode($oldQuote),'goodwill',$openingId]);
     $c['blocked'][] = ['start'=>'2027-08-20','end'=>'2027-08-21'];
-    database($c);
+    installInitialHold($db,$c);
     check(row($db,$openingId)['end'] === '2027-08-20');
     $c['blocked'] = [];
     $db->exec("INSERT INTO bookings(id,start,end,state,quote,customer,created,terms_version)
         VALUES('friday-block','2027-08-20','2027-08-21','owner_block','{}','{}',0,'fixture')");
-    database($c);
+    installInitialHold($db,$c);
     check(row($db,$openingId)['end'] === '2027-08-20');
     $db->exec("DELETE FROM bookings WHERE id='friday-block'");
-    database($c);
-    database($c);
+    installInitialHold($db,$c);
+    installInitialHold($db,$c);
     $corrected = row($db,$openingId);
     check($corrected['start'] === $opening['start'] && $corrected['end'] === $opening['end']);
     check($corrected['state'] === 'goodwill' && $corrected['customer'] === $fresh['customer']
@@ -73,10 +74,13 @@ try {
     available($db,'2027-08-21','2027-08-22');
     // A later explicit change or release wins, including a return to the original date.
     $db->prepare("UPDATE bookings SET end='2027-08-20',quote=? WHERE id=?")->execute([json_encode($oldQuote),$openingId]);
-    database($c);
+    installInitialHold($db,$c);
     check(row($db,$openingId)['end'] === '2027-08-20');
     $db->prepare("DELETE FROM bookings WHERE id=?")->execute([$openingId]);
-    database($c);
+    installInitialHold($db,$c);
+    check(row($db,$openingId)['end'] === '2027-08-21');
+    unset($restore, $db);
+    $db = database($c);
     check(row($db,$openingId)['end'] === '2027-08-21');
     checkHoldReturnEditing($db,$c);
     echo "Diary hold, seven-night correction, return date edits, release, changeover, horizon, quote confirmation and mail checks passed.\n";
