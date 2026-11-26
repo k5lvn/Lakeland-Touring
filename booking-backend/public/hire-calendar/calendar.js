@@ -25,6 +25,7 @@ function choices(key) {
   return lengthsFor(key,p).filter(n => {
     const end = add(key,n);
     if (p?.season === 'peak' && (weekday !== 6 || n !== 7)) return false;
+    if (p?.season === 'mid' && weekday !== 6) return false;
     if ((!p || p.season === 'low') && n === 3 && weekday !== 5) return false;
     if (end > diary.through || (p && end > p.end)) return false;
     if (!p && diary.periods.some(period => overlap(key,end,period))) return false;
@@ -44,9 +45,14 @@ function render() {
   el('month').textContent = fmt(month,{month:'long',year:'numeric'});
   el('prev').disabled = month.slice(0,7) <= diary.today.slice(0,7);
   el('next').disabled = month.slice(0,7) >= diary.through.slice(0,7);
-  const activePeriod = periodFor(month) || diary.periods.find(p=>p.start <= iso(final) && p.end > month);
-  el('season-guide').textContent = activePeriod?.season === 'peak' ? 'Summer stays · Saturday to Saturday' : 'Elddis Avanté 866 · Six berths';
-  el('guide').textContent = activePeriod?.season === 'peak' ? 'Choose a Saturday for a seven-night stay.' : 'Select an arrival date. We’ll check availability and confirm your hire price.';
+  const monthPeriods = diary.periods.filter(p => p.start <= iso(final) && p.end > month);
+  const seasons = [...new Set(monthPeriods.map(p => p.season))];
+  el('season-guide').textContent = seasons.length === 1
+    ? ({low:'Low season', mid:'Mid season', peak:'Peak season'})[seasons[0]] : 'Elddis Avanté 866 · Six berths';
+  const weekly = seasons.length > 0 && !seasons.includes('low');
+  el('guide').textContent = weekly
+    ? 'Tap a dotted Saturday to start your week. Other priced dates are nights in the stay.'
+    : 'A dot marks a date you can start a stay. Select it to see the nights included and the total.';
   const grid = el('days'); grid.replaceChildren();
   for(let i=0;i<(first.getUTCDay()+6)%7;i++) grid.append(document.createElement('span'));
   for(let i=1;i<=final.getUTCDate();i++) {
@@ -74,7 +80,10 @@ function render() {
   const length = el('length');
   if(start) {
     const p = periodFor(start); length.replaceChildren();
-    choices(start).forEach(n=>length.add(new Option(n+' nights'+(p?' · '+money(p.prices[n]):''),String(n))));
+    choices(start).forEach(n => {
+      const rate = p ? ' · ' + money(Math.round(p.prices[n] / n)) + '/night' : '';
+      length.add(new Option(n + ' nights' + rate, String(n)));
+    });
     length.value=String(nights); length.disabled=length.options.length<=1;
     const label = fmt(start,{weekday:'short',day:'numeric',month:'short'})+' – '+fmt(add(start,nights),{weekday:'short',day:'numeric',month:'short',year:'numeric'});
     el('stay-heading').textContent=nights+' nights in '+fmt(start,{month:'long'});

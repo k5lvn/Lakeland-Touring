@@ -7,6 +7,57 @@ use function TouringBooking\{available,dateValue,db,overlaps};
 require_once dirname(__DIR__).'/api/common.php';
 require_once __DIR__.'/booking-sms.php';
 
+function seasonalHirePeriods(string $from, string $through): array {
+    // Each change starts a new hire week. The last date is checkout only.
+    $changes = [
+        '2026-11-21' => 'low',
+        '2026-12-19' => 'peak',
+        '2027-01-02' => 'low',
+        '2027-02-13' => 'peak',
+        '2027-02-20' => 'low',
+        '2027-03-20' => 'peak',
+        '2027-04-10' => 'low',
+        '2027-05-01' => 'peak',
+        '2027-05-08' => 'mid',
+        '2027-05-29' => 'peak',
+        '2027-06-05' => 'mid',
+        '2027-06-26' => 'peak',
+        '2027-09-04' => 'mid',
+        '2027-10-02' => 'low',
+        '2027-10-23' => 'peak',
+        '2027-10-30' => 'low',
+        '2027-12-18' => 'peak',
+        '2028-01-08' => 'low',
+        '2028-02-12' => 'peak',
+        '2028-02-19' => 'low',
+        '2028-04-01' => 'peak',
+        '2028-04-22' => 'low',
+        '2028-04-29' => 'peak',
+        '2028-05-06' => 'mid',
+        '2028-05-27' => 'peak',
+        '2028-06-03' => 'mid',
+        '2028-07-01' => 'peak',
+        '2028-09-02' => 'mid',
+        '2028-09-30' => null,
+    ];
+    $prices = [
+        'low' => [3 => 37500, 5 => 57500, 7 => 75000],
+        'mid' => [7 => 95000],
+        'peak' => [7 => 120000],
+    ];
+    $boundaries = array_keys($changes);
+    $periods = [];
+    for ($i = 0; $i < count($boundaries) - 1; $i++) {
+        $start = max($from, $boundaries[$i]);
+        $end = min($through, $boundaries[$i + 1]);
+        if ($start < $end) {
+            $season = $changes[$boundaries[$i]];
+            $periods[] = ['start' => $start, 'end' => $end, 'season' => $season, 'prices' => $prices[$season]];
+        }
+    }
+    return $periods;
+}
+
 function settings(): array {
     $root = realpath($_SERVER['DOCUMENT_ROOT'] ?? '');
     if (!$root) throw new Failure('Diary storage is unavailable.',503);
@@ -33,6 +84,10 @@ function settings(): array {
         }
     }
     foreach ($c['blocked'] as $b) if(dateValue($b['end']) <= dateValue($b['start'])) throw new Failure('Check blocked dates.',503);
+    // A guest can request a priced stay before the operator confirms availability.
+    if (empty($c['inventory_verified']) && !empty($c['allow_enquiries'])) {
+        $c['periods'] = seasonalHirePeriods(today(), $c['request_through']);
+    }
     return $c;
 }
 function today(): string {return (new \DateTimeImmutable('today',new \DateTimeZone('Europe/London')))->format('Y-m-d');}
@@ -46,6 +101,7 @@ function price(array $c,string $start,int $n): array {
     foreach ($c['periods'] as $p) {
         if ($p['start']>$start || $p['end']<$end || !isset($p['prices'][$n])) continue;
         if ($p['season']==='peak' && ((int)$a->format('N')!==6 || $n!==7)) continue;
+        if ($p['season']==='mid' && (int)$a->format('N')!==6) continue;
         if ($p['season']==='low' && $n===3 && (int)$a->format('N')!==5) continue;
         foreach ($c['blocked'] as $b) if(overlaps($start,$end,$b['start'],$b['end'])) throw new Failure('Those dates are unavailable.',409);
         return ['start'=>$start,'end'=>$end,'nights'=>$n,'hire_pence'=>$p['prices'][$n]];
@@ -195,7 +251,10 @@ function decide(PDO $db,array $c,string $id,string $action,?int $agreedPrice=nul
         $q=json_decode($r['quote'],true);
         if ($action==='approved') {
             if (!$hold) {
-                $fresh=price($c,$r['start'],$q['nights']);
+                // An existing unpriced enquiry may still have a bespoke price agreed by the operator.
+                $reviewConfig = $c;
+                if ($q['hire_pence'] === null && !empty($c['allow_enquiries'])) $reviewConfig['periods'] = [];
+                $fresh=price($reviewConfig,$r['start'],$q['nights']);
                 if ($fresh['hire_pence']!==$q['hire_pence']) throw new Failure('The price changed. Agree a new request with the customer.',409);
                 available($db,$r['start'],$r['end']);
             }
