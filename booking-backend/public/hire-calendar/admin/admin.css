@@ -1,0 +1,109 @@
+:root {
+  color-scheme: dark;
+  font-family: "DM Sans", system-ui, sans-serif;
+  color: #f0f6fa;
+  background: #101b25;
+  --muted: #b6c8d3;
+  --border: #9bb6c539;
+  --requested: #f8c67f;
+  --reserved: #8ce0ca;
+  --held: #9dbdf9;
+  --blocked: #d4b6d9;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+}
+body::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(150deg,#0c1929d4,#182b3b77 55%,#0b2435a6), url("/Assets/derwentwater-panorama.jpg") center / cover no-repeat;
+  background-color: #142a39;
+}
+a { color: #a5e8dd; }
+.operator { max-width: 1472px; margin: auto; padding: clamp(16px, 3vw, 48px); }
+.mast, .month-bar, .month-bar nav, .queue-head, .card-meta, .wordmark, .legend, .actions { display: flex; align-items: center; }
+.mast, .month-bar, .queue-head, .card-meta { justify-content: space-between; gap: .5rem; }
+.wordmark { gap: .65rem; font-size: 1.06rem; font-weight: 650; }
+.wordmark span { display: grid; place-items: center; width: 2.3rem; height: 2.3rem; border: 1px solid #8fdac47d; color: var(--reserved); border-radius: .72rem; font-family: Georgia, serif; }
+.private, .vehicle, .caption, .hire, .notes, .empty, .card-meta small { color: var(--muted); }
+.private { font-size: .9rem; }
+h1, h2, h3, p { margin: 0; }
+h1 { margin: 1.7rem 0 1.1rem; font-size: clamp(2.2rem, 4vw, 3.85rem); line-height: 1.02; letter-spacing: -.055em; }
+h2 { font-size: clamp(1.15rem, 2.1vw, 1.8rem); letter-spacing: -.035em; }
+.workspace { display: grid; grid-template-columns: minmax(0,1.9fr) minmax(300px,1fr); border: 1px solid var(--border); border-radius: 1.35rem; overflow: hidden; background: linear-gradient(125deg,#243745ea,#172a36ec); box-shadow: 0 18px 60px #030a132e; }
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .workspace {
+    background: linear-gradient(125deg,#263b4cbf,#142834bd);
+    -webkit-backdrop-filter: blur(18px) saturate(125%);
+    backdrop-filter: blur(18px) saturate(125%);
+  }
+}
+.calendar, .queue { min-width: 0; padding: clamp(.85rem, 2.1vw, 2rem); }
+.queue { background: #101f2b69; border-left: 1px solid var(--border); }
+.month-bar { flex-wrap: wrap; }
+.month-bar nav { gap: .32rem; }
+.month-bar nav a { display: grid; place-items: center; height: 2.75rem; min-width: 2.75rem; border: 1px solid var(--border); border-radius: .7rem; color: #eff9fa; font-size: 1.4rem; text-decoration: none; }
+.month-bar nav .current { padding: 0 .6rem; font-size: .89rem; }
+.vehicle { margin: .45rem 0 1.1rem; }
+.month-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: clamp(3px,.48vw,8px); }
+.weekday { color: var(--muted); padding: .35rem .15rem; font-size: .88rem; text-align: center; }
+.night { display: flex; flex-direction: column; gap: .25rem; min-width: 0; min-height: clamp(65px,7.1vw,108px); border: 1px solid #9fb7c323; padding: .55rem; border-radius: .6rem; background: #8299a218; text-decoration: none; color: #f1f7fa; font-variant-numeric: tabular-nums; }
+.night.reserved { background: #29726931; }
+.night.requested { border-color: #c8985469; }
+.night.today b { text-decoration: underline; text-decoration-color: var(--reserved); text-underline-offset: .25em; }
+.night b { font-weight: 600; }
+.flag { display: inline-flex; align-items: center; gap: .27rem; color: var(--muted); font-size: .79rem; line-height: 1.2; }
+.flag i { display: inline-block; width: .46rem; height: .46rem; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.flag.requested { color: var(--requested); }
+.flag.reserved { color: var(--reserved); }
+.flag.held { color: var(--held); }
+.flag.blocked { color: var(--blocked); }
+.legend { gap: .5rem 1rem; flex-wrap: wrap; margin: 1.1rem 0 .55rem; }
+.legend .flag { font-size: .88rem; }
+.caption { font-size: .88rem; line-height: 1.55; }
+.queue-head { flex-wrap: wrap; margin: .25rem 0 1rem; }
+.count { color: var(--requested); font-size: .9rem; font-weight: 600; }
+.request-card { --accent: var(--requested); padding: .95rem; background: linear-gradient(120deg,#ffffff09,#ffffff04); border: 1px solid var(--border); border-radius: .83rem; margin-bottom: .75rem; overflow-wrap: anywhere; scroll-margin: 1rem; }
+.request-card.approved { --accent: var(--reserved); }
+.request-card.declined { --accent: #c7bdcc; }
+.request-card:target { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card-meta { flex-wrap: wrap; }
+.tag { color: var(--accent); font-size: .85rem; font-weight: 650; }
+.card-meta small { font-size: .77rem; }
+h3 { margin: .7rem 0 .35rem; font-size: 1.13rem; letter-spacing: -.025em; }
+.stay { font-weight: 600; }
+.hire, .notes, .contact { font-size: .93rem; line-height: 1.5; margin-top: .37rem; }
+.notes { white-space: pre-wrap; }
+.contact a { text-underline-offset: .13em; }
+.actions { flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
+.actions button { min-height: 44px; border: 1px solid transparent; border-radius: .62rem; padding: .55rem .75rem; background: #a8e4d6; font-family: inherit; font-size: .92rem; font-weight: 650; color: #0f2d2c; cursor: pointer; }
+.actions .secondary { background: transparent; border-color: var(--border); color: #e2ecf0; }
+.agree { display: flex; align-items: start; gap: .5rem; margin-top: .8rem; font-size: .9rem; line-height: 1.45; }
+.agree input { width: 1rem; height: 1rem; accent-color: #a8e4d6; flex-shrink: 0; }
+a:hover, button:hover { filter: brightness(1.14); }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #ffd693; outline-offset: 2px; }
+.error { margin-bottom: 1rem; padding: .9rem; border: 1px solid #ffbe9d80; background: #502e29; border-radius: .65rem; }
+@media (min-width: 691px) and (max-width: 1170px) {
+  .night .flag span { display: none; }
+}
+@media (max-width: 850px) {
+  .workspace { grid-template-columns: 1fr; }
+  .queue { border-left: 0; border-top: 1px solid var(--border); }
+}
+@media (max-width: 690px) {
+  .night { min-height: 57px; padding: .3rem; gap: .18rem; }
+  .night .flag i { width: .75rem; height: .2rem; border-radius: 2px; }
+  .night .flag span { display: none; }
+  .legend .flag { font-size: .84rem; }
+}
+@media (max-width: 380px) {
+  .operator { padding: 10px; }
+  .month-bar nav a { min-width: 2.5rem; }
+  .weekday { font-size: .78rem; }
+}

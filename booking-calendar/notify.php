@@ -13,7 +13,8 @@ foreach($jobs as $job){
     $r=row($db,$job['booking']);$guest=json_decode($r['customer'],true);$ref=reference($r['id']);
     $isNew=$job['status']==='requested';
     $to=$isNew?$c['office_email']:$guest['email'];
-    $message=$isNew?'A hire request needs review. Open the operator diary: '.$c['origin'].'/hire-calendar/admin/':
+    $reviewUrl=$c['origin'].'/hire-calendar/admin/?month='.rawurlencode(substr($r['start'],0,7)).'#request-'.rawurlencode($ref);
+    $message=$isNew?'A hire request needs review. Open this request in the operator diary: '.$reviewUrl:
         'Your hire request is now '.statusLabel($job['status']).'. Your private confirmation: '.$c['origin'].'/hire-calendar/status.php?key='.receipt($c,$r['id']);
     if(mail($to,'Lakeland Touring hire request '.$ref,$message."\n".$r['start'].' to '.$r['end'],['From'=>$c['office_email'],'Content-Type'=>'text/plain; charset=UTF-8'])){
         $db->prepare('UPDATE calendar_mail SET sent=? WHERE booking=? AND status=?')->execute([time(),$r['id'],$job['status']]);

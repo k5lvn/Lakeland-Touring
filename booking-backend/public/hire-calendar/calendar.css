@@ -2,3 +2,183 @@
 @media(max-width:700px){.mast,main{width:min(100% - 20px,550px)}.mast{padding:14px 4px}.hero{min-height:128px;padding:21px}.layout{grid-template-columns:1fr}.diary,.summary{padding:18px 14px}.summary{border-left:0;border-top:1px solid var(--line);border-radius:0 0 20px 20px}.week,.days{gap:3px}.day{min-height:50px}.day small{font-size:.71rem}.back{font-size:.85rem}.diary>.note{font-size:.8rem}.summary .total{margin:14px 0}.hero h1{font-size:2.9rem}}
 .review{padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:18px 0}.review p,.review form{margin:.6rem 0;overflow-wrap:anywhere}.approve,.decline{padding:12px;border-radius:8px;border:1px solid var(--line);margin:4px}.approve{background:var(--mint);color:#17362d}.decline{background:var(--paper);color:var(--ink)}.agree{display:flex;align-items:center}.agree input{width:auto}
 .day.start:enabled:hover,.day.start:focus-visible{background:var(--mint);color:#112f27}.day.end b{text-decoration:none}.day.end small{color:#264b3e}
+
+/* The guest desk shares the landscape through a series of translucent surfaces.
+   Leave the private approval and status pages on their existing styles. */
+.guest-diary {
+  --ink: #f7fbff;
+  --muted: #d0dfe4;
+  --mint: #95efe3;
+  --warm: #ffd28a;
+  --edge: rgb(213 239 250 / 22%);
+  font-family: "DM Sans", system-ui, sans-serif;
+  padding: clamp(12px, 4vw, 64px) clamp(10px, 4vw, 64px);
+  background: #182f3a;
+  isolation: isolate;
+}
+.guest-diary::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(145deg, rgb(8 22 31 / 36%), rgb(8 26 35 / 18%) 56%, rgb(6 25 36 / 46%)),
+    url("/Assets/derwentwater-panorama.jpg") center / cover no-repeat;
+}
+.booking-app {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding: clamp(15px, 2.7vw, 36px);
+  border: 1px solid var(--edge);
+  border-radius: 26px;
+  background: linear-gradient(130deg, rgb(17 32 46 / 76%), rgb(28 50 64 / 55%) 72%, rgb(20 43 53 / 66%));
+  box-shadow: inset 0 1px rgb(235 249 255 / 15%), 0 24px 68px rgb(4 19 28 / 36%);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+}
+.booking-app main, .booking-app .mast { width: 100%; }
+.booking-app .mast { padding: 0; }
+.booking-app .brand { gap: 10px; }
+.booking-app .mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid rgb(162 242 228 / 52%);
+  background: rgb(56 147 142 / 23%);
+  color: #b3fff0;
+}
+.booking-app .back { color: var(--muted); text-underline-offset: 4px; }
+.diary-title { padding: clamp(22px, 3vw, 40px) 0 20px; }
+.diary-title h1 {
+  font: 650 clamp(1.9rem, 4vw, 3.05rem)/1.05 "DM Sans", system-ui, sans-serif;
+  letter-spacing: -.045em;
+}
+.booking-app .layout {
+  grid-template-columns: minmax(0, 2.2fr) minmax(260px, 1fr);
+  background: linear-gradient(120deg, rgb(149 181 206 / 14%), rgb(113 157 179 / 7%));
+  border: 1px solid var(--edge);
+  border-radius: 18px;
+  box-shadow: inset 0 1px rgb(255 255 255 / 8%);
+}
+.booking-app .diary, .booking-app .summary { padding: clamp(18px, 2vw, 28px); }
+.booking-app h2, .guest-diary dialog h2 {
+  font: 650 clamp(1.25rem, 2.1vw, 1.58rem)/1.2 "DM Sans", system-ui, sans-serif;
+  letter-spacing: -.03em;
+}
+.booking-app .summary {
+  border-left: 1px solid var(--edge);
+  border-radius: 0 18px 18px 0;
+  background: linear-gradient(150deg, rgb(11 29 40 / 32%), rgb(100 151 158 / 8%));
+}
+.guest-diary .arrows button, .guest-diary .close {
+  border: 1px solid var(--edge);
+  background: rgb(78 102 118 / 33%);
+  min-width: 44px;
+  height: 44px;
+}
+.guest-diary .arrows button:enabled:hover, .guest-diary .close:hover {
+  background: rgb(121 157 169 / 46%);
+}
+.booking-app #guide { margin: 6px 0 20px; }
+.booking-app .week, .booking-app .days { gap: clamp(3px, .5vw, 7px); }
+.booking-app .week { font-weight: 550; font-size: .88rem; }
+.booking-app .day {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: clamp(68px, 6.8vw, 86px);
+  padding: 8px;
+  border: 1px solid rgb(224 240 251 / 16%);
+  border-radius: 10px;
+  background: linear-gradient(130deg, rgb(185 206 225 / 13%), rgb(118 158 180 / 7%));
+  box-shadow: inset 0 1px rgb(255 255 255 / 6%);
+}
+.booking-app .day b { line-height: 1.1; font-size: 1.03rem; }
+.booking-app .day small { color: var(--muted); font-size: .83rem; font-variant-numeric: tabular-nums; }
+.booking-app .day.pick { border-color: rgb(158 232 221 / 52%); }
+.booking-app .day.pick::after {
+  width: 5px;
+  height: 5px;
+  top: 9px;
+  right: 8px;
+  background: var(--mint);
+}
+.booking-app .day[data-state="held"] { background: rgb(113 82 48 / 52%); color: #ffe2a8; }
+.booking-app .day[data-state="booked"] { background: rgb(88 62 70 / 49%); color: #ffd0d2; }
+.booking-app .day[data-state="unreleased"] { background: rgb(18 31 44 / 17%); color: #a9b8c3; }
+.booking-app .day:enabled:hover { background: rgb(79 157 161 / 46%); }
+.booking-app .day.range {
+  border-color: rgb(147 231 218 / 62%);
+  background: linear-gradient(135deg, rgb(22 143 147 / 54%), rgb(28 106 119 / 47%));
+}
+.booking-app .day:is(.start, .end), .booking-app .day.start:is(:hover, :focus-visible) {
+  border: 2px solid #b1fff2;
+  background: linear-gradient(145deg, rgb(16 119 139 / 88%), rgb(22 94 123 / 81%));
+  color: #fff;
+}
+.booking-app .day:is(.start, .end) small { color: #f2fffe; }
+.booking-app .legend { gap: 8px 16px; margin-top: 18px; }
+.booking-app .available { background: var(--mint); }
+.booking-app .summary h2 { margin: 5px 0 17px; }
+.caravan-card, .stay-card {
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgb(133 162 181 / 10%);
+  box-shadow: inset 0 1px rgb(255 255 255 / 7%);
+}
+.caravan-card img {
+  width: 100%;
+  height: clamp(105px, 12vw, 150px);
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.caravan-caption { padding: 10px 13px; display: grid; gap: 3px; }
+.caravan-caption span { color: var(--muted); font-size: .88rem; }
+.stay-card { padding: 14px; margin: 12px 0; }
+.stay-card h3 { color: var(--ink); margin: 0; font-size: 1rem; font-weight: 650; }
+.stay-card #selection { margin: 6px 0 15px; }
+.stay-card .total { margin: 16px 0 0; padding-top: 14px; border-color: var(--edge); }
+.stay-card .total strong { font: 650 1.55rem/1 "DM Sans", system-ui, sans-serif; }
+.guest-diary :is(input, textarea, select) { background: rgb(20 40 53 / 67%); border-color: rgb(195 223 230 / 37%); }
+.guest-diary select option { background: #20363f; }
+.guest-diary .cta { background: #9ae9db; color: #10342e; min-height: 46px; }
+.guest-diary .cta:enabled:hover { background: #b1fff0; }
+.guest-diary dialog {
+  background: linear-gradient(140deg, rgb(33 56 69 / 92%), rgb(22 42 52 / 95%));
+  border-color: var(--edge);
+  box-shadow: 0 20px 60px rgb(4 19 28 / 40%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.booking-app #notice:not(:empty) { padding: 14px; border: 1px solid var(--mint); border-radius: 10px; }
+.booking-app #notice:empty { margin: 0; }
+@media (max-width: 810px) {
+  .guest-diary { padding: 12px; }
+  .booking-app { padding: 16px; border-radius: 19px; }
+  .booking-app .layout { grid-template-columns: minmax(0, 1fr); }
+  .booking-app .summary { border-left: none; border-top: 1px solid var(--edge); border-radius: 0 0 18px 18px; }
+  .caravan-card { display: grid; grid-template-columns: 102px 1fr; align-items: center; }
+  .caravan-card img { height: 72px; }
+}
+@media (max-width: 500px) {
+  .guest-diary { padding: 6px; }
+  .booking-app { padding: 10px; border-radius: 16px; }
+  .booking-app .diary, .booking-app .summary { padding: 11px; }
+  .booking-app .mast a:first-child { font-size: 1.13rem; }
+  .booking-app .back { font-size: .84rem; }
+  .booking-app .week, .booking-app .days { gap: 2px; }
+  .booking-app .week { font-size: .78rem; }
+  .booking-app .day { padding: 5px 2px; border-radius: 6px; min-height: 56px; align-items: center; }
+  .booking-app .day small { font-size: clamp(.65rem, 2.7vw, .83rem); }
+  .booking-app .day.pick::after { width: 3px; height: 3px; top: 4px; right: 3px; }
+  .booking-app .legend { gap: 6px 9px; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .guest-diary .booking-app { background: #20323f; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

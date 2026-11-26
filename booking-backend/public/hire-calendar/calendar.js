@@ -29,6 +29,7 @@ function navigate(step) {
 function choose(key) {
   start = key; const opts = choices(key); nights = opts.includes(7) ? 7 : opts[0];
   issued = null; attempt=crypto.randomUUID(); el('notice').textContent = ''; render();
+  el('days').querySelector('.start')?.focus({preventScroll:true});
 }
 function render() {
   const first = date(month), final = date(month); final.setUTCMonth(first.getUTCMonth()+1,0);
@@ -53,8 +54,12 @@ function render() {
     if(key===start) b.classList.add('start');
     if(key===end){b.classList.add('end');amount.textContent='Return';}
     const description = opts.length ? 'available arrival' : state === 'available' ? 'stay night' : state;
-    b.setAttribute('aria-label', [fmt(key,{weekday:'long',day:'numeric',month:'long'}),description,price,key===end?'return day':''].filter(Boolean).join(', '));
-    if(!b.disabled)b.addEventListener('click',()=>choose(key));
+    const selectionState = key === start ? 'selected arrival' : key === end ? 'return day' : start && key > start && key < end ? 'selected stay night' : '';
+    b.setAttribute('aria-label', [fmt(key,{weekday:'long',day:'numeric',month:'long'}),description,price,selectionState].filter(Boolean).join(', '));
+    if(!b.disabled) {
+      b.setAttribute('aria-pressed',String(key === start));
+      b.addEventListener('click',()=>choose(key));
+    }
     grid.append(b);
   }
   const length = el('length');
