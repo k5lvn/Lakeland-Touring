@@ -48,6 +48,13 @@ try {
                 header('Location: ./?month='.rawurlencode($monthKey),true,303); exit;
             }
             $id = (string)($_POST['id'] ?? '');
+            if (isset($_POST['save_return'])) {
+                if (!is_string($_POST['return_date'] ?? null) || !is_string($_POST['expected_end'] ?? null)) {
+                    throw new Failure('Choose a return date.');
+                }
+                \HireCalendar\changeHoldReturn($db, $c, $id, $_POST['expected_end'], $_POST['return_date']);
+                header('Location: ./?month='.rawurlencode($monthKey).'#request-'.rawurlencode(reference($id)),true,303); exit;
+            }
             if (isset($_POST['save_time'])) {
                 $time=(string)($_POST['handover']??'');
                 if (!preg_match('/^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/D',$time)) throw new Failure('Enter a valid handover time.');
@@ -73,7 +80,12 @@ try {
                     $pence=(int)$parts[1]*100+(int)str_pad($parts[2]??'',2,'0');
                 }
             }
-            decide($db,$c,$id,$decision,$pence);
+            $expectedEnd = null;
+            if ($entry['state'] === 'goodwill') {
+                if (!is_string($_POST['expected_end'] ?? null)) throw new Failure('Refresh the booking and review the dates before continuing.', 409);
+                $expectedEnd = $_POST['expected_end'];
+            }
+            decide($db,$c,$id,$decision,$pence,$expectedEnd);
             try { \HireCalendar\deliverMail($db,$c); } catch (Throwable $e) {error_log('Calendar notification queued for retry.');}
             header('Location: ./?month='.rawurlencode(substr($entry['start'], 0, 7)).'#request-'.rawurlencode(reference($id)), true, 303);
             exit;
@@ -202,10 +214,21 @@ try {
     <p class="notes"><?=h($guest['details'])?></p>
     <?php if (in_array($state,['goodwill','approved'],true)): ?><p><a href="../status.php?key=<?=h(\HireCalendar\receipt($c,$r['id']))?>">Open guest’s private holiday page</a></p>
     <form method="post"><input type="hidden" name="csrf" value="<?=h($_SESSION['csrf'])?>"><input type="hidden" name="id" value="<?=h($r['id'])?>"><label>Agreed handover (UK time) <input required type="time" name="handover" value="<?=h($quote['handover']??'')?>"></label><button name="save_time" value="1">Save handover time</button></form><?php endif; ?>
+    <?php if ($state === 'goodwill' && $r['end'] >= $today): ?>
+    <form method="post">
+      <input type="hidden" name="csrf" value="<?=h($_SESSION['csrf'])?>">
+      <input type="hidden" name="id" value="<?=h($r['id'])?>">
+      <input type="hidden" name="expected_end" value="<?=h($r['end'])?>">
+      <p>Last night held: <?=h($return->modify('-1 day')->format('l j F Y'))?></p>
+      <label>Return date <input type="date" name="return_date" required value="<?=h($r['end'])?>" min="<?=h(max($today,$arrival->modify('+1 day')->format('Y-m-d')))?>" max="<?=h(max($r['end'],$c['request_through']))?>"></label>
+      <button type="submit" name="save_return" value="1">Save return date</button>
+    </form>
+    <?php endif; ?>
     <?php if (in_array($state,['requested','goodwill'],true)): ?>
     <form method="post">
       <input type="hidden" name="csrf" value="<?=h($_SESSION['csrf'])?>">
       <input type="hidden" name="id" value="<?=h($r['id'])?>">
+      <?php if ($state === 'goodwill'): ?><input type="hidden" name="expected_end" value="<?=h($r['end'])?>"><?php endif; ?>
       <?php if ($guest['mode'] === 'delivery'): ?><label class="agree"><input type="checkbox" name="delivery_agreed" value="1"> Customer has agreed the delivery price separately.</label><?php endif; ?>
       <?php if ($quote['hire_pence']===null): ?><label>Agreed hire price (£) <input name="agreed_price" inputmode="decimal" placeholder="0.00"></label><?php endif; ?>
       <label class="agree"><input type="checkbox" name="agreed" value="1"> I have checked availability, agreed the price with the guest and received the booking deposit.</label>

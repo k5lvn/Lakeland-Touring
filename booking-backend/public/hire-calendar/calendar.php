@@ -66,21 +66,49 @@ function database(array $c): PDO {
 function installInitialHold(PDO $db,array $c): void {
     $hold = $c['initial_hold'];
     $id = $hold['id'];
-    $exists = $db->prepare('SELECT 1 FROM bookings WHERE id=?');
-    $exists->execute([$id]);
-    if ($exists->fetchColumn()) return;
-    transaction($db,function()use($db,$c,$hold,$id,$exists) {
-        $exists->execute([$id]);
-        if ($exists->fetchColumn()) return;
-        $start=$hold['start']; $end=$hold['end'];
-        foreach ($c['blocked'] as $block) {
-            if (overlaps($start,$end,$block['start'],$block['end'])) throw new Failure('Operator review required for overlapping dates.',409);
+    // Older installations keep the original return date in their private seed file or config.
+    $openingWeek = $id === 'a8b5f06d1bb5469e0d523d9c472d472fa02db3e7'
+        && $hold['start'] === '2027-08-14' && in_array($hold['end'],['2027-08-20','2027-08-21'],true);
+    if ($openingWeek) $hold['end'] = '2027-08-21';
+    $lookup = $db->prepare('SELECT state,start,end,terms_version,quote FROM bookings WHERE id=?');
+    $read = static function() use ($lookup,$id) {
+        $lookup->execute([$id]);
+        $row = $lookup->fetch(PDO::FETCH_ASSOC);
+        $lookup->closeCursor();
+        return $row;
+    };
+    $needsExtension = static fn(array $row): bool => $openingWeek && $row['state'] === 'goodwill'
+        && $row['terms_version'] === 'operator-hold-v1' && $row['start'] === $hold['start']
+        && $row['end'] === '2027-08-20';
+    $existing = $read();
+    if ($existing && !$needsExtension($existing)) return;
+    transaction($db,function() use ($db,$c,$hold,$id,$openingWeek,$read,$needsExtension) {
+        $existing = $read();
+        if ($existing && !$needsExtension($existing)) return;
+        $start = $hold['start'];
+        $end = $hold['end'];
+        $checkFrom = $existing ? $existing['end'] : $start;
+        try {
+            foreach ($c['blocked'] as $block) {
+                if (overlaps($checkFrom,$end,$block['start'],$block['end'])) throw new Failure('Operator review required for overlapping dates.',409);
+            }
+            available($db,$checkFrom,$end);
+        } catch (Failure $e) {
+            if ($openingWeek && $e->status === 409) return;
+            throw $e;
         }
-        available($db,$start,$end);
+        if ($existing) {
+            $quote = json_decode($existing['quote'],true,512,JSON_THROW_ON_ERROR);
+            $quote['end'] = $end;
+            $quote['nights'] = 7;
+            $db->prepare("UPDATE bookings SET end=?, quote=?, terms_version='operator-hold-v2' WHERE id=?")
+                ->execute([$end,json_encode($quote,JSON_THROW_ON_ERROR),$id]);
+            return;
+        }
         $quote=['start'=>$start,'end'=>$end,'nights'=>dateValue($start)->diff(dateValue($end))->days,'hire_pence'=>null];
         $guest=['name'=>'Guest hold','mode'=>'undecided','email'=>'','details'=>'Hire option and booking deposit to be confirmed.'];
-        $insert=$db->prepare("INSERT INTO bookings (id,start,end,state,quote,customer,created,terms_version) VALUES (?,?,?,'goodwill',?,?,?,'operator-hold-v1')");
-        $insert->execute([$id,$start,$end,json_encode($quote),json_encode($guest),time()]);
+        $insert=$db->prepare("INSERT INTO bookings (id,start,end,state,quote,customer,created,terms_version) VALUES (?,?,?,'goodwill',?,?,?,?)");
+        $insert->execute([$id,$start,$end,json_encode($quote),json_encode($guest),time(),$openingWeek ? 'operator-hold-v2' : 'operator-hold-v1']);
     });
 }
 function receipt(array $c,string $id): string {return $id.'.'.hash_hmac('sha256',$id,$c['receipt_secret']);}
@@ -119,12 +147,45 @@ function requestStay(PDO $db,array $c,string $id,array $input): array {
         return ['reference'=>reference($id),'key'=>receipt($c,$id)];
     });
 }
-function decide(PDO $db,array $c,string $id,string $action,?int $agreedPrice=null): void {
+function changeHoldReturn(PDO $db, array $c, string $id, string $expectedEnd, string $newEnd): void {
+    $return = dateValue($newEnd);
+    transaction($db, function () use ($db, $c, $id, $expectedEnd, $newEnd, $return) {
+        $entry = row($db, $id);
+        if ($entry['state'] !== 'goodwill') throw new Failure('Only an active hold can be edited.', 409);
+        if ($entry['end'] === $newEnd) return;
+        if ($entry['end'] !== $expectedEnd) throw new Failure('The return date has changed. Review the current dates and try again.', 409);
+
+        $arrival = dateValue($entry['start']);
+        if ($return <= $arrival || $newEnd < today() || $entry['end'] < today()) {
+            throw new Failure('Choose a return date after arrival for a current or future hold.');
+        }
+        if ($newEnd > $entry['end']) {
+            if ($newEnd > $c['request_through']) throw new Failure('Choose a return date within the booking window.');
+            // Test only the added nights, starting on the old return day, so the hold cannot conflict with itself.
+            foreach ($c['blocked'] as $block) {
+                if (overlaps($entry['end'], $newEnd, $block['start'], $block['end'])) {
+                    throw new Failure('The additional nights include a blocked date.', 409);
+                }
+            }
+            available($db, $entry['end'], $newEnd);
+        }
+        $quote = json_decode($entry['quote'], true, 512, JSON_THROW_ON_ERROR);
+        $quote['end'] = $newEnd;
+        $quote['nights'] = $arrival->diff($return)->days;
+        $update = $db->prepare("UPDATE bookings SET end=?, quote=?,
+            terms_version=CASE WHEN terms_version='operator-hold-v1' THEN 'operator-hold-v2' ELSE terms_version END WHERE id=?");
+        $update->execute([$newEnd, json_encode($quote, JSON_THROW_ON_ERROR), $id]);
+    });
+}
+function decide(PDO $db,array $c,string $id,string $action,?int $agreedPrice=null,?string $expectedEnd=null): void {
     if (!in_array($action,['approved','declined','released'],true)) throw new Failure('Unknown decision.');
-    transaction($db,function()use($db,$c,$id,$action,$agreedPrice){
+    transaction($db,function()use($db,$c,$id,$action,$agreedPrice,$expectedEnd){
         $r=row($db,$id);
         if ($r['state']===$action) return;
         $hold=$r['state']==='goodwill';
+        if ($hold && $expectedEnd !== null && $r['end'] !== $expectedEnd) {
+            throw new Failure('The held dates changed. Review them before confirming your decision.', 409);
+        }
         if (($hold && $action==='declined') || (!$hold && ($r['state']!=='requested' || $action==='released'))) throw new Failure('This entry already has a decision.',409);
         $q=json_decode($r['quote'],true);
         if ($action==='approved') {

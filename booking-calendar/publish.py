@@ -98,7 +98,10 @@ def verify_diary():
     status, public=page('hire-calendar/')
     if status!=200 or b'Find your dates' not in public:
         raise RuntimeError('Missing public diary')
-    return any(b['start']==HOLD['start'] and b['end']==HOLD['end'] and b['state']=='held' for b in result['blocks'])
+    expected = {'start': HOLD['start'], 'end': HOLD['end'], 'state': 'held'}
+    occupied = [block for block in result['blocks']
+                if block['start'] < expected['end'] and block['end'] > expected['start']]
+    return occupied == [expected]
 
 
 def run():
@@ -145,7 +148,7 @@ def run():
                 if status!=200 or b'/hire-calendar/' not in content:
                     raise RuntimeError('Missing published navigation on '+(name or 'homepage'))
             print('Verified guest calendar, operator sign-in, private receipt boundary and three live entry points.')
-            print('Opening dates currently held:',held)
+            print(f"Public calendar shows one hold from {HOLD['start']} to checkout {HOLD['end']}: {held}")
         except BaseException:
             for name in reversed(changed):
                 if current(name)==updates[name]:
