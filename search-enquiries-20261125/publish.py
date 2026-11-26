@@ -4,6 +4,7 @@ from contextlib import closing
 from io import BytesIO
 import json
 from pathlib import Path, PurePosixPath
+import re
 import sys
 import time
 from urllib.error import HTTPError
@@ -33,9 +34,20 @@ def public(name):
                 raise
         time.sleep(attempt + 1)
 
+BROCHURE_PATH = '/downloads/lakeland-touring-brochure.pdf'
+# The review refresh can reorder anchor attributes and serialize download as download="".
+BROCHURE_ANCHOR = (r'<a\b(?=[^>]*\shref\s*=\s*["\']' + re.escape(BROCHURE_PATH)
+                   + r'["\'])[^>]*>\s*Download the caravan brochure\s*\(PDF\)\s*</a>')
+BROCHURE_LINK = re.compile(BROCHURE_ANCHOR, re.IGNORECASE)
+REPEATED_BROCHURE = re.compile(
+    r'(?P<first>' + BROCHURE_ANCHOR + r')(?:\s*' + BROCHURE_ANCHOR + r')+', re.IGNORECASE)
+
 def updated(name, current, changes):
     text = current.decode('utf-8')
     for edit in changes:
+        if BROCHURE_PATH in edit['new'] and BROCHURE_LINK.search(text):
+            text = REPEATED_BROCHURE.sub(r'\g<first>', text)
+            continue
         seen = text.count(edit['old'])
         completed = text.count(edit['new'])
         if completed >= edit['count'] and seen == completed * edit['new'].count(edit['old']):
