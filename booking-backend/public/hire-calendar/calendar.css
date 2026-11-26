@@ -233,3 +233,25 @@
 @media (prefers-reduced-transparency: reduce) {
   .calendar-panel { background: #18383e; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
+
+@media (max-width: 600px) and (orientation: portrait) {
+  .booking-app .day {
+    container-type: inline-size;
+    min-inline-size: 0;
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: 0;
+  }
+  .booking-app .day small {
+    font-family: Arial, sans-serif;
+    font-size: clamp(.625rem, 2.7vw, .75rem);
+    font-size: clamp(.625rem, 26cqi, .75rem);
+    line-height: 1.2;
+    letter-spacing: -.025em;
+    white-space: nowrap;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+}
+@media (max-width: 360px) and (orientation: portrait) {
+  .booking-app .calendar-panel { padding-inline: 6px; }
+}
