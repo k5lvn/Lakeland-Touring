@@ -69,7 +69,7 @@ function db(array $cfg): PDO {
     return $db;
 }
 function available(PDO $db, string $start, string $end): void {
-    $q = $db->prepare("SELECT COUNT(*) FROM bookings WHERE state IN ('creating','pending','paid') AND start < ? AND end > ?");
+    $q = $db->prepare("SELECT COUNT(*) FROM bookings WHERE state IN ('creating','pending','paid','approved','goodwill','owner_block') AND start < ? AND end > ?");
     $q->execute([$end,$start]);
     if ($q->fetchColumn()) throw new Failure('Those dates are no longer available. Please choose again.',409);
 }

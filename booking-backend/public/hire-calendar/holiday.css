@@ -1,0 +1,100 @@
+.holiday-page {
+  color-scheme: dark;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  color: #f5f9f5;
+  background: linear-gradient(105deg, rgb(3 22 34 / 46%), rgb(7 29 36 / 9%) 80%),
+              #092633 url("lake.webp") 68% center / cover no-repeat;
+  font: 400 1rem/1.5 "DM Sans", system-ui, sans-serif;
+}
+.holiday-page *, .holiday-page *::before, .holiday-page *::after { box-sizing: border-box; }
+.holiday-shell { width: min(91%, 900px); margin: 0 auto; padding: 0 0 clamp(35px, 7vw, 95px); }
+.holiday-mast {
+  min-height: 85px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgb(222 248 234 / 35%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+}
+.holiday-mast img { display: block; width: 145px; max-width: 45vw; height: auto; }
+.holiday-page a { color: #c9f4df; text-underline-offset: 3px; }
+.holiday-page a:focus-visible { outline: 2px solid #fcd69c; outline-offset: 3px; }
+.holiday-intro { padding: clamp(36px, 7vw, 95px) 0 clamp(27px, 4vw, 52px); }
+.holiday-intro > p:first-child, .holiday-intro .eyebrow, .holiday-intro > small { text-transform: uppercase; letter-spacing: .15em; font-size: .8rem; font-weight: 650; color: #cfeddf; }
+.holiday-intro h1 {
+  max-width: 15ch;
+  margin: .15em 0 .25em;
+  font: 400 clamp(2.9rem, 7vw, 5.8rem)/1.01 Georgia, serif;
+  letter-spacing: -.042em;
+  text-wrap: balance;
+  color: #fffdf7;
+}
+.holiday-intro h1 em { color: #e2f6e7; font-weight: 400; }
+.holiday-intro p { margin: .25em 0 0; line-height: 1.55; }
+.holiday-card {
+  max-width: 680px;
+  border: 1px solid rgb(222 248 234 / 36%);
+  border-radius: 19px;
+  padding: clamp(18px, 3vw, 32px);
+  background: linear-gradient(128deg, rgb(13 43 52 / 58%), rgb(12 37 43 / 34%));
+  box-shadow: 0 12px 34px rgb(4 19 25 / 22%);
+}
+.holiday-card h2 { margin: 0 0 12px; font: 600 clamp(1.1rem, 2.1vw, 1.5rem)/1.2 "DM Sans", system-ui, sans-serif; }
+.holiday-card p { margin: .7em 0; }
+.holiday-card > :last-child { margin-bottom: 0; }
+.rings { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: clamp(4px, 1.4vw, 19px); }
+.ring-unit { display: grid; justify-items: center; align-content: start; gap: 6px; min-width: 0; }
+.ring-unit > :is(small, label), .ring-unit > span:not(.ring) { font-size: .78rem; font-weight: 650; text-transform: uppercase; letter-spacing: .045em; }
+.ring {
+  width: 100%;
+  max-width: 100px;
+  aspect-ratio: 1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgb(18 40 44 / 10%);
+}
+.ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(#77dfcc 0% var(--progress, 0%), rgb(184 222 215 / 41%) var(--progress, 0%) 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3.5px));
+}
+.ring > span, .ring > b {
+  font: 400 clamp(1.55rem, 4.8vw, 2.9rem)/1 Georgia, serif;
+  letter-spacing: -.045em;
+  color: #fff;
+  font-variant-numeric: tabular-nums lining-nums;
+  text-shadow: 0 1px 3px #031318c9;
+}
+.holiday-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 14px 0;
+  margin: 15px 0 9px;
+  border-block: 1px solid rgb(224 247 232 / 29%);
+}
+.holiday-dates :is(dt,small) { color: #d8e9e5; display: block; font-size: .875rem; }
+.holiday-dates :is(dd,strong) { display: block; margin: 3px 0 0; font-weight: 650; }
+@media (max-width: 550px) {
+  .holiday-shell { width: 91%; }
+  .holiday-mast { min-height: 73px; }
+  .holiday-mast img { width: 123px; }
+  .holiday-intro { padding: 35px 0 28px; }
+  .holiday-card { padding: 16px; border-radius: 16px; }
+  .rings { gap: 6px; }
+  .ring-unit > :is(small, label), .ring-unit > span:not(.ring) { font-size: .72rem; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .holiday-card { background: #18383e; }
+  .ring { background: #183237; }
+}

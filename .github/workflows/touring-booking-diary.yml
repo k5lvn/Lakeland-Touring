@@ -1,0 +1,35 @@
+name: Publish Touring booking diary
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'booking-calendar/**'
+      - 'booking-backend/public/hire-calendar/**'
+      - '.github/workflows/touring-booking-diary.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: design-standard-release
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the calendar
+        run: |
+          find booking-backend/public/hire-calendar -name '*.php' -print0 | xargs -0 -n 1 php -l
+          php booking-calendar/tests/approval.php
+          php booking-calendar/tests/diary.php
+          node --check booking-backend/public/hire-calendar/calendar.js
+          node --check booking-backend/public/hire-calendar/holiday.js
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Publish and verify on IONOS
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+        run: python3 booking-calendar/publish.py
