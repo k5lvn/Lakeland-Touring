@@ -5,6 +5,7 @@ use PDO;
 use TouringBooking\Failure;
 use function TouringBooking\{available,dateValue,db,overlaps};
 require_once dirname(__DIR__).'/api/common.php';
+require_once __DIR__.'/booking-sms.php';
 
 function settings(): array {
     $root = realpath($_SERVER['DOCUMENT_ROOT'] ?? '');
@@ -60,6 +61,7 @@ function price(array $c,string $start,int $n): array {
 function database(array $c): PDO {
     $db=db($c);
     $db->exec('CREATE TABLE IF NOT EXISTS calendar_mail (booking TEXT NOT NULL, status TEXT NOT NULL, sent INTEGER, PRIMARY KEY(booking,status))');
+    $db->exec("CREATE TABLE IF NOT EXISTS calendar_sms (booking TEXT PRIMARY KEY, status TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0, due INTEGER NOT NULL DEFAULT 0)");
     if (!empty($c['initial_hold'])) installInitialHold($db,$c);
     return $db;
 }
@@ -143,6 +145,9 @@ function requestStay(PDO $db,array $c,string $id,array $input): array {
             $db->prepare("INSERT INTO bookings(id,start,end,state,quote,customer,created,terms_version) VALUES(?,?,?,'requested',?,?,?,'operator-request-v1')")
                ->execute([$id,$q['start'],$q['end'],json_encode($q),json_encode($customer),time()]);
             scheduleMail($db,$id,'requested');
+            if (\BookingSms\configured($c['private_dir'])) {
+                $db->prepare("INSERT INTO calendar_sms(booking,status) VALUES (?,'pending')")->execute([$id]);
+            }
         }
         return ['reference'=>reference($id),'key'=>receipt($c,$id)];
     });

@@ -6,6 +6,7 @@ use TouringBooking\Failure;
 
 require __DIR__.'/access.php';
 require dirname(__DIR__).'/mail.php';
+require_once dirname(__DIR__).'/sms.php';
 header('Cache-Control: no-store');
 header('Referrer-Policy: no-referrer');
 header('X-Robots-Tag: noindex, nofollow');
@@ -15,6 +16,7 @@ try {
     $db = database($c);
     \HireCalendar\operatorAccess($c,$db);
     try { \HireCalendar\deliverMail($db,$c); } catch (Throwable $e) {error_log('Calendar notification queued for retry.');}
+    try { \HireCalendar\deliverSms($db,$c); } catch (Throwable $e) {error_log('Touring booking SMS needs review.');}
     $error = '';
     $today = today();
     $monthKey = $_GET['month'] ?? substr($today, 0, 7);
@@ -158,6 +160,7 @@ try {
 </head>
 <body><main class="operator">
 <header class="mast">
+  <a href="booking-sms.php">SMS booking alerts</a>
   <div class="wordmark"><span aria-hidden="true">LT</span> Lakeland Touring</div>
   <form method="post"><input type="hidden" name="csrf" value="<?=h($_SESSION['csrf'])?>"><button class="private" name="signout" value="1">Sign out</button></form>
 </header>

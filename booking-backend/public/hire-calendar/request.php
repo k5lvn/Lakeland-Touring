@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/mail.php';
+require_once __DIR__.'/sms.php';
 \TouringBooking\run(function(){
     $c=\HireCalendar\settings();$input=\TouringBooking\body($c);
     $id=$_SESSION['calendar_id']??null;
@@ -10,6 +11,7 @@ require __DIR__.'/mail.php';
     $id=substr(hash_hmac('sha256',$attempt,$id),0,40);
     $db=\HireCalendar\database($c);
     $result=\HireCalendar\requestStay($db,$c,$id,$input);
+    try { \HireCalendar\deliverSms($db,$c,$id); } catch (Throwable $error) {error_log('Touring booking SMS needs review.');}
     try { \HireCalendar\deliverMail($db,$c); } catch (Throwable $error) {error_log('Calendar notification queued for retry.');}
     return $result;
 });

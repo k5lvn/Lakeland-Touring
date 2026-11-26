@@ -112,7 +112,9 @@ def run():
             host.run(lambda s:guarded_replace(s,WEB/name,old,new))
         public_source=PUBLIC/'hire-calendar'
         updates={'hire-calendar/'+str(p.relative_to(public_source)):p.read_bytes()
-                 for p in sorted(public_source.rglob('*')) if p.is_file()}
+                 for p in sorted(public_source.rglob('*'), key=lambda p: (
+                     p.parent != public_source or p.name not in ('booking-sms.php','sms.php'),
+                     p.name != 'booking-sms.php', str(p))) if p.is_file()}
         updates['hire-calendar/lake.webp']=(ROOT/'luxury-release-20261031/luxury-lake-dusk-20261031.webp').read_bytes()
         for name in ['api/common.php','api/availability.php']:
             actual=current(name)

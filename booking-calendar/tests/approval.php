@@ -2,7 +2,7 @@
 declare(strict_types=1);
 use function HireCalendar\{requestStay,decide,row,database,price};
 use TouringBooking\Failure;
-require dirname(__DIR__,2).'/booking-backend/public/hire-calendar/calendar.php';
+require dirname(__DIR__,2).'/booking-backend/public/hire-calendar/sms.php';
 $dir=sys_get_temp_dir().'/lt-'.bin2hex(random_bytes(8));mkdir($dir,0700);
 $c=['private_dir'=>$dir,'receipt_secret'=>str_repeat('a',36),'periods'=>[['start'=>'2099-07-01','end'=>'2099-08-01','season'=>'peak','prices'=>[7=>98000]]],'blocked'=>[]];
 $db=database($c);$sat=(new DateTimeImmutable('2099-07-01'))->modify('next Saturday')->format('Y-m-d');
@@ -11,12 +11,20 @@ function must(bool $ok): void {if(!$ok)throw new RuntimeException('Assertion fai
 function rejected(callable $fn): void {try{$fn();}catch(Failure){return;}throw new RuntimeException('Expected rejection');}
 try {
     $a=bin2hex(random_bytes(20));$b=bin2hex(random_bytes(20));
+    file_put_contents($dir.'/clicksend-booking.json',json_encode(['username'=>'fixture','key'=>'fixture','to'=>'+10000000000']));
     $one=requestStay($db,$c,$a,$input);must($one===requestStay($db,$c,$a,$input));
     requestStay($db,$c,$b,$input);must(row($db,$a)['state']==='requested');
+    $sent=0;
+    $mock=static function($cfg,$body,$id) use (&$sent,$one) {
+        must($id===$one['reference'] && str_starts_with($body,'Lakeland Touring:') && str_contains($body,$id));$sent++;return 'accepted';
+    };
+    \HireCalendar\deliverSms($db,$c,$a,$mock);\HireCalendar\deliverSms($db,$c,$a,$mock);
+    must($sent===1);
     decide($db,$c,$a,'approved');decide($db,$c,$a,'approved');
     must(row($db,$a)['state']==='approved');rejected(fn()=>decide($db,$c,$b,'approved'));
     rejected(fn()=>\TouringBooking\available($db,$sat,row($db,$a)['end']));
     decide($db,$c,$b,'declined');must(row($db,$b)['state']==='declined');
+    must((int)$db->query('SELECT COUNT(*) FROM calendar_sms')->fetchColumn()===2);
     must((int)$db->query('SELECT COUNT(*) FROM calendar_mail')->fetchColumn()===4);
     rejected(fn()=>price($c,$sat,3));rejected(fn()=>price($c,(new DateTimeImmutable($sat))->modify('+1 day')->format('Y-m-d'),7));
     $next=row($db,$a)['end'];$input['start']=$next;$d=bin2hex(random_bytes(20));requestStay($db,$c,$d,$input);
