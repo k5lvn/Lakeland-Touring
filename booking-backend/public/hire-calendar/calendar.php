@@ -7,13 +7,19 @@ use function TouringBooking\{available,dateValue,db,overlaps};
 require_once dirname(__DIR__).'/api/common.php';
 
 function settings(): array {
-    $file = realpath(getenv('TOURING_CALENDAR_CONFIG') ?: '/unconfigured');
-    $root = realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: '';
-    if (!$file || !$root || str_starts_with($file, $root.'/')) throw new Failure('The hire diary is awaiting setup.',503);
+    $root = realpath($_SERVER['DOCUMENT_ROOT'] ?? '');
+    if (!$root) throw new Failure('Diary storage is unavailable.',503);
+    $path = getenv('TOURING_CALENDAR_CONFIG') ?: dirname($root).'/.touring-calendar/config.php';
+    $file = realpath($path);
+    if (!$file || str_starts_with($file,$root.'/')) throw new Failure('Diary configuration is unavailable.',503);
     $c = require $file;
-    if (empty($c['inventory_verified']) || empty($c['periods']) || strlen($c['receipt_secret'] ?? '') < 32
-        || !filter_var($c['office_email'] ?? '',FILTER_VALIDATE_EMAIL) || empty($c['operator_user'])
-        || ($c['origin'] ?? '') !== 'https://lakelandtouring.uk') throw new Failure('The diary is awaiting setup.',503);
+    $holdPath=dirname($root).'/.touring-calendar/opening-hold.json';
+    if (empty($c['initial_hold']) && is_file($holdPath)) $c['initial_hold']=json_decode(file_get_contents($holdPath),true,512,JSON_THROW_ON_ERROR);
+    if (strlen($c['receipt_secret'] ?? '') < 32 || !filter_var($c['office_email'] ?? '', FILTER_VALIDATE_EMAIL)
+        || ($c['origin'] ?? '') !== 'https://lakelandtouring.uk') throw new Failure('Diary configuration is incomplete.',503);
+    $c['request_through'] = dateValue(today())->modify('+12 months')->format('Y-m-d');
+    if (empty($c['inventory_verified'])) $c['periods'] = [];
+    $c['inventory_through'] = $c['inventory_through'] ?: $c['request_through'];
     $last = ''; dateValue($c['inventory_through']);
     foreach ($c['periods'] as $p) {
         if (dateValue($p['end']) <= dateValue($p['start']) || $p['start'] < $last || $p['end'] > $c['inventory_through']) throw new Failure('Check the diary periods.',503);
@@ -32,6 +38,10 @@ function today(): string {return (new \DateTimeImmutable('today',new \DateTimeZo
 function price(array $c,string $start,int $n): array {
     if ($n<1 || $n>366 || $start<today()) throw new Failure('Choose a future stay.');
     $a=dateValue($start);$end=$a->modify("+$n days")->format('Y-m-d');
+    if (isset($c['request_through']) && $end > $c['request_through']) throw new Failure('Choose dates within the next twelve months.');
+    foreach ($c['blocked'] as $block) {
+        if (overlaps($start,$end,$block['start'],$block['end'])) throw new Failure('Those dates are unavailable.',409);
+    }
     foreach ($c['periods'] as $p) {
         if ($p['start']>$start || $p['end']<$end || !isset($p['prices'][$n])) continue;
         if ($p['season']==='peak' && ((int)$a->format('N')!==6 || $n!==7)) continue;
@@ -39,12 +49,39 @@ function price(array $c,string $start,int $n): array {
         foreach ($c['blocked'] as $b) if(overlaps($start,$end,$b['start'],$b['end'])) throw new Failure('Those dates are unavailable.',409);
         return ['start'=>$start,'end'=>$end,'nights'=>$n,'hire_pence'=>$p['prices'][$n]];
     }
+    if (!empty($c['allow_enquiries']) && in_array($n,[3,5,7],true) && ($n !== 3 || (int)$a->format('N') === 5)) {
+        foreach ($c['periods'] as $p) {
+            if (overlaps($start,$end,$p['start'],$p['end'])) throw new Failure('Choose a stay within the advertised season.',409);
+        }
+        return ['start'=>$start,'end'=>$end,'nights'=>$n,'hire_pence'=>null];
+    }
     throw new Failure('Please choose an available stay from the calendar.',409);
 }
 function database(array $c): PDO {
     $db=db($c);
     $db->exec('CREATE TABLE IF NOT EXISTS calendar_mail (booking TEXT NOT NULL, status TEXT NOT NULL, sent INTEGER, PRIMARY KEY(booking,status))');
+    if (!empty($c['initial_hold'])) installInitialHold($db,$c);
     return $db;
+}
+function installInitialHold(PDO $db,array $c): void {
+    $hold = $c['initial_hold'];
+    $id = $hold['id'];
+    $exists = $db->prepare('SELECT 1 FROM bookings WHERE id=?');
+    $exists->execute([$id]);
+    if ($exists->fetchColumn()) return;
+    transaction($db,function()use($db,$c,$hold,$id,$exists) {
+        $exists->execute([$id]);
+        if ($exists->fetchColumn()) return;
+        $start=$hold['start']; $end=$hold['end'];
+        foreach ($c['blocked'] as $block) {
+            if (overlaps($start,$end,$block['start'],$block['end'])) throw new Failure('Operator review required for overlapping dates.',409);
+        }
+        available($db,$start,$end);
+        $quote=['start'=>$start,'end'=>$end,'nights'=>dateValue($start)->diff(dateValue($end))->days,'hire_pence'=>null];
+        $guest=['name'=>'Guest hold','mode'=>'undecided','email'=>'','details'=>'Hire option and booking deposit to be confirmed.'];
+        $insert=$db->prepare("INSERT INTO bookings (id,start,end,state,quote,customer,created,terms_version) VALUES (?,?,?,'goodwill',?,?,?,'operator-hold-v1')");
+        $insert->execute([$id,$start,$end,json_encode($quote),json_encode($guest),time()]);
+    });
 }
 function receipt(array $c,string $id): string {return $id.'.'.hash_hmac('sha256',$id,$c['receipt_secret']);}
 function reference(string $id): string {return 'LT-'.strtoupper(substr($id,0,12));}
@@ -52,7 +89,7 @@ function transaction(PDO $db,callable $fn): mixed {
     $db->exec('BEGIN IMMEDIATE');try {$out=$fn();$db->exec('COMMIT');return $out;}catch(\Throwable $e){$db->exec('ROLLBACK');throw $e;}
 }
 function row(PDO $db,string $id): array {
-    $q=$db->prepare("SELECT * FROM bookings WHERE id=? AND state IN ('requested','approved','declined')");
+    $q=$db->prepare("SELECT * FROM bookings WHERE id=? AND state IN ('requested','approved','declined','goodwill','released')");
     $q->execute([$id]);return $q->fetch(PDO::FETCH_ASSOC) ?: throw new Failure('Request unavailable.',404);
 }
 function scheduleMail(PDO $db,string $id,string $state): void {
@@ -82,19 +119,29 @@ function requestStay(PDO $db,array $c,string $id,array $input): array {
         return ['reference'=>reference($id),'key'=>receipt($c,$id)];
     });
 }
-function decide(PDO $db,array $c,string $id,string $action): void {
-    if(!in_array($action,['approved','declined'],true))throw new Failure('Unknown decision.');
-    transaction($db,function()use($db,$c,$id,$action){
-        $r=row($db,$id);if($r['state']===$action)return;
-        if($r['state']!=='requested')throw new Failure('This request already has a decision.',409);
-        if($action==='approved'){
-            $q=json_decode($r['quote'],true);$fresh=price($c,$r['start'],$q['nights']);
-            if($fresh['hire_pence']!==$q['hire_pence'])throw new Failure('The price changed. Agree a new request with the customer.',409);
-            available($db,$r['start'],$r['end']);
+function decide(PDO $db,array $c,string $id,string $action,?int $agreedPrice=null): void {
+    if (!in_array($action,['approved','declined','released'],true)) throw new Failure('Unknown decision.');
+    transaction($db,function()use($db,$c,$id,$action,$agreedPrice){
+        $r=row($db,$id);
+        if ($r['state']===$action) return;
+        $hold=$r['state']==='goodwill';
+        if (($hold && $action==='declined') || (!$hold && ($r['state']!=='requested' || $action==='released'))) throw new Failure('This entry already has a decision.',409);
+        $q=json_decode($r['quote'],true);
+        if ($action==='approved') {
+            if (!$hold) {
+                $fresh=price($c,$r['start'],$q['nights']);
+                if ($fresh['hire_pence']!==$q['hire_pence']) throw new Failure('The price changed. Agree a new request with the customer.',409);
+                available($db,$r['start'],$r['end']);
+            }
+            if ($q['hire_pence']===null) {
+                if ($agreedPrice===null || $agreedPrice<=0) throw new Failure('Enter the hire price agreed with the guest.');
+                $q['hire_pence']=$agreedPrice;
+            }
         }
-        $db->prepare('UPDATE bookings SET state=? WHERE id=?')->execute([$action,$id]);scheduleMail($db,$id,$action);
+        $db->prepare('UPDATE bookings SET state=?,quote=? WHERE id=?')->execute([$action,json_encode($q),$id]);
+        if (json_decode($r['customer'],true)['email']!=='') scheduleMail($db,$id,$action);
     });
 }
 function h(string $s): string {return htmlspecialchars($s,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8');}
 function pounds(int $v): string {return '£'.number_format($v/100,2);}
-function statusLabel(string $state): string {return ['requested'=>'Awaiting approval','approved'=>'Approved · dates reserved','declined'=>'Declined'][$state];}
+function statusLabel(string $state): string {return ['requested'=>'Awaiting approval','approved'=>'Approved · dates reserved','declined'=>'Declined','goodwill'=>'Your dates are held · Payment pending','released'=>'Hold released'][$state];}

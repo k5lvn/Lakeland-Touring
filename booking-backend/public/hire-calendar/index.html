@@ -9,52 +9,75 @@
 </head>
 <body class="guest-diary">
   <div class="booking-app">
-    <header class="mast">
-      <a class="brand" href="/" aria-label="Lakeland Touring home">
-        <span class="mark" aria-hidden="true">LT</span>
-        <span>Lakeland <i>Touring</i></span>
-      </a>
-      <a class="back" href="/booking.html">Hire information</a>
+    <header class="diary-mast">
+      <a href="/" aria-label="Lakeland Touring home"><img class="brochure-logo" src="brochure-logo.webp" alt="Lakeland Touring" width="310" height="115"></a>
+      <nav class="diary-nav" aria-label="Main navigation">
+        <a href="/#caravan">Our caravan</a>
+        <a href="/explore-destinations.html">Destinations</a>
+        <a href="/#how">How it works</a>
+        <a href="/booking.html">Contact</a>
+      </nav>
+      <details class="mobile-nav">
+        <summary aria-label="Navigation menu"><span class="menu-icon" aria-hidden="true"></span></summary>
+        <nav aria-label="Main navigation">
+          <a href="/#caravan">Our caravan</a>
+          <a href="/explore-destinations.html">Destinations</a>
+          <a href="/#how">How it works</a>
+          <a href="/booking.html">Contact</a>
+        </nav>
+      </details>
     </header>
     <main>
-      <header class="diary-title"><h1>Booking diary</h1></header>
-      <div class="layout">
-        <section class="diary" aria-label="Availability calendar">
-          <div class="month-head">
-            <h2 id="month" aria-live="polite">Availability</h2>
-            <div class="arrows">
-              <button id="prev" type="button" aria-label="Previous month">‹</button>
-              <button id="next" type="button" aria-label="Next month">›</button>
+      <section class="diary-intro" aria-labelledby="diary-title">
+        <p class="eyebrow">Caravan hire · Cumbria</p>
+        <h1 id="diary-title">Your holiday. <em>Your way.</em></h1>
+        <p>Explore Cumbria in our six-berth Elddis Avanté 866.</p>
+        <a class="check-button" href="#availability">Check availability</a>
+      </section>
+      <section class="calendar-panel" id="availability" aria-labelledby="calendar-title" tabindex="-1">
+        <div class="panel-head">
+          <h2 id="calendar-title">Find your dates</h2>
+          <p id="season-guide"></p>
+        </div>
+        <div class="layout">
+          <section class="diary" aria-labelledby="month">
+            <div class="month-head">
+              <h3 id="month" aria-live="polite">Availability</h3>
+              <div class="arrows">
+                <button id="prev" type="button" aria-label="Previous month" disabled>‹</button>
+                <button id="next" type="button" aria-label="Next month" disabled>›</button>
+              </div>
             </div>
-          </div>
-          <p id="guide">Loading the hire diary…</p>
-          <div id="week" class="week" aria-hidden="true"></div>
-          <div id="days" class="days" aria-label="Dates"></div>
-          <div class="legend">
-            <span><i class="available"></i>Arrival available</span>
-            <span><i class="held"></i>Held</span>
-            <span><i class="booked"></i>Unavailable</span>
-          </div>
-          <p class="note" id="rate-note">Dates show the nightly equivalent for a week’s hire. Select a stay for the exact hire price.</p>
-        </section>
-        <section class="summary" aria-labelledby="stay-title">
-          <h2 id="stay-title">Your stay</h2>
-          <div class="caravan-card">
-            <img src="/Assets/touring-11.jpg" alt="The hire caravan" width="420" height="250">
-            <div class="caravan-caption"><strong>Elddis Avanté 866</strong><span>Six berths</span></div>
-          </div>
-          <div class="stay-card">
-            <h3>Selected dates</h3>
-            <p id="selection" aria-live="polite">Choose an available arrival date.</p>
+            <p id="guide">Loading the hire diary…</p>
+            <div id="week" class="week" aria-hidden="true"></div>
+            <div id="days" class="days" aria-label="Dates"></div>
+            <div class="legend" aria-label="Calendar key">
+              <span><i class="available"></i>Available</span>
+              <span><i class="arrival-key"></i>Available arrival</span>
+              <span><i class="selected-key"></i>Your stay</span>
+              <span><i class="held"></i>Held</span>
+              <span><i class="booked"></i>Unavailable</span>
+            </div>
+            <p class="note" id="rate-note">Prices shown on dates are nightly equivalents for a week’s hire. Where a price is on request, we’ll quote before you book.</p>
+          </section>
+          <section class="summary" aria-labelledby="stay-heading">
+            <p class="eyebrow" id="stay-title">Your selection</p>
+            <h3 id="stay-heading">Your stay</h3>
+            <p id="selection" class="screen-reader" aria-live="polite">Choose an available arrival date.</p>
+            <dl class="summary-dates">
+              <div><dt>Arrival</dt><dd id="arrival">—</dd></div>
+              <div><dt>Departure</dt><dd id="departure">—</dd></div>
+            </dl>
             <label for="length">Length of stay</label>
             <select id="length" disabled><option>Select an arrival first</option></select>
-            <div class="total"><span>Caravan hire</span><strong id="total">—</strong></div>
-          </div>
-          <button id="continue" class="cta" type="button" disabled>Request these dates</button>
-          <p class="note">We’ll confirm your dates once we approve your request.</p>
-        </section>
-      </div>
-      <p id="notice" role="status"></p>
+            <div class="total"><span>Caravan hire total</span><strong id="total">—</strong></div>
+            <button id="continue" class="cta" type="button" disabled>Request these dates</button>
+            <p class="note">Touring Admin will check availability and reply to your request.</p>
+          </section>
+        </div>
+        <p id="notice" role="status"></p>
+      </section>
+      <noscript><p class="no-script">Enable JavaScript to use the diary, or <a href="/booking.html">contact us about your dates</a>.</p></noscript>
     </main>
   </div>
   <dialog id="details" aria-labelledby="request-title">

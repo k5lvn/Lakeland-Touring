@@ -4,19 +4,17 @@ declare(strict_types=1);
 use function HireCalendar\{settings,database,decide,h,pounds,reference,today};
 use TouringBooking\Failure;
 
-require dirname(__DIR__).'/calendar.php';
+require __DIR__.'/access.php';
+require dirname(__DIR__).'/mail.php';
 header('Cache-Control: no-store');
 header('Referrer-Policy: no-referrer');
 header('X-Robots-Tag: noindex, nofollow');
 
 try {
     $c = settings();
-    // Only the operator authenticated by the host's protected directory may see guest records.
-    if (!hash_equals($c['operator_user'], (string)($_SERVER['REMOTE_USER'] ?? ''))) {
-        throw new Failure('Operator sign-in required.', 403);
-    }
-    \TouringBooking\session();
     $db = database($c);
+    \HireCalendar\operatorAccess($c,$db);
+    try { \HireCalendar\deliverMail($db,$c); } catch (Throwable $e) {error_log('Calendar notification queued for retry.');}
     $error = '';
     $today = today();
     $monthKey = $_GET['month'] ?? substr($today, 0, 7);
@@ -31,13 +29,52 @@ try {
             throw new Failure('Refresh the review page.', 403);
         }
         try {
+            if (isset($_POST['signout'])) {
+                unset($_SESSION['operator_until'],$_SESSION['operator_challenge']); session_regenerate_id(true);
+                header('Location: ./',true,303); exit;
+            }
+            if (isset($_POST['block'])) {
+                $from=\TouringBooking\dateValue((string)($_POST['start']??''))->format('Y-m-d');
+                $until=\TouringBooking\dateValue((string)($_POST['end']??''))->format('Y-m-d');
+                if ($from<today() || $until<=$from) throw new Failure('Choose a future start and a later return date.');
+                \HireCalendar\transaction($db,function()use($db,$from,$until){
+                    \TouringBooking\available($db,$from,$until);
+                    $db->prepare("INSERT INTO bookings(id,start,end,state,quote,customer,created,terms_version) VALUES(?,?,?,'owner_block','{}','{}',?,'owner-use')")->execute([bin2hex(random_bytes(20)),$from,$until,time()]);
+                });
+                header('Location: ./?month='.substr($from,0,7),true,303); exit;
+            }
+            if (isset($_POST['unblock'])) {
+                $db->prepare("UPDATE bookings SET state='unblocked' WHERE id=? AND state='owner_block'")->execute([(string)$_POST['unblock']]);
+                header('Location: ./?month='.rawurlencode($monthKey),true,303); exit;
+            }
             $id = (string)($_POST['id'] ?? '');
+            if (isset($_POST['save_time'])) {
+                $time=(string)($_POST['handover']??'');
+                if (!preg_match('/^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/D',$time)) throw new Failure('Enter a valid handover time.');
+                \HireCalendar\transaction($db,function()use($db,$id,$time){
+                    $entry=\HireCalendar\row($db,$id);
+                    if (!in_array($entry['state'],['approved','goodwill'],true)) throw new Failure('Choose a held or confirmed stay.');
+                    $quote=json_decode($entry['quote'],true); $quote['handover']=$time;
+                    $db->prepare('UPDATE bookings SET quote=? WHERE id=?')->execute([json_encode($quote),$id]);
+                });
+                header('Location: ./?month='.rawurlencode($monthKey).'#request-'.rawurlencode(reference($id)),true,303); exit;
+            }
             $decision = (string)($_POST['decision'] ?? '');
             $entry = \HireCalendar\row($db, $id);
             if ($decision === 'approved' && empty($_POST['delivery_agreed']) && json_decode($entry['customer'], true)['mode'] === 'delivery') {
                 throw new Failure('Agree the delivery price with the customer before approving.');
             }
-            decide($db, $c, $id, $decision);
+            $amount=trim((string)($_POST['agreed_price']??''));
+            $pence=null;
+            if ($decision==='approved') {
+                if (empty($_POST['agreed'])) throw new Failure('Confirm availability, the agreed price and deposit before booking.');
+                if ($amount!=='') {
+                    if (!preg_match('/^([0-9]{1,6})(?:\.([0-9]{1,2}))?$/D',$amount,$parts)) throw new Failure('Enter a valid price in pounds.');
+                    $pence=(int)$parts[1]*100+(int)str_pad($parts[2]??'',2,'0');
+                }
+            }
+            decide($db,$c,$id,$decision,$pence);
+            try { \HireCalendar\deliverMail($db,$c); } catch (Throwable $e) {error_log('Calendar notification queued for retry.');}
             header('Location: ./?month='.rawurlencode(substr($entry['start'], 0, 7)).'#request-'.rawurlencode(reference($id)), true, 303);
             exit;
         } catch (Failure $e) {
@@ -49,7 +86,7 @@ try {
     $end = $next->format('Y-m-d');
     // Every pending request remains reachable; decided stays belong to the months they occupy.
     $review = $db->prepare("SELECT id,start,end,state,quote,customer FROM bookings
-        WHERE state='requested' OR (state IN ('approved','declined') AND start < ? AND end > ?)
+        WHERE state='requested' OR (state IN ('approved','declined','goodwill','released') AND start < ? AND end > ?)
         ORDER BY CASE state WHEN 'requested' THEN 0 WHEN 'approved' THEN 1 ELSE 2 END, start, created");
     $review->execute([$end, $start]);
     $requests = $review->fetchAll(PDO::FETCH_ASSOC);
@@ -57,7 +94,7 @@ try {
     for ($night = $month; $night < $next; $night = $night->modify('+1 day')) {
         $monthsNights[$night->format('Y-m-d')] = ['booked'=>false, 'hold'=>false, 'blocked'=>false, 'requests'=>0, 'link'=>''];
     }
-    $occupied = $db->prepare("SELECT start,end,state FROM bookings WHERE state IN ('creating','pending','paid') AND start < ? AND end > ?");
+    $occupied = $db->prepare("SELECT id,start,end,state FROM bookings WHERE state IN ('creating','pending','paid','owner_block') AND start < ? AND end > ?");
     $occupied->execute([$end, $start]);
     $intervals = $occupied->fetchAll(PDO::FETCH_ASSOC);
     foreach ($c['blocked'] as $block) {
@@ -68,7 +105,7 @@ try {
         if ($r['state'] === 'requested') {
             $pendingCount++;
         }
-        if ($r['state'] !== 'declined' && $r['start'] < $end && $r['end'] > $start) {
+        if (!in_array($r['state'],['declined','released'],true) && $r['start'] < $end && $r['end'] > $start) {
             $intervals[] = $r;
         }
     }
@@ -87,7 +124,8 @@ try {
                     $info['booked'] = true;
                     break;
                 case 'paid': $info['booked'] = true; break;
-                case 'blocked': $info['blocked'] = true; break;
+                case 'goodwill': $info['link']=reference($interval['id']); $info['hold']=true; break;
+                case 'owner_block': case 'blocked': $info['blocked'] = true; break;
                 default: $info['hold'] = true;
             }
         }
@@ -109,9 +147,9 @@ try {
 <body><main class="operator">
 <header class="mast">
   <div class="wordmark"><span aria-hidden="true">LT</span> Lakeland Touring</div>
-  <span class="private">Operator access</span>
+  <form method="post"><input type="hidden" name="csrf" value="<?=h($_SESSION['csrf'])?>"><button class="private" name="signout" value="1">Sign out</button></form>
 </header>
-<h1>Booking diary</h1>
+<p>Touring Admin</p><h1>Bookings</h1>
 <?php if ($error !== ''): ?><p class="error" role="alert"><?=h($error)?></p><?php endif; ?>
 <div class="workspace">
 <section class="calendar" aria-labelledby="month-title">
@@ -152,25 +190,37 @@ try {
     $guest = json_decode($r['customer'], true);
     $quote = json_decode($r['quote'], true);
     $state = $r['state'];
-    $stateLabels = ['requested'=>'Awaiting approval', 'approved'=>'Approved', 'declined'=>'Declined'];
+    $stateLabels = ['requested'=>'Awaiting approval', 'approved'=>'Approved', 'declined'=>'Declined','goodwill'=>'Held · Payment pending','released'=>'Hold released'];
     $ref = reference($r['id']);
     $arrival = new DateTimeImmutable($r['start']); $return = new DateTimeImmutable($r['end']); ?>
   <article class="request-card <?=h($state)?>" id="request-<?=h($ref)?>">
     <div class="card-meta"><span class="tag"><?=h($stateLabels[$state])?></span><small><?=h($ref)?></small></div>
     <h3><?=h($guest['name'])?></h3>
     <p class="stay"><?=h($arrival->format('j M Y'))?> to <?=h($return->format('j M Y'))?></p>
-    <p class="hire"><?=h((string)$quote['nights'])?> nights · <?=h(pounds($quote['hire_pence']))?> hire · <?= $guest['mode'] === 'delivery' ? 'Delivered' : 'Self-tow' ?></p>
+    <p class="hire"><?=h((string)$quote['nights'])?> nights · <?= $quote['hire_pence']===null?'Price to agree':h(pounds($quote['hire_pence'])).' hire' ?> · <?=h(['delivery'=>'Delivered','self-tow'=>'Self-tow','undecided'=>'Hire option to confirm'][$guest['mode']])?></p>
     <p class="contact"><a href="mailto:<?=h($guest['email'])?>"><?=h($guest['email'])?></a></p>
     <p class="notes"><?=h($guest['details'])?></p>
-    <?php if ($state === 'requested'): ?>
+    <?php if (in_array($state,['goodwill','approved'],true)): ?><p><a href="../status.php?key=<?=h(\HireCalendar\receipt($c,$r['id']))?>">Open guest’s private holiday page</a></p>
+    <form method="post"><input type="hidden" name="csrf" value="<?=h($_SESSION['csrf'])?>"><input type="hidden" name="id" value="<?=h($r['id'])?>"><label>Agreed handover (UK time) <input required type="time" name="handover" value="<?=h($quote['handover']??'')?>"></label><button name="save_time" value="1">Save handover time</button></form><?php endif; ?>
+    <?php if (in_array($state,['requested','goodwill'],true)): ?>
     <form method="post">
       <input type="hidden" name="csrf" value="<?=h($_SESSION['csrf'])?>">
       <input type="hidden" name="id" value="<?=h($r['id'])?>">
       <?php if ($guest['mode'] === 'delivery'): ?><label class="agree"><input type="checkbox" name="delivery_agreed" value="1"> Customer has agreed the delivery price separately.</label><?php endif; ?>
-      <div class="actions"><button type="submit" name="decision" value="approved">Approve &amp; reserve dates</button><button class="secondary" type="submit" name="decision" value="declined">Decline</button></div>
+      <?php if ($quote['hire_pence']===null): ?><label>Agreed hire price (£) <input name="agreed_price" inputmode="decimal" placeholder="0.00"></label><?php endif; ?>
+      <label class="agree"><input type="checkbox" name="agreed" value="1"> I have checked availability, agreed the price with the guest and received the booking deposit.</label>
+      <div class="actions"><button type="submit" name="decision" value="approved">Approve &amp; reserve dates</button><button class="secondary" type="submit" name="decision" value="<?=$state==='goodwill'?'released':'declined'?>"><?=$state==='goodwill'?'Release hold':'Decline'?></button></div>
     </form>
     <?php endif; ?>
   </article>
   <?php endforeach; ?>
 </section>
-</div></main></body></html>
+</div>
+<section class="request-card"><h2>Owner and maintenance dates</h2>
+<form method="post"><input type="hidden" name="csrf" value="<?=h($_SESSION['csrf'])?>">
+<label>First night <input type="date" name="start" required min="<?=h($today)?>"></label>
+<label>Available again <input type="date" name="end" required min="<?=h($today)?>"></label>
+<button name="block" value="1">Block dates</button></form>
+<?php foreach ($intervals as $block): if ($block['state']!=='owner_block') continue; ?>
+<form method="post"><input type="hidden" name="csrf" value="<?=h($_SESSION['csrf'])?>"><p><?=h($block['start'])?> to <?=h($block['end'])?> <button name="unblock" value="<?=h($block['id'])?>">Reopen dates</button></p></form><?php endforeach; ?>
+</section></main></body></html>

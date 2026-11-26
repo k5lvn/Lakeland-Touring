@@ -3,182 +3,233 @@
 .review{padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:18px 0}.review p,.review form{margin:.6rem 0;overflow-wrap:anywhere}.approve,.decline{padding:12px;border-radius:8px;border:1px solid var(--line);margin:4px}.approve{background:var(--mint);color:#17362d}.decline{background:var(--paper);color:var(--ink)}.agree{display:flex;align-items:center}.agree input{width:auto}
 .day.start:enabled:hover,.day.start:focus-visible{background:var(--mint);color:#112f27}.day.end b{text-decoration:none}.day.end small{color:#264b3e}
 
-/* The guest desk shares the landscape through a series of translucent surfaces.
-   Leave the private approval and status pages on their existing styles. */
 .guest-diary {
-  --ink: #f7fbff;
-  --muted: #d0dfe4;
-  --mint: #95efe3;
-  --warm: #ffd28a;
-  --edge: rgb(213 239 250 / 22%);
-  font-family: "DM Sans", system-ui, sans-serif;
-  padding: clamp(12px, 4vw, 64px) clamp(10px, 4vw, 64px);
-  background: #182f3a;
+  --ink: #f5f8f3;
+  --muted: #d2e1df;
+  --mint: #b6e9d5;
+  --edge: rgb(210 237 230 / 29%);
+  position: relative;
   isolation: isolate;
+  background: #08212c;
 }
 .guest-diary::before {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: -1;
-  background:
-    linear-gradient(145deg, rgb(8 22 31 / 36%), rgb(8 26 35 / 18%) 56%, rgb(6 25 36 / 46%)),
-    url("/Assets/derwentwater-panorama.jpg") center / cover no-repeat;
+  background: linear-gradient(100deg, rgb(3 19 28 / 45%), transparent 70%),
+              url("lake.webp") 59% center / cover no-repeat;
 }
 .booking-app {
-  width: min(100%, 1180px);
+  width: min(1200px, 91%);
   margin: 0 auto;
-  padding: clamp(15px, 2.7vw, 36px);
+  padding: 0 0 clamp(26px, 5vw, 70px);
+}
+.booking-app main { width: 100%; }
+.diary-mast {
+  min-height: clamp(78px, 7vw, 96px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--edge);
+}
+.brochure-logo { width: clamp(134px, 12vw, 165px); height: auto; display: block; }
+.diary-nav { display: flex; align-items: center; gap: clamp(18px, 3vw, 42px); }
+.diary-mast nav a { color: var(--ink); text-decoration: none; font-size: .95rem; font-weight: 600; }
+.diary-mast nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.mobile-nav { display: none; position: relative; z-index: 2; }
+.diary-intro { padding: clamp(22px, 3vw, 43px) 0 clamp(34px, 4.2vw, 60px); }
+.guest-diary .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: .8em;
+  color: #c4eddf;
+  font-size: .78rem;
+  font-weight: 650;
+  line-height: 1.5;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.diary-intro .eyebrow::before { content: ""; width: 24px; height: 1px; background: currentColor; }
+.diary-intro h1 { margin: .12em 0 .2em; font-size: clamp(3.1rem, 5.6vw, 5.3rem); letter-spacing: -.034em; color: #fffdf6; }
+.diary-intro em { color: #def5e8; font-weight: 400; }
+.diary-intro > p:not(.eyebrow) { color: #e0ebe9; font-size: clamp(1rem, 1.45vw, 1.18rem); line-height: 1.55; }
+.check-button, .guest-diary .cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: .75rem 1.15rem;
+  border: 1px solid rgb(223 255 235 / 30%);
+  border-radius: 7px;
+  background: linear-gradient(180deg, #c5eedb, #9fd6c5);
+  color: #092f31;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.check-button { margin-top: 17px; }
+.check-button:hover, .guest-diary .cta:enabled:hover { background: #d1f7e6; }
+.guest-diary .cta:disabled { opacity: .68; }
+.calendar-panel {
+  padding: clamp(18px, 2.5vw, 34px);
   border: 1px solid var(--edge);
-  border-radius: 26px;
-  background: linear-gradient(130deg, rgb(17 32 46 / 76%), rgb(28 50 64 / 55%) 72%, rgb(20 43 53 / 66%));
-  box-shadow: inset 0 1px rgb(235 249 255 / 15%), 0 24px 68px rgb(4 19 28 / 36%);
+  border-radius: 24px;
+  background: linear-gradient(120deg, rgb(18 48 57 / 80%), rgb(16 44 51 / 58%) 72%, rgb(12 39 44 / 67%));
   -webkit-backdrop-filter: blur(7px);
   backdrop-filter: blur(7px);
+  box-shadow: 0 16px 38px rgb(1 13 19 / 22%);
+  scroll-margin-top: 12px;
 }
-.booking-app main, .booking-app .mast { width: 100%; }
-.booking-app .mast { padding: 0; }
-.booking-app .brand { gap: 10px; }
-.booking-app .mark {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  border-radius: 12px;
-  border: 1px solid rgb(162 242 228 / 52%);
-  background: rgb(56 147 142 / 23%);
-  color: #b3fff0;
-}
-.booking-app .back { color: var(--muted); text-underline-offset: 4px; }
-.diary-title { padding: clamp(22px, 3vw, 40px) 0 20px; }
-.diary-title h1 {
-  font: 650 clamp(1.9rem, 4vw, 3.05rem)/1.05 "DM Sans", system-ui, sans-serif;
-  letter-spacing: -.045em;
-}
+.panel-head, .month-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.panel-head { border-bottom: 1px solid var(--edge); padding-bottom: 11px; }
+.panel-head h2 { font-size: clamp(1.85rem, 3.15vw, 2.65rem); line-height: 1.12; }
+#season-guide { color: var(--muted); font-size: .9rem; text-align: right; }
 .booking-app .layout {
-  grid-template-columns: minmax(0, 2.2fr) minmax(260px, 1fr);
-  background: linear-gradient(120deg, rgb(149 181 206 / 14%), rgb(113 157 179 / 7%));
-  border: 1px solid var(--edge);
-  border-radius: 18px;
-  box-shadow: inset 0 1px rgb(255 255 255 / 8%);
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+  gap: clamp(18px, 2.5vw, 34px);
+  margin-top: 17px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
-.booking-app .diary, .booking-app .summary { padding: clamp(18px, 2vw, 28px); }
-.booking-app h2, .guest-diary dialog h2 {
-  font: 650 clamp(1.25rem, 2.1vw, 1.58rem)/1.2 "DM Sans", system-ui, sans-serif;
-  letter-spacing: -.03em;
-}
+.booking-app .diary, .booking-app .summary { min-width: 0; padding: 0; }
 .booking-app .summary {
+  padding-left: clamp(18px, 2.5vw, 34px);
+  border: 0;
   border-left: 1px solid var(--edge);
-  border-radius: 0 18px 18px 0;
-  background: linear-gradient(150deg, rgb(11 29 40 / 32%), rgb(100 151 158 / 8%));
+  border-radius: 0;
+  background: transparent;
 }
+.booking-app h3 { font: 400 clamp(1.5rem, 2.55vw, 2.25rem)/1.13 Georgia, serif; letter-spacing: -.025em; margin: 0; }
 .guest-diary .arrows button, .guest-diary .close {
+  min-width: 40px;
+  height: 40px;
+  background: rgb(22 51 58 / 49%);
+  color: var(--ink);
   border: 1px solid var(--edge);
-  background: rgb(78 102 118 / 33%);
-  min-width: 44px;
-  height: 44px;
+  border-radius: 7px;
 }
-.guest-diary .arrows button:enabled:hover, .guest-diary .close:hover {
-  background: rgb(121 157 169 / 46%);
-}
-.booking-app #guide { margin: 6px 0 20px; }
-.booking-app .week, .booking-app .days { gap: clamp(3px, .5vw, 7px); }
-.booking-app .week { font-weight: 550; font-size: .88rem; }
+.guest-diary .arrows button:enabled:hover, .guest-diary .close:hover { background: #385b5b; }
+.booking-app #guide { font-size: .875rem; margin: 5px 0 10px; }
+.booking-app .week, .booking-app .days { gap: clamp(3px, .35vw, 5px); }
+.booking-app .week { margin-bottom: 6px; color: var(--muted); font-size: .78rem; font-weight: 650; text-transform: uppercase; }
 .booking-app .day {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  min-height: clamp(68px, 6.8vw, 86px);
-  padding: 8px;
-  border: 1px solid rgb(224 240 251 / 16%);
-  border-radius: 10px;
-  background: linear-gradient(130deg, rgb(185 206 225 / 13%), rgb(118 158 180 / 7%));
-  box-shadow: inset 0 1px rgb(255 255 255 / 6%);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 1px;
+  min-height: clamp(48px, 4.3vw, 62px);
+  padding: 4px 1px;
+  border: 1px solid rgb(199 228 226 / 14%);
+  border-radius: 6px;
+  color: var(--ink);
+  background: rgb(142 182 190 / 13%);
 }
-.booking-app .day b { line-height: 1.1; font-size: 1.03rem; }
-.booking-app .day small { color: var(--muted); font-size: .83rem; font-variant-numeric: tabular-nums; }
-.booking-app .day.pick { border-color: rgb(158 232 221 / 52%); }
-.booking-app .day.pick::after {
-  width: 5px;
-  height: 5px;
-  top: 9px;
-  right: 8px;
+.booking-app .day b { font-size: 1.04rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.booking-app .day small { color: #e2eded; font-size: .8rem; font-variant-numeric: tabular-nums; }
+.booking-app .day small:empty { display: none; }
+.booking-app .day.pick { border-color: rgb(195 241 218 / 63%); }
+.booking-app .day.pick::after { background: var(--mint); }
+.booking-app .day:enabled:hover { background: rgb(67 117 106 / 82%); }
+.booking-app .day[data-state=unreleased] { color: #9bb0b1; background: rgb(15 41 49 / 34%); }
+.booking-app .day[data-state=held] {
+  color: #ffe6b1;
+  background: repeating-linear-gradient(135deg, transparent 0 4px, rgb(255 211 142 / 15%) 4px 5px), rgb(80 61 36 / 67%);
+}
+.booking-app .day[data-state=booked], .booking-app .day[data-state=blocked] {
+  color: #c8d7d7;
+  background: repeating-linear-gradient(135deg, transparent 0 4px, rgb(189 214 214 / 13%) 4px 5px), rgb(16 44 50 / 48%);
+}
+.booking-app .day:is([data-state=booked],[data-state=blocked]) b { text-decoration: line-through; }
+.booking-app .day.range { background: rgb(68 136 120 / 77%); border-color: rgb(177 232 204 / 30%); }
+.booking-app .day.end { color: #f1fff6; border: 2px solid var(--mint); background: rgb(35 77 74 / 75%); }
+.booking-app .day.end b { text-decoration: none; }
+.booking-app .day.end small { color: #e2f7ed; }
+.booking-app .day.start, .booking-app .day.start:is(:hover, :focus-visible) {
   background: var(--mint);
+  border: 2px solid #dbffeb;
+  color: #103335;
 }
-.booking-app .day[data-state="held"] { background: rgb(113 82 48 / 52%); color: #ffe2a8; }
-.booking-app .day[data-state="booked"] { background: rgb(88 62 70 / 49%); color: #ffd0d2; }
-.booking-app .day[data-state="unreleased"] { background: rgb(18 31 44 / 17%); color: #a9b8c3; }
-.booking-app .day:enabled:hover { background: rgb(79 157 161 / 46%); }
-.booking-app .day.range {
-  border-color: rgb(147 231 218 / 62%);
-  background: linear-gradient(135deg, rgb(22 143 147 / 54%), rgb(28 106 119 / 47%));
+.booking-app .day.start small { color: #1a4743; }
+.booking-app .day.start::after { display: none; }
+.booking-app .legend { column-gap: 14px; row-gap: 4px; margin: 12px 0 6px; }
+.booking-app .legend > span { white-space: nowrap; }
+.booking-app .legend i { width: 10px; height: 10px; border-radius: 3px; vertical-align: baseline; }
+.legend .available { background: #849d9e; }
+.legend .arrival-key { background: #213e42; border: 1px solid var(--mint); }
+.legend .selected-key { background: var(--mint); }
+.legend .held { background: repeating-linear-gradient(135deg, #635743 0 2px, #f5d598 2px 3px); }
+.legend .booked { background: repeating-linear-gradient(135deg, #334e53 0 2px, #a6b9b7 2px 3px); }
+.booking-app .note { color: #d1dfdd; font-size: .84rem; }
+.booking-app .summary .eyebrow { margin: 0 0 6px; }
+.booking-app .summary h3 { font-size: clamp(1.7rem, 2.6vw, 2.4rem); }
+.summary-dates { display: grid; grid-template-columns: 1fr 1fr; padding: 16px 0; margin: 14px 0 0; border-block: 1px solid var(--edge); }
+.summary-dates > div + div { padding-left: 12px; border-left: 1px solid var(--edge); }
+.summary-dates dt { color: var(--muted); font-size: .875rem; }
+.summary-dates dd { margin: 4px 0 0; font-weight: 600; line-height: 1.4; }
+.guest-diary :is(input, textarea, select) {
+  background-color: #18383d;
+  color: var(--ink);
+  border: 1px solid #6a8887;
+  border-radius: 6px;
 }
-.booking-app .day:is(.start, .end), .booking-app .day.start:is(:hover, :focus-visible) {
-  border: 2px solid #b1fff2;
-  background: linear-gradient(145deg, rgb(16 119 139 / 88%), rgb(22 94 123 / 81%));
-  color: #fff;
+.guest-diary select {
+  appearance: none;
+  padding-right: 38px;
+  background-image: linear-gradient(45deg, transparent 50%, #d3e7e0 50%), linear-gradient(135deg, #d3e7e0 50%, transparent 50%);
+  background-position: calc(100% - 19px) 51%, calc(100% - 14px) 51%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
 }
-.booking-app .day:is(.start, .end) small { color: #f2fffe; }
-.booking-app .legend { gap: 8px 16px; margin-top: 18px; }
-.booking-app .available { background: var(--mint); }
-.booking-app .summary h2 { margin: 5px 0 17px; }
-.caravan-card, .stay-card {
-  border: 1px solid var(--edge);
-  border-radius: 12px;
-  overflow: hidden;
-  background: rgb(133 162 181 / 10%);
-  box-shadow: inset 0 1px rgb(255 255 255 / 7%);
-}
-.caravan-card img {
-  width: 100%;
-  height: clamp(105px, 12vw, 150px);
-  object-fit: cover;
-  object-position: center;
-  display: block;
-}
-.caravan-caption { padding: 10px 13px; display: grid; gap: 3px; }
-.caravan-caption span { color: var(--muted); font-size: .88rem; }
-.stay-card { padding: 14px; margin: 12px 0; }
-.stay-card h3 { color: var(--ink); margin: 0; font-size: 1rem; font-weight: 650; }
-.stay-card #selection { margin: 6px 0 15px; }
-.stay-card .total { margin: 16px 0 0; padding-top: 14px; border-color: var(--edge); }
-.stay-card .total strong { font: 650 1.55rem/1 "DM Sans", system-ui, sans-serif; }
-.guest-diary :is(input, textarea, select) { background: rgb(20 40 53 / 67%); border-color: rgb(195 223 230 / 37%); }
-.guest-diary select option { background: #20363f; }
-.guest-diary .cta { background: #9ae9db; color: #10342e; min-height: 46px; }
-.guest-diary .cta:enabled:hover { background: #b1fff0; }
-.guest-diary dialog {
-  background: linear-gradient(140deg, rgb(33 56 69 / 92%), rgb(22 42 52 / 95%));
-  border-color: var(--edge);
-  box-shadow: 0 20px 60px rgb(4 19 28 / 40%);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-.booking-app #notice:not(:empty) { padding: 14px; border: 1px solid var(--mint); border-radius: 10px; }
+.guest-diary select:disabled { color: #c0d0cc; opacity: 1; }
+.booking-app .total { margin: 16px 0; padding-top: 14px; border-color: var(--edge); }
+.booking-app .total strong { font-size: clamp(1.85rem, 3vw, 2.65rem); }
+.booking-app .summary > .note { margin-top: 8px; text-align: center; }
+.guest-diary dialog { color: var(--ink); background: #17363c; border-color: #728e8f; }
+.guest-diary dialog::backdrop { background: rgb(0 12 18 / 77%); }
+.booking-app #notice:not(:empty), .no-script { margin-top: 17px; padding: 12px 16px; border: 1px solid var(--edge); border-radius: 8px; background: #143a3e; }
 .booking-app #notice:empty { margin: 0; }
-@media (max-width: 810px) {
-  .guest-diary { padding: 12px; }
-  .booking-app { padding: 16px; border-radius: 19px; }
-  .booking-app .layout { grid-template-columns: minmax(0, 1fr); }
-  .booking-app .summary { border-left: none; border-top: 1px solid var(--edge); border-radius: 0 0 18px 18px; }
-  .caravan-card { display: grid; grid-template-columns: 102px 1fr; align-items: center; }
-  .caravan-card img { height: 72px; }
+.screen-reader { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px !important; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+@media (max-width: 740px) {
+  .guest-diary::before { background-position: center, 71% center; }
+  .booking-app { width: min(94%, 570px); }
+  .diary-mast { min-height: 72px; }
+  .diary-nav { display: none; }
+  .mobile-nav { display: block; }
+  .mobile-nav summary {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    list-style: none;
+    border: 1px solid var(--edge);
+    border-radius: 8px;
+    background: rgb(14 43 54 / 58%);
+    cursor: pointer;
+  }
+  .mobile-nav summary::-webkit-details-marker { display: none; }
+  .menu-icon { width: 19px; height: 9px; border-block: 1.5px solid #e9fbf5; }
+  .mobile-nav nav { position: absolute; top: calc(100% + 6px); right: 0; min-width: 165px; padding: 7px; background: #0d303a; border: 1px solid var(--edge); border-radius: 8px; }
+  .mobile-nav nav a { display: block; padding: 12px; }
+  .diary-intro { padding: 22px 0 28px; }
+  .diary-intro h1 { font-size: clamp(2.9rem, 8vw, 4.3rem); }
+  .diary-intro h1 em { display: block; }
+  .calendar-panel { padding: 15px; border-radius: 18px; }
+  .panel-head { flex-wrap: wrap; gap: 3px 14px; }
+  #season-guide { font-size: .82rem; }
+  .booking-app .layout { grid-template-columns: 1fr; gap: 15px; }
+  .booking-app .summary { padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--edge); }
+  .booking-app .day { min-height: 49px; }
 }
-@media (max-width: 500px) {
-  .guest-diary { padding: 6px; }
-  .booking-app { padding: 10px; border-radius: 16px; }
-  .booking-app .diary, .booking-app .summary { padding: 11px; }
-  .booking-app .mast a:first-child { font-size: 1.13rem; }
-  .booking-app .back { font-size: .84rem; }
+@media (max-width: 400px) {
+  .calendar-panel { padding: 12px; }
   .booking-app .week, .booking-app .days { gap: 2px; }
-  .booking-app .week { font-size: .78rem; }
-  .booking-app .day { padding: 5px 2px; border-radius: 6px; min-height: 56px; align-items: center; }
-  .booking-app .day small { font-size: clamp(.65rem, 2.7vw, .83rem); }
-  .booking-app .day.pick::after { width: 3px; height: 3px; top: 4px; right: 3px; }
-  .booking-app .legend { gap: 6px 9px; }
+  .booking-app .day small { font: 400 .75rem/1.15 Arial, sans-serif; letter-spacing: -.025em; }
+  .booking-app .legend { gap: 4px 8px; }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .guest-diary .booking-app { background: #20323f; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .calendar-panel { background: #18383e; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }

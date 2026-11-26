@@ -2,7 +2,7 @@ name: Install locked booking backend standby
 on:
   push:
     branches: [main]
-    paths: ['booking-standby-20261020/**', '.github/workflows/booking-standby-20261020.yml']
+    paths: ['booking-standby-20261020/manifest.json', 'booking-standby-20261020/deploy.py', 'booking-standby-20261020/check.cjs']
 permissions:
   contents: read
 concurrency:
