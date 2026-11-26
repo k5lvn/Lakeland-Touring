@@ -1,0 +1,100 @@
+<?php
+declare(strict_types=1);
+namespace HireCalendar;
+use PDO;
+use TouringBooking\Failure;
+use function TouringBooking\{available,dateValue,db,overlaps};
+require_once dirname(__DIR__).'/api/common.php';
+
+function settings(): array {
+    $file = realpath(getenv('TOURING_CALENDAR_CONFIG') ?: '/unconfigured');
+    $root = realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: '';
+    if (!$file || !$root || str_starts_with($file, $root.'/')) throw new Failure('The hire diary is awaiting setup.',503);
+    $c = require $file;
+    if (empty($c['inventory_verified']) || empty($c['periods']) || strlen($c['receipt_secret'] ?? '') < 32
+        || !filter_var($c['office_email'] ?? '',FILTER_VALIDATE_EMAIL) || empty($c['operator_user'])
+        || ($c['origin'] ?? '') !== 'https://lakelandtouring.uk') throw new Failure('The diary is awaiting setup.',503);
+    $last = ''; dateValue($c['inventory_through']);
+    foreach ($c['periods'] as $p) {
+        if (dateValue($p['end']) <= dateValue($p['start']) || $p['start'] < $last || $p['end'] > $c['inventory_through']) throw new Failure('Check the diary periods.',503);
+        $last = $p['end'];
+        $season = $p['season'] ?? '';
+        if (!in_array($season,['peak','mid','low'],true) || empty($p['prices'][7])) throw new Failure('Check the hire tariff.',503);
+        foreach ($p['prices'] as $n=>$price) {
+            if (!is_int($n) || !is_int($price) || $price <= 0 || $n > 366 || ($season === 'low' && !in_array($n,[3,5,7],true))
+                || ($season === 'peak' && $n !== 7) || ($season === 'mid' && $n<7)) throw new Failure('Check the hire tariff.',503);
+        }
+    }
+    foreach ($c['blocked'] as $b) if(dateValue($b['end']) <= dateValue($b['start'])) throw new Failure('Check blocked dates.',503);
+    return $c;
+}
+function today(): string {return (new \DateTimeImmutable('today',new \DateTimeZone('Europe/London')))->format('Y-m-d');}
+function price(array $c,string $start,int $n): array {
+    if ($n<1 || $n>366 || $start<today()) throw new Failure('Choose a future stay.');
+    $a=dateValue($start);$end=$a->modify("+$n days")->format('Y-m-d');
+    foreach ($c['periods'] as $p) {
+        if ($p['start']>$start || $p['end']<$end || !isset($p['prices'][$n])) continue;
+        if ($p['season']==='peak' && ((int)$a->format('N')!==6 || $n!==7)) continue;
+        if ($p['season']==='low' && $n===3 && (int)$a->format('N')!==5) continue;
+        foreach ($c['blocked'] as $b) if(overlaps($start,$end,$b['start'],$b['end'])) throw new Failure('Those dates are unavailable.',409);
+        return ['start'=>$start,'end'=>$end,'nights'=>$n,'hire_pence'=>$p['prices'][$n]];
+    }
+    throw new Failure('Please choose an available stay from the calendar.',409);
+}
+function database(array $c): PDO {
+    $db=db($c);
+    $db->exec('CREATE TABLE IF NOT EXISTS calendar_mail (booking TEXT NOT NULL, status TEXT NOT NULL, sent INTEGER, PRIMARY KEY(booking,status))');
+    return $db;
+}
+function receipt(array $c,string $id): string {return $id.'.'.hash_hmac('sha256',$id,$c['receipt_secret']);}
+function reference(string $id): string {return 'LT-'.strtoupper(substr($id,0,12));}
+function transaction(PDO $db,callable $fn): mixed {
+    $db->exec('BEGIN IMMEDIATE');try {$out=$fn();$db->exec('COMMIT');return $out;}catch(\Throwable $e){$db->exec('ROLLBACK');throw $e;}
+}
+function row(PDO $db,string $id): array {
+    $q=$db->prepare("SELECT * FROM bookings WHERE id=? AND state IN ('requested','approved','declined')");
+    $q->execute([$id]);return $q->fetch(PDO::FETCH_ASSOC) ?: throw new Failure('Request unavailable.',404);
+}
+function scheduleMail(PDO $db,string $id,string $state): void {
+    $db->prepare('INSERT OR IGNORE INTO calendar_mail(booking,status) VALUES (?,?)')->execute([$id,$state]);
+}
+function requestStay(PDO $db,array $c,string $id,array $input): array {
+    foreach(['name'=>100,'email'=>254,'details'=>600] as $field=>$max){
+        $v=$input[$field]??null;
+        if(!is_string($v) || trim($v)==='' || strlen($v)>$max || preg_match('/[\x00-\x08\x0b\x0c\x0e-\x1f]/',$v))throw new Failure('Please check your contact and hire details.');
+        $customer[$field]=trim($v);
+    }
+    if(!filter_var($customer['email'],FILTER_VALIDATE_EMAIL) || !in_array($input['mode']??'',['self-tow','delivery'],true))throw new Failure('Please check your email and hire option.');
+    $customer['mode']=$input['mode'];
+    if(!is_int($input['nights']??null) || !is_string($input['start']??null))throw new Failure('Invalid stay.');
+    $q=price($c,$input['start'],$input['nights']);
+    if($q['hire_pence']!==($input['expected']??null))throw new Failure('The tariff has changed. Please select your dates again.',409);
+    return transaction($db,function()use($db,$id,$q,$customer,$c){
+        $prior=$db->prepare('SELECT quote,customer FROM bookings WHERE id=?');$prior->execute([$id]);
+        if($existing=$prior->fetch(PDO::FETCH_ASSOC)){
+            if($existing['quote']!==json_encode($q) || $existing['customer']!==json_encode($customer))throw new Failure('A request was already sent. Refresh to start another.',409);
+        }else{
+            available($db,$q['start'],$q['end']);
+            $db->prepare("INSERT INTO bookings(id,start,end,state,quote,customer,created,terms_version) VALUES(?,?,?,'requested',?,?,?,'operator-request-v1')")
+               ->execute([$id,$q['start'],$q['end'],json_encode($q),json_encode($customer),time()]);
+            scheduleMail($db,$id,'requested');
+        }
+        return ['reference'=>reference($id),'key'=>receipt($c,$id)];
+    });
+}
+function decide(PDO $db,array $c,string $id,string $action): void {
+    if(!in_array($action,['approved','declined'],true))throw new Failure('Unknown decision.');
+    transaction($db,function()use($db,$c,$id,$action){
+        $r=row($db,$id);if($r['state']===$action)return;
+        if($r['state']!=='requested')throw new Failure('This request already has a decision.',409);
+        if($action==='approved'){
+            $q=json_decode($r['quote'],true);$fresh=price($c,$r['start'],$q['nights']);
+            if($fresh['hire_pence']!==$q['hire_pence'])throw new Failure('The price changed. Agree a new request with the customer.',409);
+            available($db,$r['start'],$r['end']);
+        }
+        $db->prepare('UPDATE bookings SET state=? WHERE id=?')->execute([$action,$id]);scheduleMail($db,$id,$action);
+    });
+}
+function h(string $s): string {return htmlspecialchars($s,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8');}
+function pounds(int $v): string {return '£'.number_format($v/100,2);}
+function statusLabel(string $state): string {return ['requested'=>'Awaiting approval','approved'=>'Approved · dates reserved','declined'=>'Declined'][$state];}

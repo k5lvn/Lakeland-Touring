@@ -2,7 +2,7 @@ name: Install locked booking backend standby
 on:
   push:
     branches: [main]
-    paths: ['booking-backend/**', 'booking-standby-20261020/**', '.github/workflows/booking-standby-20261020.yml']
+    paths: ['booking-standby-20261020/**', '.github/workflows/booking-standby-20261020.yml']
 permissions:
   contents: read
 concurrency:
@@ -29,7 +29,8 @@ jobs:
           root=Path('booking-standby-20261020');m=json.loads((root/'manifest.json').read_text())
           assert 'api/booking-disabled.php' in m['files']
           for name,entry in m['files'].items():
-              src=Path('booking-backend/public')/name
+              src=root/'pinned'/name
+              if not src.is_file(): src=Path('booking-backend/public')/name
               assert hashlib.sha256(src.read_bytes()).hexdigest()==entry['updated_sha256']
               dest=root/'files'/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dest)
           PY
