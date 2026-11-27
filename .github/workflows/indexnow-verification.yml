@@ -1,0 +1,50 @@
+name: Publish Touring IndexNow verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/2deb05384f57da198a7ca10b50820cb0.txt'
+      - '.github/workflows/indexnow-verification.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: touring-indexnow-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip -q install paramiko==3.5.1
+      - name: Publish the verification file and check its public contents
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_HOST_PUBLIC_KEY: ${{ secrets.SFTP_HOST_PUBLIC_KEY }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import sys
+          from pathlib import Path, PurePosixPath
+          from urllib.request import Request, urlopen
+
+          sys.path.insert(0, 'search-enquiries-20261125')
+          from transfer import Host, guarded_replace
+
+          file = Path('site/2deb05384f57da198a7ca10b50820cb0.txt')
+          data = file.read_bytes()
+          if data != file.stem.encode('ascii'):
+              raise ValueError('Invalid verification file')
+          host = Host()
+          try:
+              host.run(lambda sftp: guarded_replace(sftp, PurePosixPath('/public') / file.name, None, data))
+          finally:
+              host.close()
+          url = 'https://lakelandtouring.uk/' + file.name
+          with urlopen(Request(url, headers={'Cache-Control': 'no-cache'}), timeout=30) as response:
+              if response.status != 200 or response.read() != data:
+                  raise ValueError('Public IndexNow verification failed')
+          print('Verified public Touring IndexNow file')
+          PY
