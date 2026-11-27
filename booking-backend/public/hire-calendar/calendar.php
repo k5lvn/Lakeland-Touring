@@ -41,9 +41,9 @@ function seasonalHirePeriods(string $from, string $through): array {
         '2028-09-30' => null,
     ];
     $prices = [
-        'low' => [3 => 37500, 5 => 57500, 7 => 75000],
-        'mid' => [7 => 95000],
-        'peak' => [7 => 120000],
+        'low' => [3 => 37500, 5 => 57500, 7 => 69500],
+        'mid' => [7 => 79500],
+        'peak' => [7 => 95000],
     ];
     $boundaries = array_keys($changes);
     $periods = [];
